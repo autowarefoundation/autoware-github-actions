@@ -1,0 +1,21 @@
+name: reusable-pre-commit
+
+on:
+  workflow_call:
+    inputs:
+      pre-commit-config:
+        required: true
+        type: string
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Run pre-commit
+        uses: pre-commit/action@v2.0.3
+        with:
+          extra_args: "--all-files --config ${{ inputs.pre-commit-config }}"
