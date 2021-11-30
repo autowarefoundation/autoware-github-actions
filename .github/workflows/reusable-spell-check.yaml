@@ -20,6 +20,6 @@ jobs:
             ${{ inputs.cspell-json-url }}
 
       - name: Run spell check
-        uses: streetsidesoftware/cspell-action@v1.3.4
+        uses: streetsidesoftware/cspell-action@v1.3.5
         with:
           config: .cspell.json
