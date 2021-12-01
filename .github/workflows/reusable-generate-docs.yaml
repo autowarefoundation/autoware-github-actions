@@ -59,7 +59,8 @@ jobs:
 
       - name: Deploy
         run: |
-          mike deploy -F ${{ inputs.mkdocs-yaml }} --push ${{ inputs.version-name }}
+          git fetch
+          mike deploy -F ${{ inputs.mkdocs-yaml }} --push --rebase ${{ inputs.version-name }}
 
   update-pr-commnet:
     needs: generate-docs
