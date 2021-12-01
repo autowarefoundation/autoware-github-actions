@@ -26,7 +26,8 @@ jobs:
       - name: Set output
         id: get-docs-version-name
         run: |
-          echo ::set-output name=version-name::"$VERSION_NAME"
+          # Replace invalid character '/' by '-'
+          echo ::set-output name=version-name::"${VERSION_NAME/\//-}"
 
       - name: Show result
         run: |
