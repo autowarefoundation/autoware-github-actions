@@ -55,4 +55,5 @@ jobs:
       - name: Delete
         if: ${{ steps.list-versions.outputs.has-version != '' }}
         run: |
-          mike delete -F ${{ inputs.mkdocs-yaml }} --push ${{ inputs.version-name }}
+          git fetch
+          mike delete -F ${{ inputs.mkdocs-yaml }} --push --rebase ${{ inputs.version-name }}
