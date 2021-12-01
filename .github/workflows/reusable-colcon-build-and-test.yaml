@@ -29,28 +29,34 @@ jobs:
 
     steps:
       - name: Checkout repository
+        if: ${{ inputs.target-packages != '' }}
         uses: actions/checkout@v2
 
       - name: Install curl
+        if: ${{ inputs.target-packages != '' }}
         run: |
           apt-get -y update
           apt-get -y install curl
 
       - name: Install pip
+        if: ${{ inputs.target-packages != '' }}
         run: |
           apt-get -y update
           apt-get -y install python3-pip
 
       - name: Show target packages
+        if: ${{ inputs.target-packages != '' }}
         run: |
           echo "target packages: ${{ inputs.target-packages }}"
 
       - name: Set git config for private repositories
+        if: ${{ inputs.target-packages != '' }}
         run: |
           git config --local --unset-all http.https://github.com/.extraheader || true
           git config --global url.https://x-access-token:${{ secrets.token }}@github.com.insteadOf 'https://github.com'
 
       - name: Clone dependency packages
+        if: ${{ inputs.target-packages != '' }}
         run: |
           mkdir dependency_ws
           vcs import dependency_ws < ${{ inputs.build-depends-repos }}
@@ -59,6 +65,7 @@ jobs:
           DEBIAN_FRONTEND=noninteractive rosdep install -y --from-paths . --ignore-src --rosdistro ${{ inputs.rosdistro }}
 
       - name: Build
+        if: ${{ inputs.target-packages != '' }}
         run: |
           . /opt/ros/${{ inputs.rosdistro }}/setup.sh
           colcon build --event-handlers console_cohesion+ \
@@ -66,6 +73,7 @@ jobs:
             --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 
       - name: Run tests
+        if: ${{ inputs.target-packages != '' }}
         run: |
           . /opt/ros/${{ inputs.rosdistro }}/setup.sh
           colcon test --event-handlers console_cohesion+ \
@@ -73,10 +81,12 @@ jobs:
             --return-code-on-test-failure
 
       - name: Calculate hash of compile_commands.json
+        if: ${{ inputs.target-packages != '' }}
         id: calc-hash
         run: echo "::set-output name=hash::${{ hashFiles('build/compile_commands.json') }}"
 
       - name: Cache build files for Clang-Tidy
+        if: ${{ inputs.target-packages != '' }}
         uses: actions/cache@v2
         with:
           path: |
