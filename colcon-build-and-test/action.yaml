@@ -1,0 +1,81 @@
+name: colcon-build-and-test
+description: Build and test the project
+
+inputs:
+  rosdistro:
+    description: ROS distro
+    required: true
+  build-depends-repos:
+    description: VCS repositories containing build dependencies
+    required: true
+  target-packages:
+    description: Target packages to build and test
+    required: true
+  token:
+    description: If the repository is private, specify a token.
+    required: false
+outputs:
+  compile-commands-hash:
+    description: Calculated hash of compile_commands.json
+    value: ${{ steps.calc-hash.outputs.hash }}
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Install pip
+      run: |
+        sudo apt-get -y update
+        sudo apt-get -y install python3-pip
+      shell: bash
+
+    - name: Show target packages
+      run: |
+        echo "target packages: ${{ inputs.target-packages }}"
+      shell: bash
+
+    - name: Set git config for private repositories
+      run: |
+        git config --local --unset-all http.https://github.com/.extraheader || true
+        git config --global url.https://x-access-token:${{ inputs.token }}@github.com.insteadOf 'https://github.com'
+      shell: bash
+
+    - name: Clone dependency packages
+      run: |
+        mkdir dependency_ws
+        vcs import dependency_ws < ${{ inputs.build-depends-repos }}
+        sudo apt-get -y update
+        rosdep update
+        DEBIAN_FRONTEND=noninteractive rosdep install -y --from-paths . --ignore-src --rosdistro ${{ inputs.rosdistro }}
+      shell: bash
+
+    - name: Build
+      run: |
+        . /opt/ros/${{ inputs.rosdistro }}/setup.sh
+        colcon build --event-handlers console_cohesion+ \
+          --packages-above-and-dependencies ${{ inputs.target-packages }} \
+          --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+      shell: bash
+
+    - name: Run tests
+      run: |
+        . /opt/ros/${{ inputs.rosdistro }}/setup.sh
+        colcon test --event-handlers console_cohesion+ \
+          --packages-above ${{ inputs.target-packages }} \
+          --return-code-on-test-failure
+      shell: bash
+
+    - name: Calculate hash of compile_commands.json
+      id: calc-hash
+      run: echo "::set-output name=hash::${{ hashFiles('build/compile_commands.json') }}"
+      shell: bash
+
+    - name: Cache build files for Clang-Tidy
+      uses: actions/cache@v2
+      with:
+        path: |
+          ./build
+          ./install
+        key: compile-commands-${{ steps.calc-hash.outputs.hash }}

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Create comment body for reusable-generate-docs.yaml
+# Create comment body for generate-docs
 # Usage: create-doc-comment.sh <base_url> <base_branch>
 
 set -e
