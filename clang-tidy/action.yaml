@@ -1,0 +1,78 @@
+name: clang-tidy
+description: Run clang-tidy on the source files
+
+inputs:
+  rosdistro:
+    description: ROS distro
+    required: true
+  build-depends-repos:
+    description: VCS repositories containing build dependencies
+    required: true
+  target-files:
+    description: Target files to run clang-tidy on
+    required: true
+  compile-commands-hash:
+    description: Calculated hash of compile_commands.json
+    required: true
+  token:
+    description: If the repository is private, specify a token.
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Install pip
+      run: |
+        sudo apt-get -y -q update
+        sudo apt-get -y -q install python3-pip
+      shell: bash
+
+    - name: Install Clang-Tidy
+      run: |
+        sudo apt-get -y -q update
+        sudo apt-get -y -q install clang-tidy
+      shell: bash
+
+    - name: Show target files
+      run: |
+        echo "target files: ${{ inputs.target-files }}"
+      shell: bash
+
+    - name: Set git config for private repositories
+      run: |
+        git config --local --unset-all http.https://github.com/.extraheader || true
+        git config --global url.https://x-access-token:${{ inputs.token }}@github.com.insteadOf 'https://github.com'
+      shell: bash
+
+    - name: Clone dependency packages
+      run: |
+        mkdir dependency_ws
+        vcs import dependency_ws < ${{ inputs.build-depends-repos }}
+        sudo apt-get -y update
+        rosdep update
+        DEBIAN_FRONTEND=noninteractive rosdep install -y --from-paths . --ignore-src --rosdistro ${{ inputs.rosdistro }}
+      shell: bash
+
+    - name: Restore build files from cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          ./build
+          ./install
+        key: compile-commands-${{ inputs.compile-commands-hash }}
+
+    - name: Show information of files
+      run: |
+        ls -a
+        echo "---"
+        find . -name compile_commands.json || true
+      shell: bash
+
+    - name: Analyze
+      run: |
+        cp ${GITHUB_ACTION_PATH}/.clang-tidy .
+        clang-tidy -p build/compile_commands.json ${{ inputs.target-files }}
+      shell: bash

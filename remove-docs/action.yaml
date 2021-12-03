@@ -1,0 +1,61 @@
+name: remove-docs
+description: Remove documentation files from the project
+
+inputs:
+  version-name:
+    description: Version name to remove from the documentation
+    required: true
+  token:
+    description: If the repository is private, specify a token.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        # Fetch with depth=0 to push to gh-pages
+        fetch-depth: 0
+
+    - name: Install MkDocs
+      run: |
+        python3 -m pip install --upgrade pip setuptools wheel
+        pip3 install -r ${GITHUB_ACTION_PATH}/mkdocs-requirements.txt
+      shell: bash
+
+    - name: Set git config
+      run: |
+        git config --local --unset-all http.https://github.com/.extraheader || true
+        git config --global url.https://x-access-token:${{ inputs.token }}@github.com.insteadOf 'https://github.com'
+        git config --global user.name github-actions
+        git config --global user.email github-actions@github.com
+      shell: bash
+
+    # TODO: remove after v1.2.0 or v2.0.0 is released
+    - name: (tmp) Install latest mike
+      run: |
+        pip install git+https://github.com/jimporter/mike
+      shell: bash
+
+    - name: List versions
+      id: list-versions
+      run: |
+        mkdocs-yaml=$(find . -type f -path './mkdocs.yaml' -or -path './mkdocs.yml')
+        echo ::set-output name=versions::$(mike list -F "$mkdocs-yaml")
+        echo ::set-output name=has-version::$(mike list -F "$mkdocs-yaml" | grep "^${{ inputs.version-name }}$")
+      shell: bash
+
+    - name: Show result
+      run: |
+        echo "versions: ${{ steps.list-versions.outputs.versions }}"
+        echo "has-version: ${{ steps.list-versions.outputs.has-version }}"
+      shell: bash
+
+    - name: Delete
+      if: ${{ steps.list-versions.outputs.has-version != '' }}
+      run: |
+        git fetch
+        mkdocs-yaml=$(find . -type f -path './mkdocs.yaml' -or -path './mkdocs.yml')
+        mike delete -F "$mkdocs-yaml" --push --rebase ${{ inputs.version-name }}
+      shell: bash
