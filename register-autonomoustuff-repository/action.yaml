@@ -9,12 +9,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-      with:
-        # Fetch with depth=0 to push to gh-pages
-        fetch-depth: 0
-
     - name: Install apt-transport-https
       run: |
         apt-get -y update
