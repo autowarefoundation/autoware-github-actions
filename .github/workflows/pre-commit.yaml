@@ -2,9 +2,26 @@ name: pre-commit
 
 on:
   pull_request:
+  workflow_call:
+    inputs:
+      pre-commit-config:
+        required: true
+        type: string
+        default: .pre-commit-config.yaml
+    secrets:
+      token:
+        required: false
 
 jobs:
   pre-commit:
-    uses: autowarefoundation/autoware-github-actions/.github/workflows/reusable-pre-commit.yaml@tier4/proposal
-    with:
-      pre-commit-config: .pre-commit-config.yaml
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Run pre-commit
+        uses: pre-commit/action@v2.0.3
+        with:
+          extra_args: --all-files --config ${{ inputs.pre-commit-config }}
+          token: ${{ secrets.token }}
