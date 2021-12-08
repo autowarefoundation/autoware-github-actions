@@ -20,6 +20,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      # shfmt requires Go 1.16+
+      - name: Setup go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.16
+
       - name: Run pre-commit
         uses: pre-commit/action@v2.0.3
         with:
