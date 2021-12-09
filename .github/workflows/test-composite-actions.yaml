@@ -6,6 +6,7 @@ on:
 jobs:
   test-register-autonomoustuff-repository:
     runs-on: ubuntu-latest
+    container: ros:${{ matrix.rosdistro }}
     strategy:
       fail-fast: false
       matrix:
