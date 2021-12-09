@@ -62,7 +62,7 @@ jobs:
           git fetch
           mike deploy -F ${{ inputs.mkdocs-yaml }} --push --rebase ${{ inputs.version-name }}
 
-  update-pr-commnet:
+  update-pr-comment:
     needs: generate-docs
     if: ${{ github.event.pull_request }}
     runs-on: ubuntu-latest
