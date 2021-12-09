@@ -1,0 +1,30 @@
+name: pre-commit
+description: pre-commit
+
+inputs:
+  pre-commit-config:
+    description: The path to `.pre-commit-config.yaml`.
+    required: true
+  token:
+    description: The token used for auto-fix.
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+
+    # shfmt requires Go 1.16+
+    - name: Setup go
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.16
+
+    - name: Run pre-commit
+      uses: pre-commit/action@v2.0.3
+      with:
+        extra_args: --all-files --config ${{ inputs.pre-commit-config }}
+        token: ${{ inputs.token }}
