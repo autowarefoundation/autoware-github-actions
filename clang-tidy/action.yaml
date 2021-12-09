@@ -1,22 +1,23 @@
 name: clang-tidy
-description: Run clang-tidy on the source files
+description: ""
 
 inputs:
   rosdistro:
-    description: ROS distro
+    description: ""
+    required: true
+  target-package:
+    description: ""
+    required: true
+  clang-tidy-config-url:
+    description: ""
     required: true
   build-depends-repos:
-    description: VCS repositories containing build dependencies
-    required: true
-  target-files:
-    description: Target files to run clang-tidy on
-    required: true
-  compile-commands-hash:
-    description: Calculated hash of compile_commands.json
-    required: true
-  token:
-    description: If the repository is private, specify a token.
+    description: ""
     required: false
+  token:
+    description: ""
+    required: false
+    default: ${{ github.token }}
 
 runs:
   using: composite
@@ -24,55 +25,64 @@ runs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Install pip
+    - name: Show target files
       run: |
-        sudo apt-get -y -q update
-        sudo apt-get -y -q install python3-pip
+        echo "target packages: ${{ inputs.target-packages }}"
+      shell: bash
+
+    - name: Install pip for rosdep
+      run: |
+        sudo apt-get -yq update
+        sudo apt-get -yq install python3-pip
       shell: bash
 
     - name: Install Clang-Tidy
       run: |
-        sudo apt-get -y -q update
-        sudo apt-get -y -q install clang-tidy
-      shell: bash
-
-    - name: Show target files
-      run: |
-        echo "target files: ${{ inputs.target-files }}"
-      shell: bash
-
-    - name: Set git config for private repositories
-      run: |
-        git config --local --unset-all http.https://github.com/.extraheader || true
-        git config --global url.https://x-access-token:${{ inputs.token }}@github.com.insteadOf 'https://github.com'
+        sudo apt-get -yq update
+        sudo apt-get -yq install clang-tidy-12
       shell: bash
 
     - name: Clone dependency packages
+      if: ${{ inputs.build-depends-repos != ''}}
       run: |
+        git config --local --unset-all http.https://github.com/.extraheader || true
+        git config --global url.https://x-access-token:${{ inputs.token }}@github.com.insteadOf 'https://github.com'
         mkdir dependency_ws
         vcs import dependency_ws < ${{ inputs.build-depends-repos }}
-        sudo apt-get -y update
+      shell: bash
+
+    - name: Run rosdep install
+      run: |
+        sudo apt-get -yq update
         rosdep update
-        DEBIAN_FRONTEND=noninteractive rosdep install -y --from-paths . --ignore-src --rosdistro ${{ inputs.rosdistro }}
+        DEBIAN_FRONTEND=noninteractive rosdep install -yq --from-paths . --ignore-src --rosdistro ${{ inputs.rosdistro }}
       shell: bash
 
     - name: Restore build files from cache
+      id: restore-build-files
       uses: actions/cache@v2
       with:
         path: |
           ./build
           ./install
-        key: compile-commands-${{ inputs.compile-commands-hash }}
+        key: build-${{ github.sha }}
 
-    - name: Show information of files
+    - name: Build
+      if: ${{ steps.restore-build-files.outputs.cache-hit != 'true' }}
       run: |
-        ls -a
-        echo "---"
-        find . -name compile_commands.json || true
+        . /opt/ros/${{ inputs.rosdistro }}/setup.sh
+        colcon build --event-handlers console_cohesion+ \
+          --packages-up-to ${{ inputs.target-packages }} \
+          --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+      shell: bash
+
+    - name: Retrieve .clang-tidy
+      run: |
+        curl -fsSL -o .clang-tidy ${{ inputs.clang-tidy-config-url }} \
+          -H "Authorization: token ${{ inputs.token }}"
       shell: bash
 
     - name: Analyze
       run: |
-        cp ${GITHUB_ACTION_PATH}/.clang-tidy .
-        clang-tidy -p build/compile_commands.json ${{ inputs.target-files }}
+        clang-tidy -p build/compile_commands.json $(colcon list --paths-only ${{ inputs.target-packages }})
       shell: bash

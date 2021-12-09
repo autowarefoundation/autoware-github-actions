@@ -1,14 +1,25 @@
 # get-self-packages
 
-## Outputs
+This action gets the list of ROS packages in the repository.
 
-| Name          | Description            |
-| ------------- | ---------------------- |
-| self-packages | List of self packages. |
-
-## Sample Workflow Steps
+## Usage
 
 ```yaml
-- name: Get self packages
-  uses: autowarefoundation/autoware-github-actions/get-self-packages@tier4/proposal
+jobs:
+  get-self-packages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get self packages
+        id: get-self-packages
+        uses: autowarefoundation/autoware-github-actions/get-self-packages@tier4/proposal
 ```
+
+## Inputs
+
+None.
+
+## Outputs
+
+| Name          | Description                                 |
+| ------------- | ------------------------------------------- |
+| self-packages | The list of ROS packages in the repository. |
