@@ -1,0 +1,16 @@
+name: spell-check
+
+on:
+  pull_request:
+
+jobs:
+  spell-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Run spell-check
+        uses: ./spell-check
+        with:
+          cspell-json-url: https://raw.githubusercontent.com/tier4/autoware-spell-check-dict/main/cspell/.cspell.json

@@ -1,0 +1,23 @@
+name: spell-check
+description: spell-check
+
+inputs:
+  cspell-json-url:
+    description: The URL to `.cspell.json`.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Retrieve spell check dictionary
+      run: |
+        curl -fsSL -o .cspell.json ${{ inputs.cspell-json-url }}
+      shell: bash
+
+    - name: Run spell check
+      uses: streetsidesoftware/cspell-action@v1.3.5
+      with:
+        config: .cspell.json
