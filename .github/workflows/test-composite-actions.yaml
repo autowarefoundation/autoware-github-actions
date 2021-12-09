@@ -24,3 +24,8 @@ jobs:
       - name: Install pacmod3_msgs
         run: |
           sudo apt-get install -y ros-${{ matrix.rosdistro }}-pacmod3-msgs
+
+      - name: Check rosdep
+        run: |
+          rosdep update
+          rosdep resolve pacmod3_msgs
