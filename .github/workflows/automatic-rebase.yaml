@@ -20,6 +20,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
+          token: ${{ steps.generate-token.outputs.token }}
           fetch-depth: 0
 
       - name: Automatic rebase
