@@ -1,7 +1,5 @@
 # pre-commit
 
-## Description
-
 This action checks if the PR passes [pre-commit](https://pre-commit.com/).  
 For public repositories, using [pre-commit.ci](https://pre-commit.ci/) is recommended.  
 Considering the case that you have both `.pre-commit-config.yaml` and `.pre-commit-config-optional.yaml`, this workflow takes the path to the config file.

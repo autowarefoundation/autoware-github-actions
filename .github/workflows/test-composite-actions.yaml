@@ -1,0 +1,31 @@
+name: test-composite-actions
+
+on:
+  pull_request:
+
+jobs:
+  test-register-autonomoustuff-repository:
+    runs-on: ubuntu-latest
+    container: ros:${{ matrix.rosdistro }}
+    strategy:
+      fail-fast: false
+      matrix:
+        rosdistro:
+          - galactic
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Run register-autonomoustuff-repository
+        uses: ./register-autonomoustuff-repository
+        with:
+          rosdistro: ${{ matrix.rosdistro }}
+
+      - name: Install pacmod3_msgs
+        run: |
+          sudo apt-get install -y ros-${{ matrix.rosdistro }}-pacmod3-msgs
+
+      - name: Check rosdep
+        run: |
+          rosdep update
+          rosdep resolve pacmod3_msgs
