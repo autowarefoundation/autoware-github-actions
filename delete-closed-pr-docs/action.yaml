@@ -51,7 +51,7 @@ runs:
           state=$(curl -fsSL "$url" -H "Authorization: token ${{ inputs.token }}" | grep -oP '"state": "\K([a-z]+)')
 
           if [ "$state" = "closed" ]; then
-            closed_docs_versions+=("$pr_number")
+            closed_docs_versions+=("$docs_version")
           fi
         done
 
