@@ -1,10 +1,14 @@
 name: spell-check
-description: spell-check
+description: ""
 
 inputs:
   cspell-json-url:
-    description: The URL to `.cspell.json`.
+    description: ""
     required: true
+  token:
+    description: ""
+    required: false
+    default: ${{ github.token }}
 
 runs:
   using: composite
@@ -14,7 +18,8 @@ runs:
 
     - name: Retrieve spell check dictionary
       run: |
-        curl -fsSL -o .cspell.json ${{ inputs.cspell-json-url }}
+        curl -fsSL -o .cspell.json ${{ inputs.cspell-json-url }} \
+          -H "Authorization: token ${{ inputs.token }}"
       shell: bash
 
     - name: Run spell check

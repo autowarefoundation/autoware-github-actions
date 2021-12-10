@@ -1,5 +1,5 @@
 #!/bin/bash
-# Create comment body for generate-docs
+# Create comment body for deploy-docs action
 # Usage: create-doc-comment.sh <base_url> <base_branch>
 
 set -e

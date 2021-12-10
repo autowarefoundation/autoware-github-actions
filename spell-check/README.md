@@ -16,9 +16,10 @@ As it is difficult to perfectly detect all miss spellings, it is recommended not
 
 ## Inputs
 
-| Name            | Required | Description                |
-| --------------- | -------- | -------------------------- |
-| cspell-json-url | true     | The URL to `.cspell.json`. |
+| Name            | Required | Description                   |
+| --------------- | -------- | ----------------------------- |
+| cspell-json-url | true     | The URL to `.cspell.json`.    |
+| token           | false    | The token for `.cspell.json`. |
 
 ## Outputs
 

@@ -1,12 +1,12 @@
 name: pre-commit
-description: pre-commit
+description: ""
 
 inputs:
   pre-commit-config:
-    description: The path to `.pre-commit-config.yaml`.
+    description: ""
     required: true
   token:
-    description: The token used for auto-fix.
+    description: ""
     required: false
 
 runs:

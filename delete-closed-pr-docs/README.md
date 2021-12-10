@@ -17,9 +17,9 @@ jobs:
 
 ## Inputs
 
-| Name  | Required | Description               |
-| ----- | -------- | ------------------------- |
-| token | true     | The token for `gh-pages`. |
+| Name  | Required | Description                       |
+| ----- | -------- | --------------------------------- |
+| token | true     | The token for push to `gh-pages`. |
 
 ## Outputs
 
