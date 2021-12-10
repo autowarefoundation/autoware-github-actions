@@ -1,0 +1,85 @@
+name: generate-docs
+description: ""
+
+inputs:
+  version-name:
+    description: ""
+    required: true
+  token:
+    description: ""
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Install MkDocs
+      run: |
+        pip3 install -U wheel
+        pip3 install -r ${GITHUB_ACTION_PATH}/../generate-docs/mkdocs-requirements.txt
+      shell: bash
+
+    # TODO: Remove after v1.2.0 or v2.0.0 is released
+    - name: (tmp) Install latest mike
+      run: |
+        pip3 install -U git+https://github.com/jimporter/mike
+      shell: bash
+
+    - name: Set git config
+      run: |
+        git config --local --unset-all http.https://github.com/.extraheader || true
+        git config --global url.https://x-access-token:${{ inputs.token }}@github.com.insteadOf 'https://github.com'
+        git config --global user.name github-actions
+        git config --global user.email github-actions@github.com
+      shell: bash
+
+    - name: Get cache
+      id: cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          site
+          comment-body.txt
+        key: generate-docs-${{ inputs.version-name }}
+
+    - name: Deploy docs
+      run: |
+        git fetch
+        mike deploy --push --rebase ${{ inputs.version-name }}
+      shell: bash
+
+    - name: Create comment body
+      if: ${{ github.event.workflow_run.event == 'pull_request' }}
+      id: create-comment-body
+      run: |
+        echo ::set-output name=comment-body::"$(cat comment-body.txt)"
+      shell: bash
+
+    - name: Find PR comment
+      if: ${{ github.event.workflow_run.event == 'pull_request' }}
+      id: find-comment
+      uses: peter-evans/find-comment@v1
+      with:
+        issue-number: ${{ github.event.workflow_run.pull_requests[0].number }}
+        comment-author: github-actions[bot]
+        body-includes: Documentation URL
+
+    - name: Update PR comment
+      if: ${{ github.event.workflow_run.event == 'pull_request' }}
+      uses: peter-evans/create-or-update-comment@v1
+      with:
+        comment-id: ${{ steps.find-comment.outputs.comment-id }}
+        issue-number: ${{ github.event.workflow_run.pull_requests[0].number }}
+        token: ${{ inputs.token }}
+        body: |
+          ${{ steps.create-comment-body.outputs.comment-body }}
+        edit-mode: replace
