@@ -1,0 +1,79 @@
+name: delete-closed-pr-docs
+description: ""
+
+inputs:
+  token:
+    description: ""
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Install mike
+      run: |
+        pip3 install mike
+      shell: bash
+
+    # TODO: Remove after v1.2.0 or v2.0.0 is released
+    - name: (tmp) Install latest mike
+      run: |
+        pip3 install -U git+https://github.com/jimporter/mike
+      shell: bash
+
+    - name: Get docs versions
+      id: get-docs-versions
+      run: |
+        echo "site_name: dummy" > mkdocs.yaml
+        echo ::set-output name=docs-versions::$(mike list | grep "pr-")
+      shell: bash
+
+    - name: Find closed docs versions
+      id: find-closed-docs-versions
+      run: |
+        echo "docs-versions: ${{ steps.get-docs-versions.outputs.docs-versions }}"
+
+        closed_docs_versions=()
+        for docs_version in ${{ steps.get-docs-versions.outputs.docs-versions }}; do
+          pr_number=$(echo "$docs_version" | grep -oP "pr-\K([0-9]+)")
+          url="https://api.github.com/repos/${{ github.repository }}/pulls/$pr_number"
+
+          echo "url: $url"
+          state=$(curl -fsSL "$url" -H "Authorization: token ${{ inputs.token }}" | grep -oP '"state": "\K([a-z]+)')
+
+          if [ "$state" = "closed" ]; then
+            closed_docs_versions+=("$pr_number")
+          fi
+        done
+
+        echo ::set-output name=closed-docs-versions::"${closed_docs_versions[@]}"
+      shell: bash
+
+    - name: Set git config
+      run: |
+        git config --local --unset-all http.https://github.com/.extraheader || true
+        git config --global url.https://x-access-token:${{ inputs.token }}@github.com.insteadOf 'https://github.com'
+        git config --global user.name github-actions
+        git config --global user.email github-actions@github.com
+      shell: bash
+
+    - name: Delete closed PR docs
+      run: |
+        echo "closed-docs-versions: ${{ steps.find-closed-docs-versions.outputs.closed-docs-versions }}"
+
+        for closed_docs_version in ${{ steps.find-closed-docs-versions.outputs.closed-docs-versions }}; do
+          git fetch
+
+          echo "Delete docs version: $closed_docs_version."
+          mike delete --push --rebase "$closed_docs_version"
+        done
+      shell: bash
