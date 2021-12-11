@@ -38,10 +38,17 @@ runs:
       id: set-docs-version-name
       run: |
         if [ "${{ github.event_name }}" = "pull_request" ]; then
-          VERSION_NAME=pr-${{ github.event.pull_request.number }}
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          VERSION_NAME="pr-$PR_NUMBER"
+        elif [ "${{ github.event_name }}" = "pull_request_target" ]; then
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          VERSION_NAME="pr-$PR_NUMBER"
         else
-          VERSION_NAME=${GITHUB_REF#refs/heads/}
+          PR_NUMBER=""
+          VERSION_NAME="${GITHUB_REF#refs/heads/}"
         fi
+
+        echo ::set-output name=pr-number::"$PR_NUMBER"
 
         # Replace invalid character '/' by '-'
         echo ::set-output name=version-name::"${VERSION_NAME//\//-}"
@@ -54,30 +61,30 @@ runs:
       shell: bash
 
     - name: Create comment body
-      if: ${{ github.event.pull_request }}
+      if: ${{ steps.set-docs-version-name.outputs.pr-number != '' }}
       id: create-comment-body
       run: |
         mkdocs_yaml=$(find . -type f -path './mkdocs.yaml' -or -path './mkdocs.yml')
         site_url=$(grep -oP "site_url:\s+\K(.*)" "$mkdocs_yaml")
         base_url="$site_url/${{ steps.set-docs-version-name.outputs.version-name }}/"
-        ${GITHUB_ACTION_PATH}/create-doc-comment.sh "$base_url" "origin/${{ github.event.pull_request.base.ref }}"
+        ${GITHUB_ACTION_PATH}/create-doc-comment.sh "$base_url" "origin/$GITHUB_BASE_REF"
       shell: bash
 
     - name: Find PR comment
-      if: ${{ github.event.pull_request }}
+      if: ${{ steps.set-docs-version-name.outputs.pr-number != '' }}
       id: find-comment
       uses: peter-evans/find-comment@v1
       with:
-        issue-number: ${{ github.event.pull_request.number }}
+        issue-number: ${{ steps.set-docs-version-name.outputs.pr-number }}
         comment-author: github-actions[bot]
         body-includes: Documentation URL
 
     - name: Update PR comment
-      if: ${{ github.event.pull_request }}
+      if: ${{ steps.set-docs-version-name.outputs.pr-number != '' }}
       uses: peter-evans/create-or-update-comment@v1
       with:
         comment-id: ${{ steps.find-comment.outputs.comment-id }}
-        issue-number: ${{ github.event.pull_request.number }}
+        issue-number: ${{ steps.set-docs-version-name.outputs.pr-number }}
         token: ${{ inputs.token }}
         body: |
           ${{ steps.create-comment-body.outputs.comment-body }}
