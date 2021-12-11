@@ -7,10 +7,14 @@ Considering the case that you have both `.pre-commit-config.yaml` and `.pre-comm
 ## Usage
 
 ```yaml
-- name: Run pre-commit
-  uses: autowarefoundation/autoware-github-actions/pre-commit@tier4/proposal
-  with:
-    pre-commit-config: .pre-commit-config.yaml
+jobs:
+  remove-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run pre-commit
+        uses: autowarefoundation/autoware-github-actions/pre-commit@tier4/proposal
+        with:
+          pre-commit-config: .pre-commit-config.yaml
 ```
 
 ## Inputs
@@ -18,7 +22,7 @@ Considering the case that you have both `.pre-commit-config.yaml` and `.pre-comm
 | Name              | Required | Description                            |
 | ----------------- | -------- | -------------------------------------- |
 | pre-commit-config | true     | The path to `.pre-commit-config.yaml`. |
-| token             | false    | The token used for auto-fix.           |
+| token             | false    | The token for auto-fix.                |
 
 > Note: Setting `GITHUB_TOKEN` for `token` doesn't work completely because it doesn't have `workflow` permission.
 

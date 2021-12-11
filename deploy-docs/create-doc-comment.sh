@@ -1,5 +1,5 @@
 #!/bin/bash
-# Create comment body for reusable-generate-docs.yaml
+# Create comment body for deploy-docs action
 # Usage: create-doc-comment.sh <base_url> <base_branch>
 
 set -e
@@ -44,7 +44,7 @@ done
 
 # Create comment body
 comment_lines=("Documentation URL: $base_url")
-comment_lines+=("Modified files:")
+comment_lines+=("Modified URLs:")
 for markdown_path in "${markdown_paths[@]}"; do
     if [[ $markdown_path =~ README\.md$ ]]; then
         url_path=${markdown_path/README.md/}

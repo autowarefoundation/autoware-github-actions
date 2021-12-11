@@ -12,10 +12,10 @@ runs:
     # https://github.com/astuff/pacmod3_msgs#installation
     - name: Register apt repository
       run: |
-        sudo apt-get -y update
-        sudo apt-get -y install apt-transport-https
+        sudo apt-get -yqq update
+        sudo apt-get -yqq install apt-transport-https
         sudo sh -c 'echo "deb [trusted=yes] https://s3.amazonaws.com/autonomoustuff-repo/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/autonomoustuff-public.list'
-        sudo apt-get -y update
+        sudo apt-get -yqq update
       shell: bash
 
     #  https://github.com/astuff/docker-builds/blob/e9f563ef04b0578ba0b545711ea3e41b20a51d27/ros2/foxy/ros-core/Dockerfile#L29
