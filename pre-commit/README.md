@@ -8,9 +8,12 @@ Considering the case that you have both `.pre-commit-config.yaml` and `.pre-comm
 
 ```yaml
 jobs:
-  remove-docs:
+  pre-commit:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
       - name: Run pre-commit
         uses: autowarefoundation/autoware-github-actions/pre-commit@tier4/proposal
         with:

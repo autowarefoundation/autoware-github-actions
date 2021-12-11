@@ -9,11 +9,6 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-
     - name: Get modified packages
       id: get-modified-packages
       run: |

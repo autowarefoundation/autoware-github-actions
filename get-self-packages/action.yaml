@@ -9,9 +9,6 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
     - name: Get packages in this repository
       id: get-self-packages
       run: |

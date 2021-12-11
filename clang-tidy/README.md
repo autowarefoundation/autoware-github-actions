@@ -12,12 +12,17 @@ jobs:
     container: ros:galactic
     needs: build-and-test
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
       - name: Get modified packages
         id: get-modified-packages
         uses: autowarefoundation/autoware-github-actions/get-modified-packages@tier4/proposal
 
       - name: Run clang-tidy
-        if: ${{ steps.get-modified-source-files.outputs.modified-source-files }}
+        if: ${{ steps.get-modified-packages.outputs.modified-packages != '' }}
         uses: autowarefoundation/autoware-github-actions/clang-tidy@tier4/proposal
         with:
           rosdistro: galactic

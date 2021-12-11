@@ -11,6 +11,11 @@ jobs:
   deploy-docs:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
       - name: Deploy docs
         uses: autowarefoundation/autoware-github-actions/deploy-docs@tier4/proposal
         with:

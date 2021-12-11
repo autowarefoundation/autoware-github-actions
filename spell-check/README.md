@@ -8,10 +8,17 @@ As it is difficult to perfectly detect all miss spellings, it is recommended not
 ## Usage
 
 ```yaml
-- name: Run spell-check
-  uses: autowarefoundation/autoware-github-actions/spell-check@tier4/proposal
-  with:
-    cspell-json-url: https://raw.githubusercontent.com/tier4/autoware-spell-check-dict/main/cspell/.cspell.json
+jobs:
+  spell-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Run spell-check
+        uses: autowarefoundation/autoware-github-actions/spell-check@tier4/proposal
+        with:
+          cspell-json-url: https://raw.githubusercontent.com/tier4/autoware-spell-check-dict/main/cspell/.cspell.json
 ```
 
 ## Inputs

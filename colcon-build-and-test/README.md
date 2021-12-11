@@ -6,18 +6,21 @@ This action runs `colcon build` and `colcon test`.
 
 ```yaml
 jobs:
-  colcon-build-and-test:
+  build-and-test:
     runs-on: ubuntu-latest
     container: ros:galactic
-    outputs:
-      compile-commands-hash: ${{ steps.build-and-test.outputs.compile-commands-hash }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
       - name: Get modified packages
         id: get-modified-packages
         uses: autowarefoundation/autoware-github-actions/get-modified-packages@tier4/proposal
 
       - name: Build and test
-        id: build-and-test
+        if: ${{ steps.get-modified-packages.outputs.modified-packages != '' }}
         uses: autowarefoundation/autoware-github-actions/colcon-build-and-test@tier4/proposal
         with:
           rosdistro: galactic
