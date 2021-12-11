@@ -19,9 +19,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
     - name: Show target packages
       run: |
         echo "target packages: ${{ inputs.target-packages }}"

@@ -13,9 +13,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
     - name: Retrieve spell check dictionary
       run: |
         curl -fsSL -o .cspell.json ${{ inputs.cspell-json-url }} \

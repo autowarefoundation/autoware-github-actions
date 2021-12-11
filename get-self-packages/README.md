@@ -9,6 +9,9 @@ jobs:
   get-self-packages:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
       - name: Get self packages
         id: get-self-packages
         uses: autowarefoundation/autoware-github-actions/get-self-packages@tier4/proposal

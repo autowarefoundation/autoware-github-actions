@@ -7,9 +7,29 @@ This action sets up the prerequisites for [pacmod3_msgs](https://github.com/astu
 ## Usage
 
 ```yaml
-- uses: autowarefoundation/autoware-github-actions/register-autonomoustuff-repository@tier4/proposal
-  with:
-    rosdistro: galactic
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    container: ros:galactic
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Register AutonomouStuff repository
+        uses: autowarefoundation/autoware-github-actions/register-autonomoustuff-repository@tier4/proposal
+        with:
+          rosdistro: galactic
+
+      - name: Get self packages
+        id: get-self-packages
+        uses: autowarefoundation/autoware-github-actions/get-self-packages@tier4/proposal
+
+      - name: Build and test
+        uses: autowarefoundation/autoware-github-actions/colcon-build-and-test@tier4/proposal
+        with:
+          rosdistro: galactic
+          target-packages: ${{ steps.get-self-packages.outputs.self-packages }}
+          build-depends-repos: build_depends.repos
 ```
 
 ## Inputs
