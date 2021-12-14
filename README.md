@@ -45,7 +45,7 @@ It is useful for preventing `pull_request_target` event and self-hosted runners 
 ```yaml
 jobs:
   prevent-no-label-execution:
-    uses: autowarefoundation/autoware-github-actions/prevent-no-label-execution@tier4/proposal
+    uses: autowarefoundation/autoware-github-actions/prevent-no-label-execution.yaml@tier4/proposal
     with:
       label: ARM64
 

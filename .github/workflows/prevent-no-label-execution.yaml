@@ -32,7 +32,7 @@ jobs:
                 return
               fi
 
-              echo "Skipping execution since a different label '${{ inputs.label }}' is added."
+              echo "Skipping execution since a different label '${{ github.event.label.name }}' is added."
               return
             fi
 
