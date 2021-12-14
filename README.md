@@ -35,6 +35,27 @@ jobs:
       token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
+### [prevent-no-label-execution](.github/workflows/prevent-no-label-execution.yaml)
+
+This workflow checks if the PR has a specific label.  
+It is useful for preventing `pull_request_target` event and self-hosted runners from being executed without the label.
+
+#### Usage
+
+```yaml
+jobs:
+  prevent-no-label-execution:
+    uses: autowarefoundation/autoware-github-actions/prevent-no-label-execution@tier4/proposal
+    with:
+      label: ARM64
+
+  build-and-test-arm:
+    needs: check-run-condition
+    if: ${{ needs.check-run-condition.outputs.run == 'true' }}
+    runs-on: [self-hosted, linux, ARM64]
+    # ...
+```
+
 ## Supported composite actions
 
 Please see the `README.md` in each directory.
