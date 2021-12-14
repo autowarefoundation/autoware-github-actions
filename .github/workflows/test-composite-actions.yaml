@@ -29,3 +29,27 @@ jobs:
         run: |
           rosdep update
           rosdep resolve pacmod3_msgs
+
+  test-clang-tidy-empty-target:
+    runs-on: ubuntu-latest
+    container: ros:${{ matrix.rosdistro }}
+    strategy:
+      fail-fast: false
+      matrix:
+        rosdistro:
+          - galactic
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Create a package with no source files
+        run: |
+          . /opt/ros/${{ matrix.rosdistro }}/setup.sh
+          ros2 pkg create empty_target
+
+      - name: Run clang-tidy
+        uses: ./clang-tidy
+        with:
+          rosdistro: ${{ matrix.rosdistro }}
+          target-packages: empty_target
+          clang-tidy-config-url: https://raw.githubusercontent.com/autowarefoundation/autoware-github-actions/tier4/proposal/.clang-tidy
