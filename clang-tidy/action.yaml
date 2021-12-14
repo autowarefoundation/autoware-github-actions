@@ -79,9 +79,16 @@ runs:
           -H "Authorization: token ${{ inputs.token }}"
       shell: bash
 
-    - name: Analyze
+    - name: Get target files
+      id: get-target-files
       run: |
         package_path=$(colcon list --paths-only --packages-select ${{ inputs.target-packages }})
         target_files=$(find $package_path -name "*.cpp" -or -name "*.hpp")
-        clang-tidy -p build/ $target_files
+        echo ::set-output name=target-files::"$target_files"
+      shell: bash
+
+    - name: Analyze
+      if: ${{ steps.get-target-files.outputs.target-files != '' }}
+      run: |
+        clang-tidy -p build/ ${{ steps.get-target-files.outputs.target-files }}
       shell: bash
