@@ -1,0 +1,55 @@
+name: prevent-no-label-execution
+
+on:
+  workflow_call:
+    inputs:
+      label:
+        required: true
+        type: string
+    outputs:
+      run:
+        value: ${{ jobs.prevent-no-label-execution.outputs.run }}
+
+jobs:
+  prevent-no-label-execution:
+    runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.prevent-no-label-execution.outputs.run }}
+    steps:
+      - name: Prevent no label execution
+        id: prevent-no-label-execution
+        run: |
+          function check() {
+            if [ "${{ github.event_name }}" != "pull_request" ] && [ "${{ github.event_name }}" != "pull_request_target" ]; then
+              echo "true"
+              return
+            fi
+
+            # Labeled now
+            if [ "${{ github.event.label.name }}" != "" ]; then
+              if [ "${{ github.event.label.name == inputs.label }}" = "true" ]; then
+                echo "true"
+                return
+              fi
+
+              echo "Skipping execution since a different label '${{ github.event.label.name }}' is added."
+              return
+            fi
+
+            # Labeled before and synchronized
+            if [ "${{ contains(github.event.pull_request.labels.*.name, inputs.label) }}" = "true" ]; then
+              echo "true"
+              return
+            fi
+
+            echo "Please add the label '${{ inputs.label }}' to run this workflow."
+            return
+          }
+
+          echo ::set-output name=run::"$(check)"
+        shell: bash
+
+      - name: Show result
+        run: |
+          echo "run: ${{ steps.prevent-no-label-execution.outputs.run }}"
+        shell: bash
