@@ -27,6 +27,12 @@ runs:
         echo "target packages: ${{ inputs.target-packages }}"
       shell: bash
 
+    - name: Install curl
+      run: |
+        sudo apt-get -yqq update
+        sudo apt-get -yqq install curl
+      shell: bash
+
     - name: Install pip for rosdep
       run: |
         sudo apt-get -yqq update
