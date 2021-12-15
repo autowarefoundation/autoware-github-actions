@@ -50,8 +50,8 @@ jobs:
       label: ARM64
 
   build-and-test-arm:
-    needs: check-run-condition
-    if: ${{ needs.check-run-condition.outputs.run == 'true' }}
+    needs: prevent-no-label-execution
+    if: ${{ needs.prevent-no-label-execution.outputs.run == 'true' }}
     runs-on: [self-hosted, linux, ARM64]
     # ...
 ```
