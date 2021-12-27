@@ -1,0 +1,10 @@
+name: remove-exec-depend
+description: remove-exec-depend
+
+runs:
+  using: composite
+  steps:
+    - name: Remove exec_depend
+      run: |
+        find . -name package.xml | xargs -I {} sed -i -rz "s|<exec_depend>\s*[a-zA-Z_0-9]+\s*</exec_depend>\n||g" {}
+      shell: bash
