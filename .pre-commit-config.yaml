@@ -32,7 +32,6 @@ repos:
     rev: v1.26.3
     hooks:
       - id: yamllint
-        exclude: .clang.tidy
 
   - repo: https://github.com/shellcheck-py/shellcheck-py
     rev: v0.8.0.1
