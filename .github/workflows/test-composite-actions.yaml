@@ -52,4 +52,4 @@ jobs:
         with:
           rosdistro: ${{ matrix.rosdistro }}
           target-packages: empty_target
-          clang-tidy-config-url: https://raw.githubusercontent.com/autowarefoundation/autoware-github-actions/tier4/proposal/.clang-tidy
+          clang-tidy-config-url: https://raw.githubusercontent.com/autowarefoundation/autoware/tier4/proposal/.clang-tidy
