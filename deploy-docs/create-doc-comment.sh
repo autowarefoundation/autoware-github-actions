@@ -56,7 +56,7 @@ for markdown_path in "${markdown_paths[@]}"; do
 done
 
 # Workaround for multiline strings
-# https://trstringer.com/github-actions-multiline-strings/
+# https://github.community/t/set-output-truncates-multiline-strings/16852
 comment_body=$(printf "%s\n" "${comment_lines[@]}")
 comment_body="${comment_body//'%'/'%25'}"
 comment_body="${comment_body//$'\n'/'%0A'}"
