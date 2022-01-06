@@ -1,9 +1,9 @@
 name: register-autonomoustuff-repository
-description: register-autonomoustuff-repository
+description: ""
 
 inputs:
   rosdistro:
-    description: ROS distro
+    description: ""
     required: true
 
 runs:
