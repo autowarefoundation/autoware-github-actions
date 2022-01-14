@@ -48,6 +48,8 @@ comment_lines+=("Modified URLs:")
 for markdown_path in "${markdown_paths[@]}"; do
     if [[ $markdown_path =~ README\.md$ ]]; then
         url_path=${markdown_path/README.md/}
+    elif [[ $markdown_path =~ index\.md$ ]]; then
+        url_path=${markdown_path/index.md/}
     else
         url_path=${markdown_path/.md/\/}
     fi
