@@ -51,21 +51,30 @@ runs:
         . /opt/ros/${{ inputs.rosdistro }}/setup.sh
         colcon build --event-handlers console_cohesion+ \
           --packages-above-and-dependencies ${{ inputs.target-packages }} \
-          --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+          --cmake-args \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_C_FLAGS="-fprofile-arcs -ftest-coverage -DCOVERAGE_RUN=1" \
+            -DCMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage -DCOVERAGE_RUN=1" \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
       shell: bash
 
     - name: Test
       run: |
         . /opt/ros/${{ inputs.rosdistro }}/setup.sh
+        colcon lcov-result --initial
         colcon test --event-handlers console_cohesion+ \
           --packages-above ${{ inputs.target-packages }} \
           --return-code-on-test-failure
+        colcon lcov-result
+        colcon coveragepy-result
       shell: bash
 
-    - name: Cache build files for Clang-Tidy
+    - name: Cache build artifacts
       uses: actions/cache@v2
       with:
         path: |
           ./build
           ./install
+          ./lcov
+          ./coveragepy
         key: build-${{ github.sha }}
