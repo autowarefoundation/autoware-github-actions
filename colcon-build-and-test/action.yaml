@@ -58,10 +58,9 @@ runs:
             -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
       shell: bash
 
-    - name: Install python package for coverage commands
+    - name: Install Python packages for coverage commands
       run: |
-        pip3 install colcon-lcov-result
-        pip3 install colcon-coveragepy-result
+        pip3 install colcon-lcov-result colcon-coveragepy-result
       shell: bash
 
     - name: Test
