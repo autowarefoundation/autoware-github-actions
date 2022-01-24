@@ -53,8 +53,8 @@ runs:
           --packages-above-and-dependencies ${{ inputs.target-packages }} \
           --cmake-args \
             -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_C_FLAGS="-fprofile-arcs -ftest-coverage -DCOVERAGE_RUN=1" \
-            -DCMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage -DCOVERAGE_RUN=1" \
+            -DCMAKE_C_FLAGS="--coverage -DCOVERAGE_RUN=1" \
+            -DCMAKE_CXX_FLAGS="--coverage -DCOVERAGE_RUN=1" \
             -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
       shell: bash
 
