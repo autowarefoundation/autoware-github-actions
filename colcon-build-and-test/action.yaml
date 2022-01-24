@@ -58,6 +58,12 @@ runs:
             -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
       shell: bash
 
+    - name: Install python package for coverage commands
+      run: |
+        pip3 install colcon-lcov-result
+        pip3 install colcon-coveragepy-result
+      shell: bash
+
     - name: Test
       run: |
         . /opt/ros/${{ inputs.rosdistro }}/setup.sh
