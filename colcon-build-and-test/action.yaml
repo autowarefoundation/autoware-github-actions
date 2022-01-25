@@ -66,12 +66,12 @@ runs:
     - name: Test
       run: |
         . /opt/ros/${{ inputs.rosdistro }}/setup.sh
-        colcon lcov-result --initial
+        colcon lcov-result --initial --packages-above ${{ inputs.target-packages }}
         colcon test --event-handlers console_cohesion+ \
           --packages-above ${{ inputs.target-packages }} \
           --return-code-on-test-failure
-        colcon lcov-result
-        colcon coveragepy-result
+        colcon lcov-result --packages-above ${{ inputs.target-packages }}
+        colcon coveragepy-result --packages-above ${{ inputs.target-packages }}
       shell: bash
 
     - name: Cache build artifacts
