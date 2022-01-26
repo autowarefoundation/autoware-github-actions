@@ -72,8 +72,10 @@ runs:
         colcon test --event-handlers console_cohesion+ \
           --packages-above ${{ inputs.target-packages }} \
           --return-code-on-test-failure
-        (find build -name coverage.info | grep .) && colcon lcov-result --packages-above ${{ inputs.target-packages }}
-        colcon coveragepy-result --packages-above ${{ inputs.target-packages }}
+        if [ -n "$(find build/ -name coverage.info)" ]; then
+          colcon lcov-result --packages-above ${{ inputs.target-packages }}
+          colcon coveragepy-result --packages-above ${{ inputs.target-packages }}
+        fi
       shell: bash
 
     - name: Cache build artifacts
