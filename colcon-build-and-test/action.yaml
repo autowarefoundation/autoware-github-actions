@@ -46,16 +46,19 @@ runs:
         DEBIAN_FRONTEND=noninteractive rosdep install -yqq --from-paths . --ignore-src --rosdistro ${{ inputs.rosdistro }}
       shell: bash
 
+    - name: Set up colcon-mixin
+      run: |
+        colcon mixin add default https://raw.githubusercontent.com/colcon/colcon-mixin-repository/master/index.yaml
+        colcon mixin update default
+      shell: bash
+
     - name: Build
       run: |
         . /opt/ros/${{ inputs.rosdistro }}/setup.sh
         colcon build --event-handlers console_cohesion+ \
           --packages-above-and-dependencies ${{ inputs.target-packages }} \
-          --cmake-args \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_C_FLAGS="--coverage -DCOVERAGE_RUN=1" \
-            -DCMAKE_CXX_FLAGS="--coverage -DCOVERAGE_RUN=1" \
-            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+          --cmake-args -DCMAKE_BUILD_TYPE=Release \
+          --mixin coverage-gcc coverage-pytest compile-commands
       shell: bash
 
     - name: Install packages for coverage commands
@@ -70,10 +73,15 @@ runs:
         . /opt/ros/${{ inputs.rosdistro }}/setup.sh
         colcon lcov-result --initial --packages-above ${{ inputs.target-packages }}
         colcon test --event-handlers console_cohesion+ \
+          --mixin coverage-pytest \
           --packages-above ${{ inputs.target-packages }} \
           --return-code-on-test-failure
-        colcon lcov-result --packages-above ${{ inputs.target-packages }}
-        colcon coveragepy-result --packages-above ${{ inputs.target-packages }}
+        if [ -n "$(find build/ -name coverage.info)" ]; then
+          colcon lcov-result --packages-above ${{ inputs.target-packages }}
+        fi
+        if [ -n "$(find build/ -name .coverage)" ]; then
+          colcon coveragepy-result --packages-above ${{ inputs.target-packages }}
+        fi
       shell: bash
 
     - name: Cache build artifacts
