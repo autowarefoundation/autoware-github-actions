@@ -9,7 +9,7 @@ jobs:
   get-self-packages:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Check out repository
         uses: actions/checkout@v2
 
       - name: Get self packages

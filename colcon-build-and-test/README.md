@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     container: ros:galactic
     steps:
-      - name: Checkout repository
+      - name: Check out repository
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
