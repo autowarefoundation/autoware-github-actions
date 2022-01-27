@@ -77,6 +77,8 @@ runs:
           --return-code-on-test-failure
         if [ -n "$(find build/ -name coverage.info)" ]; then
           colcon lcov-result --packages-above ${{ inputs.target-packages }}
+        fi
+        if [ -n "$(find build/ -name .coverage)" ]; then
           colcon coveragepy-result --packages-above ${{ inputs.target-packages }}
         fi
       shell: bash
