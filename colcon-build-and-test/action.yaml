@@ -59,10 +59,7 @@ runs:
           --packages-above-and-dependencies ${{ inputs.target-packages }} \
           --cmake-args \
             -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_C_FLAGS="-DCOVERAGE_RUN=1" \
-            -DCMAKE_CXX_FLAGS="-DCOVERAGE_RUN=1" \
-            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
-          --mixin coverage-gcc coverage-pytest
+          --mixin coverage-gcc coverage-pytest compile-commands
       shell: bash
 
     - name: Install packages for coverage commands
