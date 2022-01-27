@@ -1,0 +1,132 @@
+name: sync-files
+description: ""
+
+inputs:
+  token:
+    description: ""
+    required: true
+  config:
+    description: ""
+    required: false
+    default: .github/sync-files.yaml
+  pr-base:
+    description: ""
+    required: false
+    default: ${{ github.event.repository.default_branch }}
+  pr-branch:
+    description: ""
+    required: false
+    default: sync-files
+  pr-title:
+    description: ""
+    required: false
+    default: "chore: sync files"
+  pr-commit-message:
+    description: ""
+    required: false
+    default: "chore: sync files"
+  pr-body:
+    description: ""
+    required: false
+    default: ""
+  pr-labels:
+    description: ""
+    required: false
+    default: ""
+  pr-assignees:
+    description: ""
+    required: false
+    default: ""
+  pr-reviewers:
+    description: ""
+    required: false
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - name: Check out repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+
+    - name: Set up yq
+      uses: chrisdickinson/setup-yq@v1.0.1
+      with:
+        yq-version: v4.17.2
+
+    - name: Parse config
+      run: |
+        pip3 install pyyaml
+
+        cat ${{ inputs.config }}
+        python3 ${GITHUB_ACTION_PATH}/parse_config.py ${{ inputs.config }} > /tmp/sync-files.yaml
+        cat /tmp/sync-files.yaml
+      shell: bash
+
+    - name: Sync files
+      run: |
+        set -e
+
+        for repository in $(yq e ".[].repository" /tmp/sync-files.yaml); do
+          yq e ".[] | select(.repository == \"$repository\")" /tmp/sync-files.yaml > /tmp/repo-config.yaml
+
+          ref=$(yq e ".ref" /tmp/repo-config.yaml)
+
+          git_options=()
+          if [ "$ref" != "" ]; then
+            git_options+=("-b $ref")
+          fi
+
+          rm -rf /tmp/repository
+          git clone "$repository" /tmp/repository ${git_options[@]}
+
+          for source_file in $(yq e ".files[].source" /tmp/repo-config.yaml); do
+            yq e ".files[] | select(.source == \"$source_file\")" /tmp/repo-config.yaml > /tmp/file-config.yaml
+
+            source_path=$(yq e ".source" /tmp/file-config.yaml)
+            dest_path=$(yq e ".dest" /tmp/file-config.yaml)
+            replace=$(yq e ".replace" /tmp/file-config.yaml)
+            delete_orphaned=$(yq e ".delete-orphaned" /tmp/file-config.yaml)
+
+            target_file="/tmp/repository/$source_path"
+            if [ -f "$target_file" ]; then
+              if [ -f "$dest_file" ] && [ "replace" != "true" ]; then
+                echo "Skip copying to $dest_file."
+                continue
+              fi
+
+              echo "Copy $source_path to $dest_path."
+              cp "$target_file" "$dest_path"
+            elif [ "$delete_orphaned" = "true" ]; then
+              echo "Delete $dest_path."
+              rm "$dest_path" || true
+            fi
+          done
+        done
+
+        git status
+      shell: bash
+
+    - name: Create PR
+      id: create-pr
+      uses: peter-evans/create-pull-request@v3
+      with:
+        token: ${{ inputs.token }}
+        base: ${{ inputs.pr-base }}
+        branch: ${{ inputs.pr-branch }}
+        title: ${{ inputs.pr-title }}
+        commit-message: ${{ inputs.pr-commit-message }}
+        body: ${{ inputs.pr-body }}
+        labels: ${{ inputs.pr-labels }}
+        assignees: ${{ inputs.pr-assignees }}
+        reviewers: ${{ inputs.pr-reviewers }}
+        signoff: true
+        delete-branch: true
+
+    - name: Check outputs
+      run: |
+        echo "Pull Request Number - ${{ steps.create-pr.outputs.pull-request-number }}"
+        echo "Pull Request URL - ${{ steps.create-pr.outputs.pull-request-url }}"
+      shell: bash
