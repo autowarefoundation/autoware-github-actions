@@ -46,7 +46,7 @@ runs:
         DEBIAN_FRONTEND=noninteractive rosdep install -yqq --from-paths . --ignore-src --rosdistro ${{ inputs.rosdistro }}
       shell: bash
 
-    - name: Set colcon-mixin-repository
+    - name: Set up colcon-mixin
       run: |
         colcon mixin add default https://raw.githubusercontent.com/colcon/colcon-mixin-repository/master/index.yaml
         colcon mixin update default
