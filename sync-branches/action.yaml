@@ -1,0 +1,86 @@
+name: sync-branches
+description: ""
+
+inputs:
+  token:
+    description: ""
+    required: true
+  base-branch:
+    description: ""
+    required: true
+  sync-pr-branch:
+    description: ""
+    required: true
+  sync-target-repository:
+    description: ""
+    required: true
+  sync-target-branch:
+    description: ""
+    required: true
+  pr-title:
+    description: ""
+    required: true
+  pr-body:
+    description: ""
+    required: false
+    default: ""
+  pr-labels:
+    description: ""
+    required: false
+    default: ""
+  pr-assignees:
+    description: ""
+    required: false
+    default: ""
+  pr-reviewers:
+    description: ""
+    required: false
+    default: ""
+  auto-merge-method:
+    description: ""
+    required: false
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ inputs.base-branch }}
+
+    - name: Sync branches
+      run: |
+        git remote add sync-target "${{ inputs.sync-target-repository }}"
+        git fetch -pPtf --all
+        git reset --hard "sync-target/${{ inputs.sync-target-branch }}"
+      shell: bash
+
+    - name: Create PR
+      id: create-pr
+      uses: peter-evans/create-pull-request@v3
+      with:
+        token: ${{ inputs.token }}
+        base: ${{ inputs.base-branch }}
+        branch: ${{ inputs.sync-pr-branch }}
+        title: ${{ inputs.pr-title }}
+        body: ${{ inputs.pr-body }}
+        labels: ${{ inputs.pr-labels }}
+        assignees: ${{ inputs.pr-assignees }}
+        reviewers: ${{ inputs.pr-reviewers }}
+        signoff: true
+        delete-branch: true
+
+    - name: Check outputs
+      run: |
+        echo "Pull Request Number - ${{ steps.create-pr.outputs.pull-request-number }}"
+        echo "Pull Request URL - ${{ steps.create-pr.outputs.pull-request-url }}"
+      shell: bash
+
+    - name: Enable auto-merge
+      if: ${{ inputs.auto-merge-method != '' && steps.create-pr.outputs.pull-request-operation == 'created' }}
+      uses: peter-evans/enable-pull-request-automerge@v1
+      with:
+        token: ${{ inputs.token }}
+        pull-request-number: ${{ steps.create-pr.outputs.pull-request-number }}
+        merge-method: ${{ inputs.auto-merge-method }}
