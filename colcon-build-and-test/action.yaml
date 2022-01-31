@@ -71,17 +71,13 @@ runs:
     - name: Test
       run: |
         . /opt/ros/${{ inputs.rosdistro }}/setup.sh
-        colcon lcov-result --initial --packages-above ${{ inputs.target-packages }}
+        colcon lcov-result --initial --verbose --packages-above ${{ inputs.target-packages }}
         colcon test --event-handlers console_cohesion+ \
           --mixin coverage-pytest \
           --packages-above ${{ inputs.target-packages }} \
           --return-code-on-test-failure
-        if [ -n "$(find build/ -name coverage.info)" ]; then
-          colcon lcov-result --packages-above ${{ inputs.target-packages }}
-        fi
-        if [ -n "$(find build/ -name .coverage)" ]; then
-          colcon coveragepy-result --packages-above ${{ inputs.target-packages }}
-        fi
+        colcon lcov-result --verbose --packages-above ${{ inputs.target-packages }} || true
+        colcon coveragepy-result --verbose --packages-above ${{ inputs.target-packages }} || true
       shell: bash
 
     - name: Cache build artifacts
