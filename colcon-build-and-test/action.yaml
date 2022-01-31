@@ -77,7 +77,7 @@ runs:
           --packages-above ${{ inputs.target-packages }} \
           --return-code-on-test-failure
         colcon lcov-result --verbose --packages-above ${{ inputs.target-packages }} || true
-        colcon coveragepy-result --packages-above ${{ inputs.target-packages }} || true
+        colcon coveragepy-result --verbose --packages-above ${{ inputs.target-packages }} || true
       shell: bash
 
     - name: Cache build artifacts
