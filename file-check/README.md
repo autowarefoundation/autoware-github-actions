@@ -1,4 +1,4 @@
-# file-check
+# check-file-existence
 
 ## Description
 
