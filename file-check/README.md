@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check file existence
-        id: file-check
+        id: check-file-existence
         uses: autowarefoundation/autoware-github-actions/file-check@tier4/proposal
         with:
           files: README.yaml,LICENSE
