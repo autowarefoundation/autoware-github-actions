@@ -35,21 +35,16 @@ runs:
         if [[ ${{ inputs.condition }} = "or" ]]; then
           if [[ ${#exist_files[@]} -gt 0 ]]; then
             echo ::set-output name=exists::"true"
-            return
           else
             echo ::set-output name=exists::"false"
-            return
           fi
         elif [[ ${{ inputs.condition }} = "and" ]]; then
           if [[ ${#exist_files[@]} -eq ${#FILE_ARR[@]} ]]; then
             echo ::set-output name=exists::"true"
-            return
           else
             echo ::set-output name=exists::"false"
-            return
           fi
         else
           echo ::set-output name=exists::"false"
-          return
         fi
       shell: bash
