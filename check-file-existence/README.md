@@ -8,12 +8,12 @@ This action checks if the specified files exist.
 
 ```yaml
 jobs:
-  file-check:
+  check-file-existence:
     runs-on: ubuntu-latest
     steps:
       - name: Check file existence
         id: check-file-existence
-        uses: autowarefoundation/autoware-github-actions/file-check@tier4/proposal
+        uses: autowarefoundation/autoware-github-actions/check-file-existence@tier4/proposal
         with:
           files: |
             README.md
@@ -21,7 +21,7 @@ jobs:
           condition: or
 
       - name: Check result
-        if: steps.file-check.outputs.exists == 'true'
+        if: steps.check-file-existence.outputs.exists == 'true'
         run: echo "exists"
 ```
 

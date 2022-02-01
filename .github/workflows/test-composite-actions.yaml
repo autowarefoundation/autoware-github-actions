@@ -78,7 +78,7 @@ jobs:
           rosdistro: ${{ matrix.rosdistro }}
           target-packages: empty_target_cmake empty_target_python
 
-  test-file-check:
+  test-check-file-existence:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -89,9 +89,9 @@ jobs:
           touch foo
           touch bar
 
-      - name: Run file-check
-        id: file-check1
-        uses: ./file-check
+      - name: Run check-file-existence
+        id: check-file-existence1
+        uses: ./check-file-existence
         with:
           files: |
             foo
@@ -100,11 +100,11 @@ jobs:
 
       - name: Check result
         run: |
-          [[ "${{ steps.file-check1.outputs.exists }}" == "true" ]]
+          [[ "${{ steps.check-file-existence1.outputs.exists }}" == "true" ]]
 
-      - name: Run file-check
-        id: file-check2
-        uses: ./file-check
+      - name: Run check-file-existence
+        id: check-file-existence2
+        uses: ./check-file-existence
         with:
           files: |
             foo
@@ -114,22 +114,22 @@ jobs:
 
       - name: Check result
         run: |
-          [[ "${{ steps.file-check2.outputs.exists }}" == "false" ]]
+          [[ "${{ steps.check-file-existence2.outputs.exists }}" == "false" ]]
 
-      - name: Run file-check
-        id: file-check3
-        uses: ./file-check
+      - name: Run check-file-existence
+        id: check-file-existence3
+        uses: ./check-file-existence
         with:
           files: foo
           condition: or
 
       - name: Check result
         run: |
-          [[ "${{ steps.file-check3.outputs.exists }}" == "true" ]]
+          [[ "${{ steps.check-file-existence3.outputs.exists }}" == "true" ]]
 
-      - name: Run file-check
-        id: file-check4
-        uses: ./file-check
+      - name: Run check-file-existence
+        id: check-file-existence4
+        uses: ./check-file-existence
         with:
           files: |
             foo
@@ -138,4 +138,4 @@ jobs:
 
       - name: Check result
         run: |
-          [[ "${{ steps.file-check4.outputs.exists }}" == "true" ]]
+          [[ "${{ steps.check-file-existence4.outputs.exists }}" == "true" ]]

@@ -1,4 +1,4 @@
-name: file-check
+name: check-file-existence
 description: ""
 
 inputs:
@@ -11,13 +11,13 @@ inputs:
 outputs:
   exists:
     description: ""
-    value: ${{ steps.file-check.outputs.exists }}
+    value: ${{ steps.check-file-existence.outputs.exists }}
 
 runs:
   using: composite
   steps:
     - name: File check
-      id: file-check
+      id: check-file-existence
       run: |
         set -e
 
