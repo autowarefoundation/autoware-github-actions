@@ -90,6 +90,7 @@ jobs:
           touch bar
 
       - name: Run file-check
+        id: file-check1
         uses: ./file-check
         with:
           files: foo,bar
@@ -97,9 +98,10 @@ jobs:
 
       - name: Check result
         run: |
-          [[ "${{ steps.file-check.outputs.exists }}" == "true" ]]
+          [[ "${{ steps.file-check1.outputs.exists }}" == "true" ]]
 
       - name: Run file-check
+        id: file-check2
         uses: ./file-check
         with:
           files: foo,bar,baz
@@ -107,9 +109,10 @@ jobs:
 
       - name: Check result
         run: |
-          [[ "${{ steps.file-check.outputs.exists }}" == "false" ]]
+          [[ "${{ steps.file-check2.outputs.exists }}" == "false" ]]
 
       - name: Run file-check
+        id: file-check3
         uses: ./file-check
         with:
           files: foo
@@ -117,9 +120,10 @@ jobs:
 
       - name: Check result
         run: |
-          [[ "${{ steps.file-check.outputs.exists }}" == "true" ]]
+          [[ "${{ steps.file-check3.outputs.exists }}" == "true" ]]
 
       - name: Run file-check
+        id: file-check4
         uses: ./file-check
         with:
           files: foo,baz
@@ -127,4 +131,4 @@ jobs:
 
       - name: Check result
         run: |
-          [[ "${{ steps.file-check.outputs.exists }}" == "true" ]]
+          [[ "${{ steps.file-check4.outputs.exists }}" == "true" ]]
