@@ -29,7 +29,7 @@ runs:
         exist_files=()
         for FILE in "${file_array[@]}"; do
           if [[ -f $FILE ]]; then
-            echo "File $FILE exists"
+            echo "File exists: $FILE"
             exist_files+=("$FILE")
           else
             echo "File $FILE does not exist"
