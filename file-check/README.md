@@ -34,4 +34,4 @@ jobs:
 
 | Name   | Description                                                                         |
 | ------ | ----------------------------------------------------------------------------------- |
-| exists | If the file exists, it will be set to `true`. Otherwise, it will be set to `false`. |
+| exists | Whether the specified files exist or not. |
