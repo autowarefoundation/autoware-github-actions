@@ -27,12 +27,12 @@ runs:
 
         # Iterate files
         exist_files=()
-        for FILE in "${file_array[@]}"; do
-          if [[ -f $FILE ]]; then
-            echo "File exists: $FILE"
-            exist_files+=("$FILE")
+        for f in "${file_array[@]}"; do
+          if [[ -f $f ]]; then
+            echo "File exists: $f"
+            exist_files+=("$f")
           else
-            echo "File $FILE does not exist"
+            echo "File $f does not exist"
           fi
         done
 
