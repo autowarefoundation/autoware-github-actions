@@ -25,13 +25,13 @@ jobs:
 
 ## Inputs
 
-| Name      | Required | Description                                                                                                  |
-| --------- | -------- | ------------------------------------------------------------------------------------------------------------ |
-| files     | true     | Comma-separated file names.                                                                                  |
+| Name      | Required | Description                                           |
+| --------- | -------- | ----------------------------------------------------- |
+| files     | true     | Comma-separated file names.                           |
 | condition | true     | The `and` or `or` condition for file existence check. |
 
 ## Outputs
 
-| Name   | Description                                                                         |
-| ------ | ----------------------------------------------------------------------------------- |
+| Name   | Description                               |
+| ------ | ----------------------------------------- |
 | exists | Whether the specified files exist or not. |
