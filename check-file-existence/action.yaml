@@ -26,24 +26,24 @@ runs:
         file_array=(${input_files})
 
         # Iterate files
-        exist_files=()
+        found_files=()
         for f in "${file_array[@]}"; do
           if [[ -f $f ]]; then
             echo "File exists: $f"
-            exist_files+=("$f")
+            found_files+=("$f")
           else
             echo "File does not exist: $f"
           fi
         done
 
         if [[ "${{ inputs.condition }}" = "or" ]]; then
-          if [[ ${#exist_files[@]} -gt 0 ]]; then
+          if [[ ${#found_files[@]} -gt 0 ]]; then
             echo "::set-output name=exists::true"
           else
             echo "::set-output name=exists::false"
           fi
         elif [[ ${{ inputs.condition }} = "and" ]]; then
-          if [[ ${#exist_files[@]} -eq ${#file_array[@]} ]]; then
+          if [[ ${#found_files[@]} -eq ${#file_array[@]} ]]; then
             echo "::set-output name=exists::true"
           else
             echo "::set-output name=exists::false"
