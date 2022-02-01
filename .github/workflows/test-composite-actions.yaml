@@ -77,3 +77,51 @@ jobs:
         with:
           rosdistro: ${{ matrix.rosdistro }}
           target-packages: empty_target_cmake empty_target_python
+
+  test-file-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create temporary files
+        run: |
+          touch foo
+          touch bar
+
+      - name: Run file-check
+        uses: ./file-check
+        with:
+          files: foo,bar
+          condition: and
+
+      - name: Check result
+        run: |
+          [[ "${{ steps.file-check.outputs.exists }}" == "true" ]]
+
+      - name: Run file-check
+        uses: ./file-check
+        with:
+          files: foo,bar,baz
+          condition: and
+
+      - name: Check result
+        run: |
+          [[ "${{ steps.file-check.outputs.exists }}" == "false" ]]
+
+      - name: Run file-check
+        uses: ./file-check
+        with:
+          files: foo
+          condition: or
+
+      - name: Check result
+        run: |
+          [[ "${{ steps.file-check.outputs.exists }}" == "true" ]]
+
+      - name: Run file-check
+        uses: ./file-check
+        with:
+          files: foo,baz
+          condition: or
+
+      - name: Check result
+        run: |
+          [[ "${{ steps.file-check.outputs.exists }}" == "true" ]]
