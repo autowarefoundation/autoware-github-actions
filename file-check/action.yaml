@@ -28,7 +28,10 @@ runs:
         exist_files=()
         for FILE in "${FILE_ARR[@]}"; do
           if [[ -f $FILE ]]; then
+            echo "File $FILE exists"
             exist_files+=("$FILE")
+          else
+            echo "File $FILE does not exist"
           fi
         done
 
