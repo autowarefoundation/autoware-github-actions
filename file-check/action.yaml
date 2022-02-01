@@ -25,7 +25,7 @@ runs:
         input_files="${{ inputs.files }}"
         file_array=(${input_files})
 
-        # Loop through files
+        # Iterate files
         exist_files=()
         for FILE in "${file_array[@]}"; do
           if [[ -f $FILE ]]; then
