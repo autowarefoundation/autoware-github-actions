@@ -93,7 +93,9 @@ jobs:
         id: file-check1
         uses: ./file-check
         with:
-          files: foo,bar
+          files: |
+            foo
+            bar
           condition: and
 
       - name: Check result
@@ -104,7 +106,10 @@ jobs:
         id: file-check2
         uses: ./file-check
         with:
-          files: foo,bar,baz
+          files: |
+            foo
+            bar
+            baz
           condition: and
 
       - name: Check result
@@ -126,7 +131,9 @@ jobs:
         id: file-check4
         uses: ./file-check
         with:
-          files: foo,baz
+          files: |
+            foo
+            baz
           condition: or
 
       - name: Check result

@@ -22,8 +22,8 @@ runs:
         set -e
 
         # Split files into an array
-        input_files=${{ inputs.files }}
-        file_array=(${input_files//,/ })
+        input_files="${{ inputs.files }}"
+        file_array=(${input_files})
 
         # Loop through files
         exist_files=()

@@ -15,7 +15,9 @@ jobs:
         id: check-file-existence
         uses: autowarefoundation/autoware-github-actions/file-check@tier4/proposal
         with:
-          files: README.md,LICENSE
+          files: |
+            README.md
+            LICENSE
           condition: or
 
       - name: Check result
@@ -27,7 +29,7 @@ jobs:
 
 | Name      | Required | Description                                           |
 | --------- | -------- | ----------------------------------------------------- |
-| files     | true     | Comma-separated file names.                           |
+| files     | true     | file names.                  |
 | condition | true     | The `and` or `or` condition for file existence check. |
 
 ## Outputs
