@@ -29,7 +29,7 @@ jobs:
 
 | Name      | Required | Description                                           |
 | --------- | -------- | ----------------------------------------------------- |
-| files     | true     | file names.                                           |
+| files     | true     | The file names to check the existence.                |
 | condition | true     | The `and` or `or` condition for file existence check. |
 
 ## Outputs
