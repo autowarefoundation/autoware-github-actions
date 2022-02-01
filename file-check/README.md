@@ -28,7 +28,7 @@ jobs:
 | Name      | Required | Description                                                                                                  |
 | --------- | -------- | ------------------------------------------------------------------------------------------------------------ |
 | files     | true     | Comma-separated file names.                                                                                  |
-| condition | true     | Set to `and` or`or`. If more than one file is specified, this condition determines whether to report `true`. |
+| condition | true     | The `and` or `or` condition for file existence check. |
 
 ## Outputs
 
