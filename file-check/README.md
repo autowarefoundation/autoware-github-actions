@@ -2,7 +2,7 @@
 
 ## Description
 
-This action checks if the file exists.
+This action checks if the specified files exist.
 
 ## Usage
 
