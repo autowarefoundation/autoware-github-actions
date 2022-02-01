@@ -15,7 +15,7 @@ jobs:
         id: check-file-existence
         uses: autowarefoundation/autoware-github-actions/file-check@tier4/proposal
         with:
-          files: README.yaml,LICENSE
+          files: README.md,LICENSE
           condition: or
 
       - name: Check result
