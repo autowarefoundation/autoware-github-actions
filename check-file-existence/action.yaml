@@ -32,7 +32,7 @@ runs:
             echo "File exists: $f"
             exist_files+=("$f")
           else
-            echo "File $f does not exist"
+            echo "File does not exist: $f"
           fi
         done
 
