@@ -11,7 +11,7 @@ jobs:
   file-check:
     runs-on: ubuntu-latest
     steps:
-      - name: Check file exists
+      - name: Check file existence
         id: file-check
         uses: autowarefoundation/autoware-github-actions/file-check@tier4/proposal
         with:
