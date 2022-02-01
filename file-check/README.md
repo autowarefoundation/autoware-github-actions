@@ -20,8 +20,7 @@ jobs:
 
       - name: Check result
         if: steps.file-check.outputs.exists == 'true'
-        # Only executed if one of the files exists
-        run: echo One of the files exists.
+        run: echo "exists"
 ```
 
 ## Inputs
