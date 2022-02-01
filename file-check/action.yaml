@@ -22,11 +22,12 @@ runs:
         set -e
 
         # Split files into an array
-        IFS=, eval 'FILE_ARR=(${{ inputs.files }})'
+        input_files=${{ inputs.files }}
+        file_array=${input_files//,/ }
 
         # Loop through files
         exist_files=()
-        for FILE in "${FILE_ARR[@]}"; do
+        for FILE in "${file_array[@]}"; do
           if [[ -f $FILE ]]; then
             echo "File $FILE exists"
             exist_files+=("$FILE")
@@ -42,7 +43,7 @@ runs:
             echo ::set-output name=exists::"false"
           fi
         elif [[ ${{ inputs.condition }} = "and" ]]; then
-          if [[ ${#exist_files[@]} -eq ${#FILE_ARR[@]} ]]; then
+          if [[ ${#exist_files[@]} -eq ${#file_array[@]} ]]; then
             echo ::set-output name=exists::"true"
           else
             echo ::set-output name=exists::"false"
