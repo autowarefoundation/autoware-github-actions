@@ -22,12 +22,12 @@ runs:
         set -e
 
         # Split files into an array
-        input_files="${{ inputs.files }}"
-        file_array=(${input_files})
+        tmp="${{ inputs.files }}"
+        input_files=(${tmp})
 
         # Iterate files
         found_files=()
-        for f in "${file_array[@]}"; do
+        for f in "${input_files[@]}"; do
           if [[ -f $f ]]; then
             echo "File exists: $f"
             found_files+=("$f")
@@ -36,14 +36,16 @@ runs:
           fi
         done
 
+        num_found_files=${#found_files[@]}
         if [[ "${{ inputs.condition }}" = "or" ]]; then
-          if [[ ${#found_files[@]} -gt 0 ]]; then
+          if [[ "$num_found_files" -gt 0 ]]; then
             echo "::set-output name=exists::true"
           else
             echo "::set-output name=exists::false"
           fi
         elif [[ ${{ inputs.condition }} = "and" ]]; then
-          if [[ ${#found_files[@]} -eq ${#file_array[@]} ]]; then
+          num_input_files=${#input_files[@]}
+          if [[ "$num_found_files" -eq "$num_input_files" ]]; then
             echo "::set-output name=exists::true"
           else
             echo "::set-output name=exists::false"
