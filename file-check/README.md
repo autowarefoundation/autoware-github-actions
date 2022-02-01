@@ -26,13 +26,13 @@ jobs:
 
 ## Inputs
 
-| Name            | Required | Description                   |
-| --------------- | -------- | ----------------------------- |
-| files           | true     | Comma-separated file names. |
-| condition       | true     | Set to `and` or`or`. If more than one file is specified, this condition determines whether to report `true`.    |
+| Name      | Required | Description                                                                                                  |
+| --------- | -------- | ------------------------------------------------------------------------------------------------------------ |
+| files     | true     | Comma-separated file names.                                                                                  |
+| condition | true     | Set to `and` or`or`. If more than one file is specified, this condition determines whether to report `true`. |
 
 ## Outputs
 
-| Name             | Description                   |
-| ---------------  | ----------------------------- |
-| exists           | If the file exists, it will be set to `true`. Otherwise, it will be set to `false`. |
+| Name   | Description                                                                         |
+| ------ | ----------------------------------------------------------------------------------- |
+| exists | If the file exists, it will be set to `true`. Otherwise, it will be set to `false`. |

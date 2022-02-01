@@ -19,37 +19,37 @@ runs:
     - name: File check
       id: file-check
       run: |
-          set -e
+        set -e
 
-          # Split files into an array
-          IFS=, eval 'FILE_ARR=(${{ inputs.files }})'
+        # Split files into an array
+        IFS=, eval 'FILE_ARR=(${{ inputs.files }})'
 
-          # Loop through files
-          exist_files=()
-          for FILE in "${FILE_ARR[@]}"; do
-            if [[ -f $FILE ]]; then
-              exist_files+=("$FILE")
-            fi
-          done
+        # Loop through files
+        exist_files=()
+        for FILE in "${FILE_ARR[@]}"; do
+          if [[ -f $FILE ]]; then
+            exist_files+=("$FILE")
+          fi
+        done
 
-          if [[ ${{ inputs.condition }} = "or" ]]; then
-            if [[ ${#exist_files[@]} -gt 0 ]]; then
-              echo ::set-output name=exists::"true"
-              return
-            else
-              echo ::set-output name=exists::"false"
-              return
-            fi
-          elif [[ ${{ inputs.condition }} = "and" ]]; then
-            if [[ ${#exist_files[@]} -eq ${#FILE_ARR[@]} ]]; then
-              echo ::set-output name=exists::"true"
-              return
-            else
-              echo ::set-output name=exists::"false"
-              return
-            fi
+        if [[ ${{ inputs.condition }} = "or" ]]; then
+          if [[ ${#exist_files[@]} -gt 0 ]]; then
+            echo ::set-output name=exists::"true"
+            return
           else
             echo ::set-output name=exists::"false"
             return
           fi
+        elif [[ ${{ inputs.condition }} = "and" ]]; then
+          if [[ ${#exist_files[@]} -eq ${#FILE_ARR[@]} ]]; then
+            echo ::set-output name=exists::"true"
+            return
+          else
+            echo ::set-output name=exists::"false"
+            return
+          fi
+        else
+          echo ::set-output name=exists::"false"
+          return
+        fi
       shell: bash
