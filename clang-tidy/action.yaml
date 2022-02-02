@@ -49,7 +49,8 @@ runs:
       if: ${{ inputs.build-depends-repos != ''}}
       run: |
         git config --local --unset-all http.https://github.com/.extraheader || true
-        git config --global url.https://x-access-token:${{ inputs.token }}@github.com.insteadOf 'https://github.com'
+        git config --global --add url.https://x-access-token:${{ inputs.token }}@github.com/.insteadOf 'https://github.com/'
+        git config --global --add url.https://x-access-token:${{ inputs.token }}@github.com/.insteadOf 'git@github.com:'
         mkdir dependency_ws
         vcs import dependency_ws < ${{ inputs.build-depends-repos }}
       shell: bash
