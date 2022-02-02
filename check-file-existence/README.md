@@ -21,7 +21,7 @@ jobs:
           condition: or
 
       - name: Check result
-        if: steps.check-file-existence.outputs.exists == 'true'
+        if: ${{ steps.check-file-existence.outputs.exists == 'true' }}
         run: echo "exists"
 ```
 
