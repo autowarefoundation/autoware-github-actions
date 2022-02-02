@@ -48,6 +48,11 @@ runs:
     - name: Check out repository
       uses: actions/checkout@v2
 
+    - name: Set git config
+      uses: autowarefoundation/autoware-github-actions/set-git-config@tier4/proposal
+      with:
+        token: ${{ inputs.token }}
+
     - name: Set up Python
       uses: actions/setup-python@v2
 

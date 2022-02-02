@@ -49,6 +49,11 @@ runs:
       with:
         ref: ${{ inputs.base-branch }}
 
+    - name: Set git config
+      uses: autowarefoundation/autoware-github-actions/set-git-config@tier4/proposal
+      with:
+        token: ${{ inputs.token }}
+
     - name: Sync branches
       run: |
         git remote add sync-target "${{ inputs.sync-target-repository }}"
