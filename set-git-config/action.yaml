@@ -1,0 +1,19 @@
+name: set-git-config
+description: ""
+
+inputs:
+  token:
+    description: ""
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Set git config
+      run: |
+        git config --local --unset-all http.https://github.com/.extraheader || true
+        git config --global --add url.https://x-access-token:${{ inputs.token }}@github.com/.insteadOf 'https://github.com/'
+        git config --global --add url.https://x-access-token:${{ inputs.token }}@github.com/.insteadOf 'git@github.com:'
+        git config --global user.name github-actions
+        git config --global user.email github-actions@github.com
+      shell: bash
