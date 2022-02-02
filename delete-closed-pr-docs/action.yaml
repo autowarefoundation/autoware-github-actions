@@ -54,13 +54,9 @@ runs:
       shell: bash
 
     - name: Set git config
-      run: |
-        git config --local --unset-all http.https://github.com/.extraheader || true
-        git config --global --add url.https://x-access-token:${{ inputs.token }}@github.com/.insteadOf 'https://github.com/'
-        git config --global --add url.https://x-access-token:${{ inputs.token }}@github.com/.insteadOf 'git@github.com:'
-        git config --global user.name github-actions
-        git config --global user.email github-actions@github.com
-      shell: bash
+      uses: autowarefoundation/autoware-github-actions/set-git-config@tier4/proposal
+      with:
+        token: ${{ inputs.token }}
 
     - name: Delete closed PR docs
       run: |

@@ -48,12 +48,10 @@ runs:
     - name: Check out repository
       uses: actions/checkout@v2
 
-    - name: Set git config for private repositories
-      run: |
-        git config --local --unset-all http.https://github.com/.extraheader || true
-        git config --global --add url.https://x-access-token:${{ inputs.token }}@github.com/.insteadOf 'https://github.com/'
-        git config --global --add url.https://x-access-token:${{ inputs.token }}@github.com/.insteadOf 'git@github.com:'
-      shell: bash
+    - name: Set git config
+      uses: autowarefoundation/autoware-github-actions/set-git-config@tier4/proposal
+      with:
+        token: ${{ inputs.token }}
 
     - name: Set up Python
       uses: actions/setup-python@v2
