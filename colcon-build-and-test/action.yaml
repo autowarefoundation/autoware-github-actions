@@ -90,6 +90,4 @@ runs:
         path: |
           ./build
           ./install
-          ./lcov
-          ./coveragepy
         key: build-${{ github.sha }}
