@@ -1,4 +1,4 @@
-# colcon-build-and-test
+# DEPRECATED: colcon-build-and-test
 
 This action runs `colcon build` and `colcon test`.
 
