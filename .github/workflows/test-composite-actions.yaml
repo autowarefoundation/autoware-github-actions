@@ -139,3 +139,27 @@ jobs:
       - name: Check result
         run: |
           [[ "${{ steps.check-file-existence4.outputs.exists }}" == "true" ]]
+
+  test-colcon-build:
+    runs-on: ubuntu-latest
+    container: ros:${{ matrix.rosdistro }}
+    strategy:
+      fail-fast: false
+      matrix:
+        rosdistro:
+          - galactic
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Create a package with no source files
+        run: |
+          . /opt/ros/${{ matrix.rosdistro }}/setup.sh
+          ros2 pkg create --build-type ament_cmake empty_target_cmake
+          ros2 pkg create --build-type ament_python empty_target_python
+
+      - name: Run colcon-build
+        uses: ./colcon-build
+        with:
+          rosdistro: ${{ matrix.rosdistro }}
+          target-packages: empty_target_cmake empty_target_python
