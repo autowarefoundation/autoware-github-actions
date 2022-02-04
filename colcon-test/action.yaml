@@ -14,7 +14,7 @@ inputs:
   label:
     description: ""
     required: false
-    default: ".*"  # Run all tests
+    default: ".*" # Run all tests
   token:
     description: ""
     required: false
