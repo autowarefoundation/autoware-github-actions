@@ -23,24 +23,24 @@ if [ "$base_branch" = "" ]; then
     exit 1
 fi
 
-function find_package_dir() {
+function find_package_name() {
     [ "$1" == "" ] && return 1
 
     target_dir=$(dirname "$1")
     while true; do
         parent_dir=$(dirname "$target_dir")
 
+        # Output package name if package.xml found
+        if [ -f "$parent_dir/package.xml" ]; then
+            if [ ! -f "$parent_dir/COLCON_IGNORE" ]; then
+                xmllint --xpath "package/name/text()" "$parent_dir/package.xml"
+                return 0
+            fi
+        fi
+
         # Exit if no parent found
         if [ "$parent_dir" = "$target_dir" ]; then
             return 0
-        fi
-
-        # Output package name if package.xml found
-        if [ -f "$target_dir/package.xml" ]; then
-            if [ ! -f "$target_dir/COLCON_IGNORE" ]; then
-                echo "$target_dir"
-                return 0
-            fi
         fi
 
         # Move to parent dir
@@ -52,22 +52,16 @@ function find_package_dir() {
 
 # Find modified files from base branch
 modified_files=$(git diff --name-only "$base_branch"...HEAD)
-
 # Find modified packages
-modified_package_dirs=()
+modified_package_names=()
 for modified_file in $modified_files; do
-    modified_package_dir=$(find_package_dir "$modified_file")
-
-    if [ "$modified_package_dir" != "" ]; then
-        modified_package_dirs+=("$modified_package_dir")
+    modified_package_name=$(find_package_name "$modified_file")
+    if [ "$modified_package_name" != "" ]; then
+        modified_package_names+=("$modified_package_name")
     fi
 done
 
-# Get package names from paths
-if [ "${#modified_package_dirs[@]}" != "0" ]; then
-    modified_packages=$(colcon list --names-only --paths "${modified_package_dirs[@]}")
-fi
-
+#
 # Output
-# shellcheck disable=SC2086
-echo ::set-output name=modified-packages::$modified_packages
+# shellcheck disable=SC2046
+echo ::set-output name=modified-packages::$(printf "%s\n" "${modified_package_names[@]}" | sort -u )
