@@ -1,4 +1,4 @@
-# colcon-labeled-test
+# colcon-test
 
 This action runs `colcon test` with label.
 Note that you need to build target packages before running this action.
@@ -7,7 +7,7 @@ Note that you need to build target packages before running this action.
 
 ```yaml
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
     container: ros:galactic
     steps:
@@ -22,13 +22,13 @@ jobs:
 
       - name: Build and test
         if: ${{ steps.get-modified-packages.outputs.modified-packages != '' }}
-        uses: autowarefoundation/autoware-github-actions/colcon-build-and-test@tier4/proposal
+        uses: autowarefoundation/autoware-github-actions/colcon-build@tier4/proposal
         with:
           rosdistro: galactic
           target-packages: ${{ steps.get-modified-packages.outputs.modified-packages }}
           build-depends-repos: build_depends.repos
 
-  labeled-test:
+  test:
     needs: build-and-test
     runs-on: ubuntu-latest
     container: ros:galactic
@@ -46,10 +46,10 @@ jobs:
         id: get-modified-packages
         uses: autowarefoundation/autoware-github-actions/get-modified-packages@tier4/proposal
 
-      - name: Labeled test
-        id: labeled-test
+      - name: Test
+        id: test
         if: ${{ steps.get-modified-packages.outputs.modified-packages != '' }}
-        uses: autowarefoundation/autoware-github-actions/colcon-labeled-test@tier4/proposal
+        uses: autowarefoundation/autoware-github-actions/colcon-test@tier4/proposal
         with:
           rosdistro: galactic
           target-packages: ${{ steps.get-modified-packages.outputs.modified-packages }}
@@ -57,10 +57,10 @@ jobs:
           label: ${{ matrix.label }}
 
       - name: Upload coverage to Codecov
-        if: ${{ steps.labeled-test.outputs.coverage-reports != '' }}
+        if: ${{ steps.test.outputs.coverage-reports != '' }}
         uses: codecov/codecov-action@v2
         with:
-          files: ${{ steps.labeled-test.outputs.coverage-reports }}
+          files: ${{ steps.test.outputs.coverage-reports }}
           fail_ci_if_error: true
           verbose: true
           flags: ${{ matrix.label }}
@@ -73,7 +73,7 @@ jobs:
 | rosdistro           | true     | ROS distro.                                     |
 | target-packages     | true     | The target packages to test.                    |
 | build-depends-repos | false    | `.repos` file that includes build dependencies. |
-| label               | true     | The test label to test                          |
+| label               | false    | Specify test label for test.                    |
 | token               | false    | The token for build dependencies.               |
 
 ## Outputs

@@ -1,4 +1,4 @@
-name: colcon-labeled-test
+name: colcon-test
 description: ""
 
 inputs:
@@ -13,7 +13,8 @@ inputs:
     required: false
   label:
     description: ""
-    required: true
+    required: false
+    default: ".*"  # Run all tests
   token:
     description: ""
     required: false
