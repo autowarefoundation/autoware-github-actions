@@ -21,6 +21,7 @@ runs:
   steps:
     - name: Show deprecated warning
       run: ::warning title=DEPRECATED::This action will no longer be available in future releases. Please consider using the colcon-build and colcon-test workflows instead.
+      shell: bash
 
     - name: Show target packages
       run: |
