@@ -73,11 +73,11 @@ jobs:
 | rosdistro           | true     | ROS distro.                                     |
 | target-packages     | true     | The target packages to test.                    |
 | build-depends-repos | false    | `.repos` file that includes build dependencies. |
-| label               | true    | The test label to test              |
+| label               | true     | The test label to test                          |
 | token               | false    | The token for build dependencies.               |
 
 ## Outputs
 
-| Name                | Description                                     |
-| ------------------- | ----------------------------------------------- |
-| coverage-reports    | Generated coverage reports.                     |
+| Name             | Description                 |
+| ---------------- | --------------------------- |
+| coverage-reports | Generated coverage reports. |
