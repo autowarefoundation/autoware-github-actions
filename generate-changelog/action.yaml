@@ -22,28 +22,25 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: Set config path
-      id: set-git-cliff-config-path
-      run: |
-        echo "::set-output name=path::$(readlink -f ${{ inputs.git-cliff-config }})"
-      shell: bash
+    - name: Install Rust toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: nightly
+        override: true
 
     - name: Install git-cliff
-      run: |
-        curl -fsSL -o git-cliff.tar.gz https://github.com/orhun/git-cliff/releases/download/v${VERSION}/git-cliff-${VERSION}-x86_64-unknown-linux-gnu.tar.gz
-        tar -xf git-cliff.tar.gz
-        sudo cp git-cliff-${VERSION}/git-cliff /usr/local/bin/git-cliff
-      env:
-        VERSION: 0.5.0
-      shell: bash
+      uses: actions-rs/cargo@v1
+      with:
+        command: install
+        args: git-cliff
 
     - name: Generate changelog
       id: generate-changelog
       shell: bash
       run: |
         # Generate changelog
-        git cliff --output CHANGELOG.md \
-          --config ${{ steps.set-git-cliff-config-path.outputs.path }} \
+        git cliff --output CHANGELOG.md --config ${{ inputs.git-cliff-config }} \
           -vv --strip header ${{ inputs.git-cliff-args }}
 
         r=$(cat CHANGELOG.md)
