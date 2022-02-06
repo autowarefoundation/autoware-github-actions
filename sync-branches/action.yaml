@@ -61,7 +61,7 @@ runs:
       id: generate-changelog
       uses: autowarefoundation/autoware-github-actions/generate-changelog@tier4/proposal
       with:
-        git-cliff-args: "origin/${{ inputs.base-branch }}..HEAD"
+        git-cliff-args: origin/${{ inputs.base-branch }}..HEAD
 
     - name: Create PR
       id: create-pr
