@@ -95,15 +95,15 @@ runs:
             replace=$(yq e ".replace" /tmp/file-config.yaml)
             delete_orphaned=$(yq e ".delete-orphaned" /tmp/file-config.yaml)
 
-            target_file="/tmp/repository/$source_path"
-            if [ -f "$target_file" ]; then
-              if [ -f "$dest_file" ] && [ "replace" != "true" ]; then
-                echo "Skip copying to $dest_file."
+            source_file="/tmp/repository/$source_path"
+            if [ -f "$source_file" ]; then
+              if [ -f "$dest_path" ] && [ "$replace" != "true" ]; then
+                echo "Skip copying to $dest_path."
                 continue
               fi
 
               echo "Copy $source_path to $dest_path."
-              cp "$target_file" "$dest_path"
+              cp "$source_file" "$dest_path"
             elif [ "$delete_orphaned" = "true" ]; then
               echo "Delete $dest_path."
               rm "$dest_path" || true
