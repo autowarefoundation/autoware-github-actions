@@ -44,6 +44,7 @@ runs:
           -vv --strip header ${{ inputs.git-cliff-args }}
 
         r=$(cat CHANGELOG.md)
+        rm CHANGELOG.md
 
         # Trim version and date
         if [ "${{ inputs.trim-version-and-date }}" = "true" ]; then
