@@ -20,10 +20,6 @@ inputs:
   pr-title:
     description: ""
     required: true
-  pr-body:
-    description: ""
-    required: false
-    default: ""
   pr-labels:
     description: ""
     required: false
@@ -61,6 +57,12 @@ runs:
         git reset --hard "sync-target/${{ inputs.sync-target-branch }}"
       shell: bash
 
+    - name: Generate changelog
+      id: generate-changelog
+      uses: autowarefoundation/autoware-github-actions/generate-changelog@tier4/proposal
+      with:
+        git-cliff-args: "origin/${{ inputs.base-branch }}..HEAD"
+
     - name: Create PR
       id: create-pr
       uses: peter-evans/create-pull-request@v3
@@ -69,7 +71,7 @@ runs:
         base: ${{ inputs.base-branch }}
         branch: ${{ inputs.sync-pr-branch }}
         title: ${{ inputs.pr-title }}
-        body: ${{ inputs.pr-body }}
+        body: ${{ steps.generate-changelog.outputs.changelog }}
         labels: ${{ inputs.pr-labels }}
         assignees: ${{ inputs.pr-assignees }}
         reviewers: ${{ inputs.pr-reviewers }}
