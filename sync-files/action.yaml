@@ -25,10 +25,6 @@ inputs:
     description: ""
     required: false
     default: "chore: sync files"
-  pr-body:
-    description: ""
-    required: false
-    default: ""
   pr-labels:
     description: ""
     required: false
@@ -74,6 +70,7 @@ runs:
       run: |
         set -e
 
+        touch /tmp/result.yaml
         for repository in $(yq e ".[].repository" /tmp/sync-files.yaml); do
           yq e ".[] | select(.repository == \"$repository\")" /tmp/sync-files.yaml > /tmp/repo-config.yaml
 
@@ -99,19 +96,71 @@ runs:
             if [ -f "$source_file" ]; then
               if [ -f "$dest_path" ] && [ "$replace" != "true" ]; then
                 echo "Skip copying to $dest_path."
+                yq -i e ".skipped += [\"$dest_path\"]" /tmp/result.yaml
                 continue
               fi
 
-              echo "Copy $source_path to $dest_path."
-              cp "$source_file" "$dest_path"
+              if ! [ -f "$dest_path" ]; then
+                echo "Newly copy $source_path to $dest_path."
+                cp "$source_file" "$dest_path"
+                yq -i e ".added += [\"$dest_path\"]" /tmp/result.yaml
+              elif ! diff "$source_file" "$dest_path"; then
+                echo "Copy $source_path to $dest_path."
+                cp "$source_file" "$dest_path"
+                yq -i e ".changed += [\"$dest_path\"]" /tmp/result.yaml
+              else
+                echo "$source_path and $dest_path are the same."
+                yq -i e ".not-changed += [\"$dest_path\"]" /tmp/result.yaml
+              fi
             elif [ "$delete_orphaned" = "true" ]; then
-              echo "Delete $dest_path."
-              rm "$dest_path" || true
+              if [ -f "$dest_path" ]; then
+                echo "Delete $dest_path."
+                rm "$dest_path"
+                yq -i e ".deleted += [\"$dest_path\"]" /tmp/result.yaml
+              else
+                echo "$dest_path was not found."
+                yq -i e ".not-found += [\"$dest_path\"]" /tmp/result.yaml
+              fi
             fi
           done
         done
 
         git status
+      shell: bash
+
+    - name: Create PR body
+      id: create-pr-body
+      run: |
+        # Define function
+        body_lines=()
+        function add-section() {
+          title="$1"
+          key="$2"
+
+          body_lines+=("## $title" "")
+          for f in $(yq e ".$key[]" /tmp/result.yaml); do
+            body_lines+=("- $f")
+          done
+          body_lines+=("")
+        }
+
+        # Add sections
+        add-section "Skipped" "skipped"
+        add-section "Added" "added"
+        add-section "Changed" "changed"
+        add-section "Not changed" "not-changed"
+        add-section "Deleted" "deleted"
+        add-section "Not found" "not-found"
+
+        # Workaround for multiline strings
+        # https://github.community/t/set-output-truncates-multiline-strings/16852
+        body=$(printf "%s\n" "${body_lines[@]}")
+        body="${body//'%'/'%25'}"
+        body="${body//$'\n'/'%0A'}"
+        body="${body//$'\r'/'%0D'}"
+
+        # Output
+        echo ::set-output name=body::"$(printf "%s\n" "${body[@]}")"
       shell: bash
 
     - name: Create PR
@@ -123,7 +172,7 @@ runs:
         branch: ${{ inputs.pr-branch }}
         title: ${{ inputs.pr-title }}
         commit-message: ${{ inputs.pr-commit-message }}
-        body: ${{ inputs.pr-body }}
+        body: ${{ steps.create-pr-body.outputs.body }}
         labels: ${{ inputs.pr-labels }}
         assignees: ${{ inputs.pr-assignees }}
         reviewers: ${{ inputs.pr-reviewers }}
