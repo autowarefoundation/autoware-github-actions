@@ -17,20 +17,20 @@ def main():
         if not re.match(r"^http", repo_config["repository"]):
             repo_config["repository"] = f"https://github.com/{repo_config['repository']}.git"
 
-        if not repo_config.get("ref"):
+        if "ref" not in repo_config:
             repo_config["ref"] = ""
 
         for item in repo_config["files"]:
-            if not item.get("source"):
+            if "source" not in item:
                 raise RuntimeError(f"'source' is not defined in {item}")
 
-            if not item.get("dest"):
+            if "dest" not in item:
                 item["dest"] = item["source"]
 
-            if not item.get("replace"):
+            if "replace" not in item:
                 item["replace"] = True
 
-            if not item.get("delete-orphaned"):
+            if "delete-orphaned" not in item:
                 item["delete-orphaned"] = True
 
     print(yaml.dump(config))
