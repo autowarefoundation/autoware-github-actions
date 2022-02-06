@@ -25,6 +25,6 @@ None.
 
 ## Outputs
 
-| Name              | Description                                           |
-| ----------------- | ----------------------------------------------------- |
-| modified-packages | The list of ROS packages modified in the pull request |
+| Name              | Description                                            |
+| ----------------- | ------------------------------------------------------ |
+| modified-packages | The list of ROS packages modified in the pull request. |
