@@ -1,0 +1,57 @@
+name: generate-changelog
+description: ""
+
+inputs:
+  git-cliff-args:
+    description: ""
+    required: false
+    default: --current
+  git-cliff-config:
+    description: ""
+    required: false
+    default: ${GITHUB_ACTION_PATH}/../cliff.toml
+  trim-version-and-date:
+    description: ""
+    required: false
+    default: "true"
+outputs:
+  changelog:
+    description: ""
+    value: ${{ steps.generate-changelog.outputs.changelog }}
+
+runs:
+  using: composite
+  steps:
+    - name: Generate changelog by git-cliff
+      id: git-cliff
+      uses: orhun/git-cliff-action@v1
+      with:
+        config: ${{ inputs.git-cliff-config }}
+        args: -vv --strip header ${{ inputs.git-cliff-args }}
+      env:
+        OUTPUT: CHANGES.md
+
+    - name: Generate changelog
+      id: generate-changelog
+      shell: bash
+      run: |
+        r=$(cat ${{ steps.git-cliff.outputs.changelog }})
+
+        # Trim version and date
+        if [ "${{ inputs.trim-version-and-date }}" = "true" ];
+          r="$(printf "$r" | tail -n +3)"
+        fi
+
+        # Workaround for https://github.community/t/set-output-truncates-multiline-strings/16852
+        r="${r//'%'/'%25'}"
+        r="${r//$'\n'/'%0A'}"
+        r="${r//$'\r'/'%0D'}"
+
+        echo "::set-output name=changelog::$r"
+
+    - name: Show result
+      run: |
+        echo "$CHANGELOG"
+      env:
+        CHANGELOG: ${{ steps.generate-changelog.outputs.changelog }}
+      shell: bash
