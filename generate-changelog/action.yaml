@@ -22,23 +22,34 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: Generate changelog by git-cliff
-      id: git-cliff
-      uses: orhun/git-cliff-action@v1
-      with:
-        config: ${{ inputs.git-cliff-config }}
-        args: -vv --strip header ${{ inputs.git-cliff-args }}
+    - name: Set config path
+      id: set-git-cliff-config-path
+      run: |
+        echo "::set-output name=path::$(readlink -f ${{ inputs.git-cliff-config }})"
+      shell: bash
+
+    - name: Install git-cliff
+      run: |
+        curl -fsSL -o git-cliff.tar.gz https://github.com/orhun/git-cliff/releases/download/v${VERSION}/git-cliff-${VERSION}-x86_64-unknown-linux-gnu.tar.gz
+        tar -xf git-cliff.tar.gz
+        sudo cp git-cliff-${VERSION}/git-cliff /usr/local/bin/git-cliff
       env:
-        OUTPUT: CHANGES.md
+        VERSION: 0.5.0
+      shell: bash
 
     - name: Generate changelog
       id: generate-changelog
       shell: bash
       run: |
-        r=$(cat ${{ steps.git-cliff.outputs.changelog }})
+        # Generate changelog
+        git cliff --output CHANGELOG.md \
+          --config ${{ steps.set-git-cliff-config-path.outputs.path }} \
+          -vv --strip header ${{ inputs.git-cliff-args }}
+
+        r=$(cat CHANGELOG.md)
 
         # Trim version and date
-        if [ "${{ inputs.trim-version-and-date }}" = "true" ];
+        if [ "${{ inputs.trim-version-and-date }}" = "true" ]; then
           r="$(printf "$r" | tail -n +3)"
         fi
 
