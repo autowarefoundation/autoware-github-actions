@@ -71,7 +71,6 @@ The specifications are:
 | pr-branch         | false    | The same as above.                            |
 | pr-title          | false    | The same as above.                            |
 | pr-commit-message | false    | The same as above.                            |
-| pr-body           | false    | The same as above.                            |
 | pr-labels         | false    | The same as above.                            |
 | pr-assignees      | false    | The same as above.                            |
 | pr-reviewers      | false    | The same as above.                            |
