@@ -43,7 +43,6 @@ jobs:
 | sync-target-repository | true     | The sync target repository.                             |
 | sync-target-branch     | true     | The sync target branch.                                 |
 | pr-title               | true     | Please see `peter-evans/create-pull-request`.           |
-| pr-body                | false    | The same as above.                                      |
 | pr-labels              | false    | The same as above.                                      |
 | pr-assignees           | false    | The same as above.                                      |
 | pr-reviewers           | false    | The same as above.                                      |
