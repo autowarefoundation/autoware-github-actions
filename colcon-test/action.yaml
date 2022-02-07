@@ -120,11 +120,11 @@ runs:
       id: test
       run: |
         coverage_files=()
-        if [[ ${{ steps.lcov-coverage-file-existence.outputs.exists == 'true' }} ]]; then
+        if [[ "${{ steps.lcov-coverage-file-existence.outputs.exists }}" == "true" ]]; then
           coverage_files+=("lcov/total_coverage.info")
         fi
 
-        if [[ ${{ steps.coveragepy-coverage-file-existence.outputs.exists == 'true' }} ]]; then
+        if [[ "${{ steps.coveragepy-coverage-file-existence.outputs.exists}}" == "true" ]]; then
           coverage_files+=("coveragepy/.coverage")
         fi
 
