@@ -37,7 +37,7 @@ runs:
         token: ${{ inputs.token }}
 
     - name: Clone dependency packages
-      if: ${{ inputs.build-depends-repos != ''}}
+      if: ${{ inputs.build-depends-repos != '' }}
       run: |
         mkdir dependency_ws
         vcs import dependency_ws < ${{ inputs.build-depends-repos }}
