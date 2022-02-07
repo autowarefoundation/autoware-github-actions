@@ -60,10 +60,10 @@ jobs:
           label-regex: ${{ matrix.test-label }}
 
       - name: Upload coverage to Codecov
-        if: ${{ steps.test.outputs.coverage-reports != '' }}
+        if: ${{ steps.test.outputs.coverage-report-files != '' }}
         uses: codecov/codecov-action@v2
         with:
-          files: ${{ steps.test.outputs.coverage-reports }}
+          files: ${{ steps.test.outputs.coverage-report-files }}
           fail_ci_if_error: false
           verbose: true
           flags: ${{ matrix.codecov-flags }}
@@ -83,4 +83,4 @@ jobs:
 
 | Name             | Description                 |
 | ---------------- | --------------------------- |
-| coverage-reports | Generated coverage reports. |
+| coverage-report-files | Generated coverage report files. |
