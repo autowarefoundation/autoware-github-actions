@@ -34,7 +34,7 @@ jobs:
     container: ros:galactic
     strategy:
       matrix:
-        label: 
+        label:
           - gtest
           - launch_test
     steps:
