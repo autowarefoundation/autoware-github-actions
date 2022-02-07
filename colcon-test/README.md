@@ -29,7 +29,7 @@ jobs:
           build-depends-repos: build_depends.repos
 
   test:
-    needs: build-and-test
+    needs: build
     runs-on: ubuntu-latest
     container: ros:galactic
     strategy:
