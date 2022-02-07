@@ -64,4 +64,4 @@ done
 #
 # Output
 # shellcheck disable=SC2046
-echo ::set-output name=modified-packages::$(printf "%s\n" "${modified_package_names[@]}" | sort -u )
+echo ::set-output name=modified-packages::$(printf "%s\n" "${modified_package_names[@]}" | sort -u)
