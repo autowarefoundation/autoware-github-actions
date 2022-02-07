@@ -81,6 +81,6 @@ jobs:
 
 ## Outputs
 
-| Name             | Description                 |
-| ---------------- | --------------------------- |
+| Name                  | Description                      |
+| --------------------- | -------------------------------- |
 | coverage-report-files | Generated coverage report files. |
