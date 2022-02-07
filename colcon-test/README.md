@@ -62,7 +62,7 @@ jobs:
         uses: codecov/codecov-action@v2
         with:
           files: ${{ steps.test.outputs.coverage-reports }}
-          fail_ci_if_error: true
+          fail_ci_if_error: false
           verbose: true
           flags: ${{ matrix.label }}
 ```
