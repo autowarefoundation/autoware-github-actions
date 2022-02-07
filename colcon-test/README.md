@@ -35,7 +35,6 @@ jobs:
     strategy:
       matrix:
         label: [gtest, launch_test]
-
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
