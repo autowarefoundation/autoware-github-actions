@@ -74,7 +74,7 @@ jobs:
 | rosdistro           | true     | ROS distro.                                         |
 | target-packages     | true     | The target packages to test.                        |
 | build-depends-repos | false    | The `.repos` file that includes build dependencies. |
-| label               | false    | The label to run tests.                             |
+| label               | false    | The regex pattern of test labels to be run.         |
 | token               | false    | The token for build dependencies.                   |
 
 ## Outputs
