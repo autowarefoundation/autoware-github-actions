@@ -75,7 +75,6 @@ runs:
         key: build-${{ github.sha }}
 
     - name: Test
-      id: test
       run: |
         set -e
         . /opt/ros/${{ inputs.rosdistro }}/setup.sh
@@ -105,19 +104,35 @@ runs:
           --verbose \
           --packages-above ${{ inputs.target-packages }} \
           --coveragepy-base coveragepy_${{ inputs.label }} || true
+      shell: bash
 
+    - name: Check lcov coverage file exists
+      id: lcov-coverage-file-existence
+      uses: autowarefoundation/autoware-github-actions/check-file-existence@tier4/proposal
+      with:
+        files: lcov_${{ inputs.label }}/total_coverage.info
+        condition: and
+
+    - name: Check coveragepy coverage file exists
+      id: coveragepy-coverage-file-existence
+      uses: autowarefoundation/autoware-github-actions/check-file-existence@tier4/proposal
+      with:
+        files: coveragepy_${{ inputs.label }}/.coverage
+        condition: and
+
+    - name: Generate output
+      id: test
+      run: |
         coverage_files=()
-        lcov_coverage_file=lcov_${{ inputs.label }}/total_coverage.info
-        if [[ -f $lcov_coverage_file ]]; then
-          coverage_files+=("$lcov_coverage_file")
+        if [[ ${{ steps.lcov-coverage-file-existence.outputs.exists == 'true' }} ]]; then
+          coverage_files+=("$lcov_${{ inputs.label }}/total_coverage.info")
         fi
 
-        coveragepy_coverage_file=coveragepy_${{ inputs.label }}/.coverage
-        if [[ -f $coveragepy_coverage_file ]]; then
-        coverage_files+=("$coveragepy_coverage_file")
+        if [[ ${{ steps.coveragepy-coverage-file-existence.outputs.exists == 'true' }} ]]; then
+          coverage_files+=("coveragepy_${{ inputs.label }}/.coverage")
         fi
 
         # Join coverage file names
-        IFS=, eval 'coverage_files_str="${coverage_files[*]}"'
+        coverage_files_str="$(IFS=,; echo "${coverage_files[*]}")"
         echo ::set-output name=coverage-reports::$coverage_files_str
       shell: bash
