@@ -28,19 +28,18 @@ function find_package_dir() {
 
     target_dir=$(dirname "$1")
     while true; do
-        parent_dir=$(dirname "$target_dir")
-
-        # Exit if no parent found
-        if [ "$parent_dir" = "$target_dir" ]; then
-            return 0
-        fi
-
         # Output package name if package.xml found
         if [ -f "$target_dir/package.xml" ]; then
             if [ ! -f "$target_dir/COLCON_IGNORE" ]; then
                 echo "$target_dir"
                 return 0
             fi
+        fi
+
+        # Exit if no parent found
+        parent_dir=$(dirname "$target_dir")
+        if [ "$parent_dir" = "$target_dir" ]; then
+            return 0
         fi
 
         # Move to parent dir
