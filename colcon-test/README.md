@@ -34,9 +34,11 @@ jobs:
     container: ros:galactic
     strategy:
       matrix:
-        label:
-          - gtest
-          - launch_test
+        include:
+          - test-label: gtest
+            codecov-flags: gtest
+          - test-label: launch_test
+            codecov-flags: launch_test
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
