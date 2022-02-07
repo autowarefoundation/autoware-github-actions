@@ -1,6 +1,6 @@
 # colcon-test
 
-This action runs `colcon test` with label.
+This action runs `colcon test` with a label.
 Note that you need to build target packages before running this action.
 
 ## Usage
