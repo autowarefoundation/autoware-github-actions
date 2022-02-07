@@ -46,7 +46,7 @@ runs:
       shell: bash
 
     - name: Set git config
-      if: ${{ inputs.build-depends-repos != ''}}
+      if: ${{ inputs.build-depends-repos != '' }}
       uses: autowarefoundation/autoware-github-actions/set-git-config@tier4/proposal
       with:
         token: ${{ inputs.token }}
