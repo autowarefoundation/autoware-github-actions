@@ -81,13 +81,11 @@ runs:
 
         colcon lcov-result --zero-counters \
           --verbose \
-          --packages-above ${{ inputs.target-packages }} \
-          --lcov-base lcov_${{ inputs.label }}
+          --packages-above ${{ inputs.target-packages }}
 
         colcon lcov-result --initial \
           --verbose \
-          --packages-above ${{ inputs.target-packages }} \
-          --lcov-base lcov_${{ inputs.label }}
+          --packages-above ${{ inputs.target-packages }}
 
         colcon test --event-handlers console_cohesion+ \
           --mixin coverage-pytest \
@@ -97,27 +95,25 @@ runs:
 
         colcon lcov-result \
           --verbose \
-          --packages-above ${{ inputs.target-packages }} \
-          --lcov-base lcov_${{ inputs.label }} || true
+          --packages-above ${{ inputs.target-packages }} || true
 
         colcon coveragepy-result \
           --verbose \
-          --packages-above ${{ inputs.target-packages }} \
-          --coveragepy-base coveragepy_${{ inputs.label }} || true
+          --packages-above ${{ inputs.target-packages }} || true
       shell: bash
 
     - name: Check lcov coverage file exists
       id: lcov-coverage-file-existence
       uses: autowarefoundation/autoware-github-actions/check-file-existence@tier4/proposal
       with:
-        files: lcov_${{ inputs.label }}/total_coverage.info
+        files: lcov/total_coverage.info
         condition: and
 
     - name: Check coveragepy coverage file exists
       id: coveragepy-coverage-file-existence
       uses: autowarefoundation/autoware-github-actions/check-file-existence@tier4/proposal
       with:
-        files: coveragepy_${{ inputs.label }}/.coverage
+        files: coveragepy/.coverage
         condition: and
 
     - name: Generate output
@@ -125,11 +121,11 @@ runs:
       run: |
         coverage_files=()
         if [[ ${{ steps.lcov-coverage-file-existence.outputs.exists == 'true' }} ]]; then
-          coverage_files+=("$lcov_${{ inputs.label }}/total_coverage.info")
+          coverage_files+=("lcov/total_coverage.info")
         fi
 
         if [[ ${{ steps.coveragepy-coverage-file-existence.outputs.exists == 'true' }} ]]; then
-          coverage_files+=("coveragepy_${{ inputs.label }}/.coverage")
+          coverage_files+=("coveragepy/.coverage")
         fi
 
         # Join coverage file names
