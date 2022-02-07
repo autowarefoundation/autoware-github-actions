@@ -11,7 +11,7 @@ inputs:
   build-depends-repos:
     description: ""
     required: false
-  label:
+  label-regex:
     description: ""
     required: false
     default: ".*" # Run all tests
@@ -90,7 +90,7 @@ runs:
         colcon test --event-handlers console_cohesion+ \
           --mixin coverage-pytest \
           --packages-above ${{ inputs.target-packages }} \
-          --ctest-args -L "${{ inputs.label }}" \
+          --ctest-args -L "${{ inputs.label-regex }}" \
           --return-code-on-test-failure
 
         colcon lcov-result \
