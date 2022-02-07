@@ -32,7 +32,7 @@ jobs:
 
 | Name                | Required | Description                                         |
 | ------------------- | -------- | --------------------------------------------------- |
-| rosdistro           | true     | The ROS distro.                                     |
+| rosdistro           | true     | ROS distro.                                     |
 | target-packages     | true     | The target packages to build.                       |
 | build-depends-repos | false    | The `.repos` file that includes build dependencies. |
 | token               | false    | The token for build dependencies.                   |
