@@ -6,7 +6,7 @@ This action runs `colcon build`.
 
 ```yaml
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
     container: ros:galactic
     steps:
