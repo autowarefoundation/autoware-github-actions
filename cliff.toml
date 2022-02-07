@@ -25,7 +25,7 @@ body = """
     {% endfor %}
 {% endfor %}\n
 """
-# remove the leading and trailing whitespaces from the template
+# remove the leading and trailing whitespace from the template
 trim = true
 # changelog footer
 footer = """
@@ -58,4 +58,10 @@ filter_commits = false
 # glob pattern for matching git tags
 tag_pattern = "v[0-9]*"
 # regex for skipping tags
-skip_tags = "v.*-beta.*"
+skip_tags = "v0.0.0"
+# regex for ignoring tags
+ignore_tags = "v.*-beta.*"
+# sort the tags chronologically
+date_order = false
+# sort the commits inside sections by oldest/newest order
+sort_commits = "oldest"
