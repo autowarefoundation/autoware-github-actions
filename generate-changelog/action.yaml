@@ -22,18 +22,8 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: Install Rust toolchain
-      uses: actions-rs/toolchain@v1
-      with:
-        profile: minimal
-        toolchain: nightly
-        override: true
-
-    - name: Install git-cliff
-      uses: actions-rs/cargo@v1
-      with:
-        command: install
-        args: git-cliff
+    - name: Set up git-cliff
+      uses: kenji-miyake/setup-git-cliff@v1
 
     - name: Generate changelog
       id: generate-changelog
