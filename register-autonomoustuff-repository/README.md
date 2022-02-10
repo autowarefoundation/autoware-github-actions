@@ -34,8 +34,8 @@ jobs:
 
 ## Inputs
 
-| Name      | Required | Description |
-| --------- | -------- | ----------- |
+| Name      | Required | Description     |
+| --------- | -------- | --------------- |
 | rosdistro | true     | The ROS distro. |
 
 ## Outputs
