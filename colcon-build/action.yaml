@@ -1,4 +1,4 @@
-name: colcon-build-and-test
+name: colcon-build
 description: ""
 
 inputs:
@@ -19,10 +19,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Show deprecated warning
-      run: echo "::warning title=DEPRECATED::colcon-build-and-test action will no longer be available in future releases. Please consider using colcon-build and colcon-test workflows instead."
-      shell: bash
-
     - name: Show target packages
       run: |
         echo "target packages: ${{ inputs.target-packages }}"
@@ -35,13 +31,13 @@ runs:
       shell: bash
 
     - name: Set git config
-      if: ${{ inputs.build-depends-repos != ''}}
+      if: ${{ inputs.build-depends-repos != '' }}
       uses: autowarefoundation/autoware-github-actions/set-git-config@tier4/proposal
       with:
         token: ${{ inputs.token }}
 
     - name: Clone dependency packages
-      if: ${{ inputs.build-depends-repos != ''}}
+      if: ${{ inputs.build-depends-repos != '' }}
       run: |
         mkdir dependency_ws
         vcs import dependency_ws < ${{ inputs.build-depends-repos }}
@@ -67,25 +63,6 @@ runs:
           --packages-above-and-dependencies ${{ inputs.target-packages }} \
           --cmake-args -DCMAKE_BUILD_TYPE=Release \
           --mixin coverage-gcc coverage-pytest compile-commands
-      shell: bash
-
-    - name: Install packages for coverage commands
-      run: |
-        sudo apt-get -yqq update
-        sudo apt-get -yqq install lcov
-        pip3 install colcon-lcov-result colcon-coveragepy-result
-      shell: bash
-
-    - name: Test
-      run: |
-        . /opt/ros/${{ inputs.rosdistro }}/setup.sh
-        colcon lcov-result --initial --verbose --packages-above ${{ inputs.target-packages }}
-        colcon test --event-handlers console_cohesion+ \
-          --mixin coverage-pytest \
-          --packages-above ${{ inputs.target-packages }} \
-          --return-code-on-test-failure
-        colcon lcov-result --verbose --packages-above ${{ inputs.target-packages }} || true
-        colcon coveragepy-result --verbose --packages-above ${{ inputs.target-packages }} || true
       shell: bash
 
     - name: Cache build artifacts

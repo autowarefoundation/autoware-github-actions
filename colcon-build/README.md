@@ -1,12 +1,12 @@
-# DEPRECATED: colcon-build-and-test
+# colcon-build
 
-This action runs `colcon build` and `colcon test`.
+This action runs `colcon build`.
 
 ## Usage
 
 ```yaml
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
     container: ros:galactic
     steps:
@@ -19,9 +19,9 @@ jobs:
         id: get-modified-packages
         uses: autowarefoundation/autoware-github-actions/get-modified-packages@tier4/proposal
 
-      - name: Build and test
+      - name: Build
         if: ${{ steps.get-modified-packages.outputs.modified-packages != '' }}
-        uses: autowarefoundation/autoware-github-actions/colcon-build-and-test@tier4/proposal
+        uses: autowarefoundation/autoware-github-actions/colcon-build@tier4/proposal
         with:
           rosdistro: galactic
           target-packages: ${{ steps.get-modified-packages.outputs.modified-packages }}
@@ -32,8 +32,8 @@ jobs:
 
 | Name                | Required | Description                                         |
 | ------------------- | -------- | --------------------------------------------------- |
-| rosdistro           | true     | The ROS distro.                                     |
-| target-packages     | true     | The target packages to build and test.              |
+| rosdistro           | true     | ROS distro.                                         |
+| target-packages     | true     | The target packages to build.                       |
 | build-depends-repos | false    | The `.repos` file that includes build dependencies. |
 | token               | false    | The token for build dependencies.                   |
 
