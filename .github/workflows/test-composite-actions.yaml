@@ -139,3 +139,28 @@ jobs:
       - name: Check result
         run: |
           [[ "${{ steps.check-file-existence4.outputs.exists }}" == "true" ]]
+
+  test-get-self-packages:
+    runs-on: ubuntu-latest
+    container: ros:${{ matrix.rosdistro }}
+    strategy:
+      fail-fast: false
+      matrix:
+        rosdistro:
+          - galactic
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Create a package with no source files
+        run: |
+          . /opt/ros/${{ matrix.rosdistro }}/setup.sh
+          ros2 pkg create empty_target
+
+      - name: Run get-self-packages
+        id: get-self-packages
+        uses: ./get-self-packages
+
+      - name: Check result
+        run: |
+          [[ "${{ steps.get-self-packages.outputs.self-packages }}" == "empty_target" ]]
