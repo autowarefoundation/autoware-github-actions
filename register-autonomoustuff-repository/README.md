@@ -36,7 +36,7 @@ jobs:
 
 | Name      | Required | Description |
 | --------- | -------- | ----------- |
-| rosdistro | true     | ROS distro. |
+| rosdistro | true     | The ROS distro. |
 
 ## Outputs
 
