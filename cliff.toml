@@ -41,17 +41,18 @@ commit_parsers = [
     # Skip
     { message = "^chore\\(release\\)", skip = true},
     # Comply with https://github.com/commitizen/conventional-commit-types/blob/c3a9be4c73e47f2e8197de775f41d981701407fb/index.json
-    { message = "^feat", group = "Features"},
-    { message = "^fix", group = "Bug Fixes"},
-    { message = "^doc", group = "Documentation"},
-    { message = "^style", group = "Styles"},
-    { message = "^refactor", group = "Code Refactoring"},
-    { message = "^perf", group = "Performance Improvements"},
-    { message = "^test", group = "Tests"},
-    { message = "^build", group = "Builds"},
-    { message = "^ci", group = "Continuous Integrations"},
-    { message = "^chore", group = "Chores"},
-    { message = "^revert", group = "Reverts"},
+    # Why adding numbers to groups is in https://github.com/orhun/git-cliff/issues/9#issuecomment-914521594
+    { message = "^feat", group = "<!-- 00 -->Features"},
+    { message = "^fix", group = "<!-- 01 -->Bug Fixes"},
+    { message = "^doc", group = "<!-- 02 -->Documentation"},
+    { message = "^style", group = "<!-- 03 -->Styles"},
+    { message = "^refactor", group = "<!-- 04 -->Code Refactoring"},
+    { message = "^perf", group = "<!-- 05 -->Performance Improvements"},
+    { message = "^test", group = "<!-- 06 -->Tests"},
+    { message = "^build", group = "<!-- 07 -->Builds"},
+    { message = "^ci", group = "<!-- 08 -->Continuous Integrations"},
+    { message = "^chore", group = "<!-- 09 -->Chores"},
+    { message = "^revert", group = "<!-- 10 -->Reverts"},
 ]
 # filter out the commits that are not matched by commit parsers
 filter_commits = false
