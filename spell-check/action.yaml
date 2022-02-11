@@ -20,7 +20,7 @@ runs:
       shell: bash
 
     - name: Run spell check
-      uses: streetsidesoftware/cspell-action@v1.3.5
+      uses: streetsidesoftware/cspell-action@v1
       with:
         config: .cspell.json
         files: |
