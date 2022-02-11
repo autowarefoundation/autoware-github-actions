@@ -23,7 +23,7 @@ runs:
   using: composite
   steps:
     - name: Set up git-cliff
-      uses: kenji-miyake/setup-git-cliff@v1
+      uses: kenji-miyake/setup-git-cliff@main
 
     - name: Generate changelog
       id: generate-changelog
