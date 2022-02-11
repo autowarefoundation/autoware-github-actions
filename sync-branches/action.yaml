@@ -40,7 +40,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Checkout repository
+    - name: Check out repository
       uses: actions/checkout@v2
       with:
         ref: ${{ inputs.base-branch }}
