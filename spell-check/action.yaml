@@ -24,4 +24,7 @@ runs:
       with:
         config: .cspell.json
         files: |
+          **
+          .*
+          .*/**
           !dist/**/*.{ts,js}
