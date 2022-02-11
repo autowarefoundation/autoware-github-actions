@@ -44,6 +44,7 @@ runs:
       uses: actions/checkout@v2
       with:
         ref: ${{ inputs.base-branch }}
+        fetch-depth: 0
 
     - name: Set git config
       uses: autowarefoundation/autoware-github-actions/set-git-config@tier4/proposal
