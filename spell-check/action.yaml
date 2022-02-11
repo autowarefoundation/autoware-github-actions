@@ -23,3 +23,5 @@ runs:
       uses: streetsidesoftware/cspell-action@v1.3.5
       with:
         config: .cspell.json
+        files: |
+          !dist/**/*.{ts,js}
