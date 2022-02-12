@@ -95,7 +95,7 @@ runs:
       run: |
         package_path=$(colcon list --paths-only --packages-select ${{ inputs.target-packages }})
         target_files=$(find $package_path -name "*.cpp" -or -name "*.hpp")
-        echo ::set-output name=target-files::"$target_files"
+        echo ::set-output name=target-files::$target_files
       shell: bash
 
     - name: Analyze
