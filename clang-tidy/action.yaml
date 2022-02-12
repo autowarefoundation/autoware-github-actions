@@ -95,11 +95,26 @@ runs:
       run: |
         package_path=$(colcon list --paths-only --packages-select ${{ inputs.target-packages }})
         target_files=$(find $package_path -name "*.cpp" -or -name "*.hpp")
-        echo ::set-output name=target-files::"$target_files"
+        echo ::set-output name=target-files::$target_files
       shell: bash
 
     - name: Analyze
       if: ${{ steps.get-target-files.outputs.target-files != '' }}
       run: |
-        clang-tidy -p build/ ${{ steps.get-target-files.outputs.target-files }}
+        mkdir /tmp/clang-tidy-result
+        clang-tidy -p build/ -export-fixes /tmp/clang-tidy-result/fixes.yaml ${{ steps.get-target-files.outputs.target-files }} || true
       shell: bash
+
+    - name: Save PR metadata
+      if: ${{ steps.get-target-files.outputs.target-files != '' }}
+      run: |
+        echo "${{ github.event.number }}" > /tmp/clang-tidy-result/pr-id.txt
+        echo "${{ github.event.pull_request.head.repo.full_name }}" > /tmp/clang-tidy-result/pr-head-repo.txt
+        echo "${{ github.event.pull_request.head.ref }}" > /tmp/clang-tidy-result/pr-head-ref.txt
+      shell: bash
+
+    - uses: actions/upload-artifact@v2
+      if: ${{ steps.get-target-files.outputs.target-files != '' }}
+      with:
+        name: clang-tidy-result
+        path: /tmp/clang-tidy-result/
