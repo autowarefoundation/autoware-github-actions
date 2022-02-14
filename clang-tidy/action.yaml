@@ -54,7 +54,7 @@ runs:
     - name: Clone dependency packages
       if: ${{ inputs.build-depends-repos != ''}}
       run: |
-        mkdir dependency_ws
+        mkdir -p dependency_ws
         vcs import dependency_ws < ${{ inputs.build-depends-repos }}
       shell: bash
 
