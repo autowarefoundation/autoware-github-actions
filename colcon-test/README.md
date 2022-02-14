@@ -78,6 +78,7 @@ jobs:
 | build-depends-repos | false    | The `.repos` file that includes build dependencies. |
 | label-regex         | false    | The regex pattern of test labels to be run.         |
 | token               | false    | The token for build dependencies.                   |
+| lcovrc              | false    | The configuration file for `lcov`.                  |
 
 ## Outputs
 

@@ -19,6 +19,10 @@ inputs:
     description: ""
     required: false
     default: ${{ github.token }}
+  lcovrc:
+    description: ""
+    required: false
+    default: ${GITHUB_ACTION_PATH}/.lcovrc
 outputs:
   coverage-report-files:
     description: ""
@@ -82,10 +86,12 @@ runs:
 
         colcon lcov-result --zero-counters \
           --verbose \
+          --lcov-config-file ${{ inputs.lcovrc }} \
           --packages-above ${{ inputs.target-packages }}
 
         colcon lcov-result --initial \
           --verbose \
+          --lcov-config-file ${{ inputs.lcovrc }} \
           --packages-above ${{ inputs.target-packages }}
 
         colcon test --event-handlers console_cohesion+ \
@@ -96,6 +102,7 @@ runs:
 
         colcon lcov-result \
           --verbose \
+          --lcov-config-file ${{ inputs.lcovrc }} \
           --packages-above ${{ inputs.target-packages }} || true
 
         colcon coveragepy-result \
