@@ -45,7 +45,7 @@ runs:
 
     - name: Run rosdep install
       run: |
-        package_paths=$(colcon list -p --packages-above-and-dependencies ${{ inputs.target-packages }})
+        package_paths=$(colcon list -p --packages-above-and-dependencies ${{ inputs.target-packages }} --base-paths . dependency_ws)
         sudo apt-get -yqq update
         rosdep update
         DEBIAN_FRONTEND=noninteractive rosdep install -yqq --from-paths ${package_paths} --ignore-src --rosdistro ${{ inputs.rosdistro }}
