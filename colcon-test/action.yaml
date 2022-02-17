@@ -66,6 +66,12 @@ runs:
         DEBIAN_FRONTEND=noninteractive rosdep install -yqq --from-paths ${package_paths} --ignore-src --rosdistro ${{ inputs.rosdistro }}
       shell: bash
 
+    - name: Determine CPU architecture
+      id: determine-architecture
+      run: |
+        echo ::set-output name=arch::$(uname -m)
+      shell: bash
+
     - name: Restore build files from cache
       id: restore-build-files
       uses: actions/cache@v2
@@ -73,7 +79,7 @@ runs:
         path: |
           ./build
           ./install
-        key: build-${{ github.sha }}
+        key: build-${{ runner.os }}-${{ steps.determine-architecture.outputs.arch }}-${{ github.sha }}
 
     - name: Test
       run: |
