@@ -66,16 +66,10 @@ runs:
           --mixin coverage-gcc coverage-pytest compile-commands
       shell: bash
 
-    - name: Determine CPU architecture
-      id: determine-architecture
-      run: |
-        echo ::set-output name=arch::$(uname -m)
-      shell: bash
-
     - name: Cache build artifacts
       uses: actions/cache@v2
       with:
         path: |
           ./build
           ./install
-        key: build-${{ runner.os }}-${{ steps.determine-architecture.outputs.arch }}-${{ github.sha }}
+        key: build-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
