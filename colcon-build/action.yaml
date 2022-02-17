@@ -72,4 +72,4 @@ runs:
         path: |
           ./build
           ./install
-        key: build-${{ github.sha }}
+        key: build-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
