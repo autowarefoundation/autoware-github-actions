@@ -23,6 +23,7 @@ jobs:
           gh release create "${{ github.ref_name }}" \
             --draft \
             --title "Release ${{ github.ref_name }}" \
-            --notes "${{ steps.generate-changelog.outputs.changelog }}"
+            --notes "$NOTES"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NOTES: ${{ steps.generate-changelog.outputs.changelog }}
