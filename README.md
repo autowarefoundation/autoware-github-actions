@@ -2,7 +2,7 @@
 
 This is one of the prototype repositories for Autoware Core/Universe that AWF agreed to create in the [TSC meeting on 2021/11/17](https://discourse.ros.org/t/technical-steering-committee-tsc-meeting-36-2021-11-17-minutes/23168).
 
-Please see [autowarefoundation/autoware](https://github.com/autowarefoundation/autoware) for more details.
+See [autowarefoundation/autoware](https://github.com/autowarefoundation/autoware) for more details.
 
 ---
 
@@ -58,7 +58,7 @@ jobs:
 
 ## Supported composite actions
 
-Please see the `README.md` in each directory.
+See the `README.md` in each directory.
 
 - [clang-tidy](./clang-tidy/README.md)
 - [colcon-build](./colcon-build/README.md)

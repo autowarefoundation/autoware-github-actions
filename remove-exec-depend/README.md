@@ -1,7 +1,7 @@
 # remove-exec-depend
 
 This action removes `<exec_depend>` from `package.xml`.  
-Please see [here](https://github.com/autowarefoundation/autoware.universe/issues/184#issuecomment-993620219) for more details.
+Refer to [here](https://github.com/autowarefoundation/autoware.universe/issues/184#issuecomment-993620219) for more details.
 
 ## Usage
 
