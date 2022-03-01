@@ -23,7 +23,7 @@ jobs:
           private_key: ${{ secrets.PRIVATE_KEY }}
 
       - name: Set git config
-        uses: autowarefoundation/autoware-github-actions/set-git-config@tier4/proposal
+        uses: autowarefoundation/autoware-github-actions/set-git-config@v1
         with:
           token: ${{ steps.generate-token.outputs.token }}
 ```

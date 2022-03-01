@@ -18,11 +18,11 @@ jobs:
 
       - name: Get modified packages
         id: get-modified-packages
-        uses: autowarefoundation/autoware-github-actions/get-modified-packages@tier4/proposal
+        uses: autowarefoundation/autoware-github-actions/get-modified-packages@v1
 
       - name: Build
         if: ${{ steps.get-modified-packages.outputs.modified-packages != '' }}
-        uses: autowarefoundation/autoware-github-actions/colcon-build@tier4/proposal
+        uses: autowarefoundation/autoware-github-actions/colcon-build@v1
         with:
           rosdistro: galactic
           target-packages: ${{ steps.get-modified-packages.outputs.modified-packages }}
@@ -47,12 +47,12 @@ jobs:
 
       - name: Get modified packages
         id: get-modified-packages
-        uses: autowarefoundation/autoware-github-actions/get-modified-packages@tier4/proposal
+        uses: autowarefoundation/autoware-github-actions/get-modified-packages@v1
 
       - name: Test
         id: test
         if: ${{ steps.get-modified-packages.outputs.modified-packages != '' }}
-        uses: autowarefoundation/autoware-github-actions/colcon-test@tier4/proposal
+        uses: autowarefoundation/autoware-github-actions/colcon-test@v1
         with:
           rosdistro: galactic
           target-packages: ${{ steps.get-modified-packages.outputs.modified-packages }}

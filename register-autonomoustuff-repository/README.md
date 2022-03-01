@@ -16,16 +16,16 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Register AutonomouStuff repository
-        uses: autowarefoundation/autoware-github-actions/register-autonomoustuff-repository@tier4/proposal
+        uses: autowarefoundation/autoware-github-actions/register-autonomoustuff-repository@v1
         with:
           rosdistro: galactic
 
       - name: Get self packages
         id: get-self-packages
-        uses: autowarefoundation/autoware-github-actions/get-self-packages@tier4/proposal
+        uses: autowarefoundation/autoware-github-actions/get-self-packages@v1
 
       - name: Build
-        uses: autowarefoundation/autoware-github-actions/colcon-build@tier4/proposal
+        uses: autowarefoundation/autoware-github-actions/colcon-build@v1
         with:
           rosdistro: galactic
           target-packages: ${{ steps.get-self-packages.outputs.self-packages }}

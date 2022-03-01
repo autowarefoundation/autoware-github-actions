@@ -22,7 +22,7 @@ jobs:
           private_key: ${{ secrets.PRIVATE_KEY }}
 
       - name: Run sync-branches
-        uses: autowarefoundation/autoware-github-actions/sync-branches@tier4/proposal
+        uses: autowarefoundation/autoware-github-actions/sync-branches@v1
         with:
           token: ${{ steps.generate-token.outputs.token }}
           base-branch: main

@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: Check file existence
         id: check-file-existence
-        uses: autowarefoundation/autoware-github-actions/check-file-existence@tier4/proposal
+        uses: autowarefoundation/autoware-github-actions/check-file-existence@v1
         with:
           files: |
             README.md

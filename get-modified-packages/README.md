@@ -16,7 +16,7 @@ jobs:
 
       - name: Get modified packages
         id: get-modified-packages
-        uses: autowarefoundation/autoware-github-actions/get-modified-packages@tier4/proposal
+        uses: autowarefoundation/autoware-github-actions/get-modified-packages@v1
 ```
 
 ## Inputs

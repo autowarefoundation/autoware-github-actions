@@ -47,7 +47,7 @@ runs:
 
     - name: Set git config
       if: ${{ inputs.build-depends-repos != '' }}
-      uses: autowarefoundation/autoware-github-actions/set-git-config@tier4/proposal
+      uses: autowarefoundation/autoware-github-actions/set-git-config@v1
       with:
         token: ${{ inputs.token }}
 
@@ -106,14 +106,14 @@ runs:
 
     - name: Check lcov coverage file exists
       id: lcov-coverage-file-existence
-      uses: autowarefoundation/autoware-github-actions/check-file-existence@tier4/proposal
+      uses: autowarefoundation/autoware-github-actions/check-file-existence@v1
       with:
         files: lcov/total_coverage.info
         condition: and
 
     - name: Check coveragepy coverage file exists
       id: coveragepy-coverage-file-existence
-      uses: autowarefoundation/autoware-github-actions/check-file-existence@tier4/proposal
+      uses: autowarefoundation/autoware-github-actions/check-file-existence@v1
       with:
         files: coveragepy/.coverage
         condition: and

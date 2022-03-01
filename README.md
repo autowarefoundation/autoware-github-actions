@@ -30,7 +30,7 @@ on:
 
 jobs:
   semantic-pull-request:
-    uses: autowarefoundation/autoware-github-actions/.github/workflows/semantic-pull-request.yaml@tier4/proposal
+    uses: autowarefoundation/autoware-github-actions/.github/workflows/semantic-pull-request.yaml@v1
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
 ```
@@ -45,7 +45,7 @@ It is useful for preventing `pull_request_target` event and self-hosted runners 
 ```yaml
 jobs:
   prevent-no-label-execution:
-    uses: autowarefoundation/autoware-github-actions/prevent-no-label-execution.yaml@tier4/proposal
+    uses: autowarefoundation/autoware-github-actions/prevent-no-label-execution.yaml@v1
     with:
       label: ARM64
 
