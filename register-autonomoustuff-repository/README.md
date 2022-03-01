@@ -8,7 +8,7 @@ This action sets up the prerequisites for [pacmod3_msgs](https://github.com/astu
 
 ```yaml
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
     container: ros:galactic
     steps:
@@ -24,8 +24,8 @@ jobs:
         id: get-self-packages
         uses: autowarefoundation/autoware-github-actions/get-self-packages@tier4/proposal
 
-      - name: Build and test
-        uses: autowarefoundation/autoware-github-actions/colcon-build-and-test@tier4/proposal
+      - name: Build
+        uses: autowarefoundation/autoware-github-actions/colcon-build@tier4/proposal
         with:
           rosdistro: galactic
           target-packages: ${{ steps.get-self-packages.outputs.self-packages }}
