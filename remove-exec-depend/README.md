@@ -1,13 +1,13 @@
 # remove-exec-depend
 
 This action removes `<exec_depend>` from `package.xml`.  
-Please see [here](https://github.com/autowarefoundation/autoware.universe/issues/184#issuecomment-993620219) for more details.
+Refer to [here](https://github.com/autowarefoundation/autoware.universe/issues/184#issuecomment-993620219) for more details.
 
 ## Usage
 
 ```yaml
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
     container: ros:galactic
     steps:
@@ -21,8 +21,8 @@ jobs:
         id: get-self-packages
         uses: autowarefoundation/autoware-github-actions/get-self-packages@tier4/proposal
 
-      - name: Build and test
-        uses: autowarefoundation/autoware-github-actions/colcon-build-and-test@tier4/proposal
+      - name: Build
+        uses: autowarefoundation/autoware-github-actions/colcon-build@tier4/proposal
         with:
           rosdistro: galactic
           target-packages: ${{ steps.get-self-packages.outputs.self-packages }}

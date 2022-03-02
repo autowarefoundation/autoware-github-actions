@@ -27,7 +27,7 @@ jobs:
           token: ${{ steps.generate-token.outputs.token }}
 ```
 
-Please place `.github/sync-files.yaml` like this.
+Create `.github/sync-files.yaml` like this.
 
 ```yaml
 - repository: autowarefoundation/autoware
@@ -63,17 +63,17 @@ The specifications are:
 
 ## Inputs
 
-| Name              | Required | Description                                   |
-| ----------------- | -------- | --------------------------------------------- |
-| token             | true     | The token for pull requests.                  |
-| config            | false    | The path to `sync-files.yaml`.                |
-| pr-base           | false    | Please see `peter-evans/create-pull-request`. |
-| pr-branch         | false    | The same as above.                            |
-| pr-title          | false    | The same as above.                            |
-| pr-commit-message | false    | The same as above.                            |
-| pr-labels         | false    | The same as above.                            |
-| pr-assignees      | false    | The same as above.                            |
-| pr-reviewers      | false    | The same as above.                            |
+| Name              | Required | Description                                 |
+| ----------------- | -------- | ------------------------------------------- |
+| token             | true     | The token for pull requests.                |
+| config            | false    | The path to `sync-files.yaml`.              |
+| pr-base           | false    | Refer to `peter-evans/create-pull-request`. |
+| pr-branch         | false    | The same as above.                          |
+| pr-title          | false    | The same as above.                          |
+| pr-commit-message | false    | The same as above.                          |
+| pr-labels         | false    | The same as above.                          |
+| pr-assignees      | false    | The same as above.                          |
+| pr-reviewers      | false    | The same as above.                          |
 
 ## Outputs
 

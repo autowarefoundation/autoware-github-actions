@@ -1,7 +1,7 @@
 # clang-tidy
 
 This action analyzes code using Clang-Tidy.
-This workflow depends on `colcon-build-and-test` action.
+This workflow depends on `colcon-build` action.
 
 ## Usage
 

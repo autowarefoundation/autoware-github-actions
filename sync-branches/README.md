@@ -35,18 +35,18 @@ jobs:
 
 ## Inputs
 
-| Name                   | Required | Description                                             |
-| ---------------------- | -------- | ------------------------------------------------------- |
-| token                  | true     | The token for pull requests.                            |
-| base-branch            | true     | The base branch of the sync PR.                         |
-| sync-pr-branch         | true     | The branch of the sync PR .                             |
-| sync-target-repository | true     | The sync target repository.                             |
-| sync-target-branch     | true     | The sync target branch.                                 |
-| pr-title               | true     | Please see `peter-evans/create-pull-request`.           |
-| pr-labels              | false    | The same as above.                                      |
-| pr-assignees           | false    | The same as above.                                      |
-| pr-reviewers           | false    | The same as above.                                      |
-| auto-merge-method      | false    | Please see `peter-evans/enable-pull-request-automerge`. |
+| Name                   | Required | Description                                           |
+| ---------------------- | -------- | ----------------------------------------------------- |
+| token                  | true     | The token for pull requests.                          |
+| base-branch            | true     | The base branch of the sync PR.                       |
+| sync-pr-branch         | true     | The branch of the sync PR .                           |
+| sync-target-repository | true     | The sync target repository.                           |
+| sync-target-branch     | true     | The sync target branch.                               |
+| pr-title               | true     | Refer to `peter-evans/create-pull-request`.           |
+| pr-labels              | false    | The same as above.                                    |
+| pr-assignees           | false    | The same as above.                                    |
+| pr-reviewers           | false    | The same as above.                                    |
+| auto-merge-method      | false    | Refer to `peter-evans/enable-pull-request-automerge`. |
 
 ## Outputs
 
