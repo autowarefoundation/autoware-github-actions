@@ -14,7 +14,7 @@ jobs:
           - galactic
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Run register-autonomoustuff-repository
         uses: ./register-autonomoustuff-repository
@@ -40,7 +40,7 @@ jobs:
           - galactic
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Create a package with no source files
         run: |
@@ -64,7 +64,7 @@ jobs:
           - galactic
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Create a package with no source files
         run: |
@@ -82,7 +82,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Create temporary files
         run: |
@@ -150,7 +150,7 @@ jobs:
           - galactic
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Create a package with no source files
         run: |
