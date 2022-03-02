@@ -13,7 +13,7 @@ jobs:
     needs: build-and-test
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
