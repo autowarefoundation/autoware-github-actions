@@ -11,7 +11,7 @@ jobs:
     container: ros:galactic
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 

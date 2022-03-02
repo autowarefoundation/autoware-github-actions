@@ -13,7 +13,7 @@ jobs:
     container: ros:galactic
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Register AutonomouStuff repository
         uses: autowarefoundation/autoware-github-actions/register-autonomoustuff-repository@tier4/proposal

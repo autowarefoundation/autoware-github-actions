@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Run pre-commit
         uses: autowarefoundation/autoware-github-actions/pre-commit@tier4/proposal
