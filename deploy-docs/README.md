@@ -17,7 +17,7 @@ jobs:
           fetch-depth: 0
 
       - name: Deploy docs
-        uses: autowarefoundation/autoware-github-actions/deploy-docs@tier4/proposal
+        uses: autowarefoundation/autoware-github-actions/deploy-docs@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 ```

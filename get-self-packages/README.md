@@ -14,7 +14,7 @@ jobs:
 
       - name: Get self packages
         id: get-self-packages
-        uses: autowarefoundation/autoware-github-actions/get-self-packages@tier4/proposal
+        uses: autowarefoundation/autoware-github-actions/get-self-packages@v1
 ```
 
 ## Inputs

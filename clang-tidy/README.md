@@ -19,15 +19,15 @@ jobs:
 
       - name: Get modified packages
         id: get-modified-packages
-        uses: autowarefoundation/autoware-github-actions/get-modified-packages@tier4/proposal
+        uses: autowarefoundation/autoware-github-actions/get-modified-packages@v1
 
       - name: Run clang-tidy
         if: ${{ steps.get-modified-packages.outputs.modified-packages != '' }}
-        uses: autowarefoundation/autoware-github-actions/clang-tidy@tier4/proposal
+        uses: autowarefoundation/autoware-github-actions/clang-tidy@v1
         with:
           rosdistro: galactic
           target-packages: ${{ steps.get-modified-packages.outputs.modified-packages }}
-          clang-tidy-config-url: https://raw.githubusercontent.com/autowarefoundation/autoware/tier4/proposal/.clang-tidy
+          clang-tidy-config-url: https://raw.githubusercontent.com/autowarefoundation/autoware/main/.clang-tidy
           build-depends-repos: build_depends.repos
 ```
 
