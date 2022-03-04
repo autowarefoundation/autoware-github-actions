@@ -20,13 +20,15 @@ jobs:
         uses: autowarefoundation/autoware-github-actions/deploy-docs@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          latest: ${{ github.ref_name == github.event.repository.default_branch }}
 ```
 
 ## Inputs
 
-| Name  | Required | Description                       |
-| ----- | -------- | --------------------------------- |
-| token | true     | The token for push to `gh-pages`. |
+| Name   | Required | Description                           |
+| ------ | -------- | ------------------------------------- |
+| token  | true     | The token for push to `gh-pages`.     |
+| latest | true     | Whether to create the `latest` alias. |
 
 ## Outputs
 
