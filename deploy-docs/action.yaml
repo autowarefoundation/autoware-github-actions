@@ -5,6 +5,9 @@ inputs:
   token:
     description: ""
     required: true
+  latest:
+    description: ""
+    required: false
 
 runs:
   using: composite
@@ -55,6 +58,12 @@ runs:
       run: |
         git fetch
         mike deploy --push --rebase ${{ steps.set-docs-version-name.outputs.version-name }}
+      shell: bash
+
+    - name: Create alias 'latest'
+      if: ${{ inputs.latest == 'true' }}
+      run: |
+        mike alias --push --rebase ${{ steps.set-docs-version-name.outputs.version-name }} latest
       shell: bash
 
     - name: Create comment body
