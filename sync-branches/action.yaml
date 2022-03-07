@@ -75,7 +75,7 @@ runs:
         echo ::set-output name=changelog::$r
       env:
         CHANGELOG: ${{ steps.generate-changelog.outputs.changelog }}
-        REPOS: ${{ inputs.sync-target-repository }}
+        REPO_URL: ${{ inputs.sync-target-repository }}
       shell: bash
 
     - name: Create PR
