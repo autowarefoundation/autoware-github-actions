@@ -64,6 +64,20 @@ runs:
       with:
         git-cliff-args: origin/${{ inputs.base-branch }}..HEAD
 
+    - name: Replace PR number to URL
+      id: replace-pr-number-to-url
+      run: |
+        r=$(echo "$CHANGELOG" | sed -r "s|\(#([0-9]+)\)|("${REPO_URL%.git}"/pull/\1)|g")
+        # Workaround for https://github.community/t/set-output-truncates-multiline-strings/16852
+        r="${r//'%'/'%25'}"
+        r="${r//$'\n'/'%0A'}"
+        r="${r//$'\r'/'%0D'}"
+        echo ::set-output name=changelog::$r
+      env:
+        CHANGELOG: ${{ steps.generate-changelog.outputs.changelog }}
+        REPO_URL: ${{ inputs.sync-target-repository }}
+      shell: bash
+
     - name: Create PR
       id: create-pr
       uses: peter-evans/create-pull-request@v3
@@ -72,7 +86,7 @@ runs:
         base: ${{ inputs.base-branch }}
         branch: ${{ inputs.sync-pr-branch }}
         title: ${{ inputs.pr-title }}
-        body: ${{ steps.generate-changelog.outputs.changelog }}
+        body: ${{ steps.replace-pr-number-to-url.outputs.changelog }}
         labels: ${{ inputs.pr-labels }}
         assignees: ${{ inputs.pr-assignees }}
         reviewers: ${{ inputs.pr-reviewers }}
