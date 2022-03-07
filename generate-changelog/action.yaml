@@ -36,12 +36,10 @@ runs:
         git cliff --output CHANGELOG.md --config ${{ inputs.git-cliff-config }} \
           -vv --strip header ${{ inputs.git-cliff-args }}
 
-        # replace PR number to URL. ex) "#400" -> "http://github.com/test/pull/400"
-        ${GITHUB_ACTION_PATH}/replace_pr_number.sh CHANGELOG.md ${{ inputs.target-repository }} > CHANGELOG_replaced.md
+        r=$(cat CHANGELOG.md | sed -r "s|\((#[0-9]+)\)|($ {{ inputs.target-repository }}/pull/\1)|g")
         rm CHANGELOG.md
 
-        r=$(cat CHANGELOG_replaced.md)
-        rm CHANGELOG_replaced.md
+        # replace PR number to URL. ex) "#400" -> "http://github.com/test/pull/400"
 
         # Trim version and date
         if [ "${{ inputs.trim-version-and-date }}" = "true" ]; then
