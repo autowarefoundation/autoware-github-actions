@@ -63,7 +63,6 @@ runs:
       uses: autowarefoundation/autoware-github-actions/generate-changelog@v1
       with:
         git-cliff-args: origin/${{ inputs.base-branch }}..HEAD
-        target-repository: ${{ inputs.sync-target-repository }}
 
     - name: Create PR
       id: create-pr
@@ -73,7 +72,7 @@ runs:
         base: ${{ inputs.base-branch }}
         branch: ${{ inputs.sync-pr-branch }}
         title: ${{ inputs.pr-title }}
-        body: ${{ steps.generate-changelog.outputs.changelog }}
+        body: $(echo ${{ steps.generate-changelog.outputs.changelog }} | sed -r "s|\((#[0-9]+)\)|($ {{ inputs.sync-target-repository }}/pull/\1)|g")
         labels: ${{ inputs.pr-labels }}
         assignees: ${{ inputs.pr-assignees }}
         reviewers: ${{ inputs.pr-reviewers }}
