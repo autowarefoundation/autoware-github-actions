@@ -67,8 +67,9 @@ runs:
     - name: Replace PR Number to URL
       id: replace-pr-number-to-url
       run: |
-        r=$(echo ${{ steps.generate-changelog.outputs.changelog }} | sed -r "s|\((#[0-9]+)\)|($ {{ inputs.sync-target-repository }}/pull/\1)|g")
-        echo ::set-output name=changelog::$r
+        echo ::set-output name=changelog::$(echo "$CHANGELOG" | sed -r "s|\((#[0-9]+)\)|($ {{ inputs.sync-target-repository }}/pull/\1)|g")
+      env:
+        CHANGELOG: ${{ steps.generate-changelog.outputs.changelog }}
       shell: bash
 
     - name: Create PR
