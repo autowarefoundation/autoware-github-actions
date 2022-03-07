@@ -67,7 +67,7 @@ runs:
     - name: Replace PR number to URL
       id: replace-pr-number-to-url
       run: |
-        r=$(echo "$CHANGELOG" | sed -r "s|\(#([0-9]+)\)|("${REPOS%.git}"/pull/\1)|g")
+        r=$(echo "$CHANGELOG" | sed -r "s|\(#([0-9]+)\)|("${REPO_URL%.git}"/pull/\1)|g")
         # Workaround for https://github.community/t/set-output-truncates-multiline-strings/16852
         r="${r//'%'/'%25'}"
         r="${r//$'\n'/'%0A'}"
