@@ -10,6 +10,9 @@ inputs:
     description: ""
     required: false
     default: ${GITHUB_ACTION_PATH}/../cliff.toml
+  target-repository:
+    description: ""
+    required: true
   trim-version-and-date:
     description: ""
     required: false
@@ -33,8 +36,12 @@ runs:
         git cliff --output CHANGELOG.md --config ${{ inputs.git-cliff-config }} \
           -vv --strip header ${{ inputs.git-cliff-args }}
 
-        r=$(cat CHANGELOG.md)
+        # replace PR number to URL. ex) "#400" -> "http://github.com/test/pull/400"
+        ${GITHUB_ACTION_PATH}/replace_pr_number.sh CHANGELOG.md ${{ inputs.target-repository }} > CHANGELOG_replaced.md
         rm CHANGELOG.md
+
+        r=$(cat CHANGELOG_replaced.md)
+        rm CHANGELOG_replaced.md
 
         # Trim version and date
         if [ "${{ inputs.trim-version-and-date }}" = "true" ]; then

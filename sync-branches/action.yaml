@@ -63,6 +63,7 @@ runs:
       uses: autowarefoundation/autoware-github-actions/generate-changelog@v1
       with:
         git-cliff-args: origin/${{ inputs.base-branch }}..HEAD
+        target-repository: ${{ inputs.sync-target-repository }}
 
     - name: Create PR
       id: create-pr
