@@ -67,7 +67,12 @@ runs:
     - name: Replace PR number to URL
       id: replace-pr-number-to-url
       run: |
-        echo ::set-output name=changelog::$(echo "$CHANGELOG" | sed -r "s|\((#[0-9]+)\)|(${{ inputs.sync-target-repository }}/pull/\1)|g")
+        r=$(echo "$CHANGELOG" | sed -r "s|\((#[0-9]+)\)|(${{ inputs.sync-target-repository }}/pull/\1)|g")
+        # Workaround for https://github.community/t/set-output-truncates-multiline-strings/16852
+        r="${r//'%'/'%25'}"
+        r="${r//$'\n'/'%0A'}"
+        r="${r//$'\r'/'%0D'}"
+        echo ::set-output name=changelog::$r
       env:
         CHANGELOG: ${{ steps.generate-changelog.outputs.changelog }}
       shell: bash
