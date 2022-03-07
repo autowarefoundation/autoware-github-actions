@@ -64,7 +64,7 @@ runs:
       with:
         git-cliff-args: origin/${{ inputs.base-branch }}..HEAD
 
-    - name: Replace PR Number to URL
+    - name: Replace PR number to URL
       id: replace-pr-number-to-url
       run: |
         echo ::set-output name=changelog::$(echo "$CHANGELOG" | sed -r "s|\((#[0-9]+)\)|($ {{ inputs.sync-target-repository }}/pull/\1)|g")
