@@ -64,6 +64,13 @@ runs:
       with:
         git-cliff-args: origin/${{ inputs.base-branch }}..HEAD
 
+    - name: Replace PR Number to URL
+      id: replace-pr-number-to-url
+      run: |
+        r=$(echo ${{ steps.generate-changelog.outputs.changelog }} | sed -r "s|\((#[0-9]+)\)|($ {{ inputs.sync-target-repository }}/pull/\1)|g")
+        echo ::set-output name=changelog::$r
+      shell: bash
+
     - name: Create PR
       id: create-pr
       uses: peter-evans/create-pull-request@v3
@@ -72,7 +79,7 @@ runs:
         base: ${{ inputs.base-branch }}
         branch: ${{ inputs.sync-pr-branch }}
         title: ${{ inputs.pr-title }}
-        body: $(echo ${{ steps.generate-changelog.outputs.changelog }} | sed -r "s|\((#[0-9]+)\)|($ {{ inputs.sync-target-repository }}/pull/\1)|g")
+        body: ${{ steps.replace-pr-number-to-url.outputs.changelog }}
         labels: ${{ inputs.pr-labels }}
         assignees: ${{ inputs.pr-assignees }}
         reviewers: ${{ inputs.pr-reviewers }}
