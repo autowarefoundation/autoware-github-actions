@@ -5,6 +5,7 @@ mdx_unimoji
 mkdocs
 mkdocs-awesome-pages-plugin
 mkdocs-exclude
+mkdocs-macros-plugin
 mkdocs-material
 mkdocs-same-dir
 mike
