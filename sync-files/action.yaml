@@ -102,6 +102,7 @@ runs:
 
               if ! [ -f "$dest_path" ]; then
                 echo "Newly copy $source_path to $dest_path."
+                mkdir -p $(dirname "$dest_path")
                 cp "$source_file" "$dest_path"
                 yq -i e ".added += [\"$dest_path\"]" /tmp/result.yaml
               elif ! diff "$source_file" "$dest_path"; then
