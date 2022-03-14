@@ -39,7 +39,7 @@ runs:
 
         closed_docs_versions=()
         for docs_version in ${{ steps.get-docs-versions.outputs.docs-versions }}; do
-          pr_number=$(echo "$docs_version" | grep -oP "pr-\K([0-9]+)")
+          pr_number=$(echo "$docs_version" | grep -oP "pr-\w+")
           url="https://api.github.com/repos/${{ github.repository }}/pulls/$pr_number"
 
           echo "url: $url"
