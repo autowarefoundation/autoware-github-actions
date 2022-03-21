@@ -5,3 +5,99 @@ updates:
     schedule:
       interval: daily
     open-pull-requests-limit: 1
+
+  - package-ecosystem: github-actions
+    directory: /check-file-existence
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: github-actions
+    directory: /clang-tidy
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: github-actions
+    directory: /colcon-build
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: github-actions
+    directory: /colcon-test
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: github-actions
+    directory: /delete-closed-pr-docs
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: github-actions
+    directory: /deploy-docs
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: github-actions
+    directory: /generate-changelog
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: github-actions
+    directory: /get-modified-packages
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: github-actions
+    directory: /get-self-packages
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: github-actions
+    directory: /pre-commit
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: github-actions
+    directory: /register-autonomoustuff-repository
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: github-actions
+    directory: /remove-exec-depend
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: github-actions
+    directory: /set-git-config
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: github-actions
+    directory: /spell-check
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: github-actions
+    directory: /sync-branches
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: github-actions
+    directory: /sync-files
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 1
