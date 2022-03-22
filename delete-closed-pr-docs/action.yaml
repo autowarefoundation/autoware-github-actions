@@ -10,7 +10,7 @@ runs:
   using: composite
   steps:
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: 3.8
 
@@ -29,7 +29,7 @@ runs:
       id: get-docs-versions
       run: |
         echo "site_name: dummy" > mkdocs.yaml
-        echo ::set-output name=docs-versions::$(mike list | grep "pr-")
+        echo ::set-output name=docs-versions::$(mike list | grep -oP "pr-\w+")
       shell: bash
 
     - name: Find closed docs versions

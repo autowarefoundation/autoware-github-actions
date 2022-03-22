@@ -50,7 +50,7 @@ runs:
         token: ${{ inputs.token }}
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
 
     - name: Set up yq
       uses: chrisdickinson/setup-yq@v1.0.1
