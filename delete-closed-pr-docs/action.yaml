@@ -44,8 +44,8 @@ runs:
 
           echo "url: $url"
           response=$(curl -sSL "$url" -H "Authorization: token ${{ inputs.token }}")
-          message=$(echo "$response" | grep -oP '"message": "\K([^"]+)')
-          state=$(echo "$response" | grep -oP '"state": "\K([a-z]+)')
+          message=$(echo "$response" | grep -oP '"message": "\K([^"]+)') || true
+          state=$(echo "$response" | grep -oP '"state": "\K([a-z]+)') || true
 
           if [ "$message" = "Not Found" ] || [ "$state" = "closed" ]; then
             closed_docs_versions+=("$docs_version")
