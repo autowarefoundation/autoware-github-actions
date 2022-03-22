@@ -43,9 +43,11 @@ runs:
           url="https://api.github.com/repos/${{ github.repository }}/pulls/$pr_number"
 
           echo "url: $url"
-          state=$(curl -fsSL "$url" -H "Authorization: token ${{ inputs.token }}" | grep -oP '"state": "\K([a-z]+)')
+          response=$(curl -sSL "$url" -H "Authorization: token ${{ inputs.token }}")
+          message=$(echo "$response" | grep -oP '"message": "\K([^"]+)')
+          state=$(echo "$response" | grep -oP '"state": "\K([a-z]+)')
 
-          if [ "$state" = "closed" ]; then
+          if [ "$message" = "Not Found" ] || [ "$state" = "closed" ]; then
             closed_docs_versions+=("$docs_version")
           fi
         done
