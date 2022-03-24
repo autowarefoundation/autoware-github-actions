@@ -13,6 +13,9 @@ def main():
     with Path(args.config_file).open() as f:
         config = yaml.safe_load(f)
 
+    if config is None:
+        return
+
     for repo_config in config:
         if not re.match(r"^http", repo_config["repository"]):
             repo_config["repository"] = f"https://github.com/{repo_config['repository']}.git"
