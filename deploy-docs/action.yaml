@@ -63,7 +63,7 @@ runs:
     - name: Create alias 'latest'
       if: ${{ inputs.latest == 'true' }}
       run: |
-        mike alias --push --rebase --update-aliases --no-redirect ${{ steps.set-docs-version-name.outputs.version-name }} latest
+        mike alias --push --rebase latest
       shell: bash
 
     - name: Create comment body
