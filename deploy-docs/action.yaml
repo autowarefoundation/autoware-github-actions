@@ -63,7 +63,7 @@ runs:
     - name: Create alias 'latest'
       if: ${{ inputs.latest == 'true' }}
       run: |
-        mike alias --push --rebase latest
+        mike deploy --push --rebase latest
       shell: bash
 
     - name: Create comment body
