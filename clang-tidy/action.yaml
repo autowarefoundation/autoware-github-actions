@@ -113,7 +113,7 @@ runs:
         echo "${{ github.event.pull_request.head.ref }}" > /tmp/clang-tidy-result/pr-head-ref.txt
       shell: bash
 
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       if: ${{ steps.get-target-files.outputs.target-files != '' }}
       with:
         name: clang-tidy-result
