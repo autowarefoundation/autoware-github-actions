@@ -3,7 +3,7 @@
 ## Description
 
 This action syncs files between repositories.  
-It uses [peter-evans/create-pull-request](https://github.com/peter-evans/create-pull-request/) for creating pull requests.
+It uses [peter-evans/create-pull-request](https://github.com/peter-evans/create-pull-request/) for creating pull requests and [peter-evans/enable-pull-request-automerge](https://github.com/peter-evans/enable-pull-request-automerge) for enabling auto-merge.
 
 Note that you need `workflow` permission for the token if you copy workflow files of GitHub Actions.
 
@@ -25,6 +25,7 @@ jobs:
         uses: autowarefoundation/autoware-github-actions/sync-files@v1
         with:
           token: ${{ steps.generate-token.outputs.token }}
+          auto-merge-method: squash
 ```
 
 Create `.github/sync-files.yaml` like this.
@@ -63,17 +64,18 @@ The specifications are:
 
 ## Inputs
 
-| Name              | Required | Description                                 |
-| ----------------- | -------- | ------------------------------------------- |
-| token             | true     | The token for pull requests.                |
-| config            | false    | The path to `sync-files.yaml`.              |
-| pr-base           | false    | Refer to `peter-evans/create-pull-request`. |
-| pr-branch         | false    | The same as above.                          |
-| pr-title          | false    | The same as above.                          |
-| pr-commit-message | false    | The same as above.                          |
-| pr-labels         | false    | The same as above.                          |
-| pr-assignees      | false    | The same as above.                          |
-| pr-reviewers      | false    | The same as above.                          |
+| Name              | Required | Description                                           |
+| ----------------- | -------- | ----------------------------------------------------- |
+| token             | true     | The token for pull requests.                          |
+| config            | false    | The path to `sync-files.yaml`.                        |
+| pr-base           | false    | Refer to `peter-evans/create-pull-request`.           |
+| pr-branch         | false    | The same as above.                                    |
+| pr-title          | false    | The same as above.                                    |
+| pr-commit-message | false    | The same as above.                                    |
+| pr-labels         | false    | The same as above.                                    |
+| pr-assignees      | false    | The same as above.                                    |
+| pr-reviewers      | false    | The same as above.                                    |
+| auto-merge-method | false    | Refer to `peter-evans/enable-pull-request-automerge`. |
 
 ## Outputs
 
