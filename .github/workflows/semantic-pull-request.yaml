@@ -31,5 +31,8 @@ jobs:
           subjectPattern: ^(?![A-Z]).+$
           validateSingleCommit: true
           validateSingleCommitMatchesPrTitle: true
+          ignoreLabels: |
+            bot
+            ignore-semantic-pull-request
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
