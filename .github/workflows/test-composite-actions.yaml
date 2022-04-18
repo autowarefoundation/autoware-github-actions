@@ -137,3 +137,53 @@ jobs:
         with:
           rosdistro: ${{ matrix.rosdistro }}
           target-packages: empty_target_cmake empty_target_python
+
+  test-get-self-packages-and-get-modified-packages:
+    runs-on: ubuntu-latest
+    container: ${{ matrix.container }}
+    strategy:
+      fail-fast: false
+      matrix:
+        container:
+          - ros:galactic
+          - ghcr.io/autowarefoundation/autoware-universe:latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set git config
+        uses: autowarefoundation/autoware-github-actions/set-git-config@v1
+
+      - name: Workaround for https://github.com/actions/checkout/issues/766
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Modify packages
+        run: |
+          echo "" >> tests/dummy_packages/empty_target_cmake/package.xml
+          git add .
+          git commit -m "modify packages"
+
+      - name: Clear workaround
+        run: |
+          git config --global --unset safe.directory
+
+      - name: Run get-self-packages
+        id: get-self-packages
+        uses: ./get-self-packages
+
+      - name: Check result of get-self-packages
+        run: |
+          [[ "${{ steps.get-self-packages.outputs.self-packages }}" == "empty_target_cmake empty_target_python" ]]
+        shell: bash
+
+      - name: Run get-modified-packages
+        id: get-modified-packages
+        uses: ./get-modified-packages
+
+      - name: Check result of get-modified-packages
+        run: |
+          [[ "${{ steps.get-modified-packages.outputs.modified-packages }}" == "empty_target_cmake" ]]
+        shell: bash
