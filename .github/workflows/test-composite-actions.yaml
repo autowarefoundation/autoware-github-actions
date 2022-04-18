@@ -2,6 +2,9 @@ name: test-composite-actions
 
 on:
   pull_request:
+  schedule:
+    - cron: 0 0 * * *
+  workflow_dispatch:
 
 jobs:
   test-register-autonomoustuff-repository:
