@@ -9,6 +9,11 @@ outputs:
 runs:
   using: composite
   steps:
+    - name: Workaround for https://github.com/actions/checkout/issues/766
+      run: |
+        git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      shell: bash
+
     - name: Get modified packages
       id: get-modified-packages
       run: |
