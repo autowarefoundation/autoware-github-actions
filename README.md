@@ -10,6 +10,33 @@ This repository contains [Reusable Workflows](https://docs.github.com/ja/actions
 
 ## Supported reusable workflows
 
+### [check-secret](.github/workflows/check-secret.yaml)
+
+This workflow checks if a certain secret is set.
+
+#### Usage
+
+```yaml
+jobs:
+jobs:
+  check-secret:
+    uses: autowarefoundation/autoware-github-actions/.github/workflows/check-secret.yaml@v1
+    secrets:
+      secret: ${{ secrets.APP_ID }}
+
+  sync-files:
+    needs: check-secret
+    if: ${{ needs.check-secret.outputs.set == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate token
+        id: generate-token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.PRIVATE_KEY }}
+```
+
 ### [semantic-pull-request](.github/workflows/semantic-pull-request.yaml)
 
 This workflow checks if the PR title complies with [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).  
@@ -45,7 +72,7 @@ It is useful for preventing `pull_request_target` event and self-hosted runners 
 ```yaml
 jobs:
   prevent-no-label-execution:
-    uses: autowarefoundation/autoware-github-actions/prevent-no-label-execution.yaml@v1
+    uses: autowarefoundation/autoware-github-actions/.github/workflows/prevent-no-label-execution.yaml@v1
     with:
       label: ARM64
 
