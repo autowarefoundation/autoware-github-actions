@@ -37,6 +37,27 @@ jobs:
           private_key: ${{ secrets.PRIVATE_KEY }}
 ```
 
+### [prevent-no-label-execution](.github/workflows/prevent-no-label-execution.yaml)
+
+This workflow checks if the PR has a specific label.  
+It is useful for preventing `pull_request_target` event and self-hosted runners from being executed without the label.
+
+#### Usage
+
+```yaml
+jobs:
+  prevent-no-label-execution:
+    uses: autowarefoundation/autoware-github-actions/.github/workflows/prevent-no-label-execution.yaml@v1
+    with:
+      label: ARM64
+
+  build-and-test-arm:
+    needs: prevent-no-label-execution
+    if: ${{ needs.prevent-no-label-execution.outputs.run == 'true' }}
+    runs-on: [self-hosted, linux, ARM64]
+    # ...
+```
+
 ### [semantic-pull-request](.github/workflows/semantic-pull-request.yaml)
 
 This workflow checks if the PR title complies with [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).  
@@ -60,27 +81,6 @@ jobs:
     uses: autowarefoundation/autoware-github-actions/.github/workflows/semantic-pull-request.yaml@v1
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
-```
-
-### [prevent-no-label-execution](.github/workflows/prevent-no-label-execution.yaml)
-
-This workflow checks if the PR has a specific label.  
-It is useful for preventing `pull_request_target` event and self-hosted runners from being executed without the label.
-
-#### Usage
-
-```yaml
-jobs:
-  prevent-no-label-execution:
-    uses: autowarefoundation/autoware-github-actions/.github/workflows/prevent-no-label-execution.yaml@v1
-    with:
-      label: ARM64
-
-  build-and-test-arm:
-    needs: prevent-no-label-execution
-    if: ${{ needs.prevent-no-label-execution.outputs.run == 'true' }}
-    runs-on: [self-hosted, linux, ARM64]
-    # ...
 ```
 
 ## Supported composite actions
