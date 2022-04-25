@@ -1,6 +1,12 @@
 name: get-modified-packages
 description: ""
 
+inputs:
+  base-branch:
+    description: ""
+    required: false
+    default: ${{ github.base_ref }}
+
 outputs:
   modified-packages:
     description: ""
@@ -17,7 +23,7 @@ runs:
     - name: Get modified packages
       id: get-modified-packages
       run: |
-        ${GITHUB_ACTION_PATH}/get-modified-packages.sh origin/${{ github.base_ref }}
+        ${GITHUB_ACTION_PATH}/get-modified-packages.sh origin/${{ inputs.base-branch }}
       shell: bash
 
     - name: Show result

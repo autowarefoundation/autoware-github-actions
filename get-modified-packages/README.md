@@ -21,7 +21,9 @@ jobs:
 
 ## Inputs
 
-None.
+| Name        | Required | Description                                      |
+| ----------- | -------- | ------------------------------------------------ |
+| base-branch | false    | The base branch to search for modified packages. |
 
 ## Outputs
 
