@@ -183,7 +183,7 @@ jobs:
         id: get-modified-packages
         uses: ./get-modified-packages
         with:
-          base-branch: ${{ github.event.repository.default_branch }}
+          base-branch: main
 
       - name: Check result of get-modified-packages
         run: |
