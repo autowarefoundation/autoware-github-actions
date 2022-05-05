@@ -59,7 +59,7 @@ runs:
     - name: Set up yq
       uses: chrisdickinson/setup-yq@v1.0.1
       with:
-        yq-version: v4.17.2
+        yq-version: v4.25.1
 
     - name: Parse config
       run: |
@@ -75,10 +75,10 @@ runs:
         set -e
 
         touch /tmp/result.yaml
-        for repository in $(yq e ".[].repository" /tmp/sync-files.yaml); do
-          yq e ".[] | select(.repository == \"$repository\")" /tmp/sync-files.yaml > /tmp/repo-config.yaml
+        for repository in $(yq ".[].repository" /tmp/sync-files.yaml); do
+          yq ".[] | select(.repository == \"$repository\")" /tmp/sync-files.yaml > /tmp/repo-config.yaml
 
-          ref=$(yq e ".ref" /tmp/repo-config.yaml)
+          ref=$(yq ".ref" /tmp/repo-config.yaml)
 
           git_options=()
           if [ "$ref" != "" ]; then
@@ -88,19 +88,19 @@ runs:
           rm -rf /tmp/repository
           git clone "$repository" /tmp/repository ${git_options[@]}
 
-          for source_file in $(yq e ".files[].source" /tmp/repo-config.yaml); do
-            yq e ".files[] | select(.source == \"$source_file\")" /tmp/repo-config.yaml > /tmp/file-config.yaml
+          for source_file in $(yq ".files[].source" /tmp/repo-config.yaml); do
+            yq ".files[] | select(.source == \"$source_file\")" /tmp/repo-config.yaml > /tmp/file-config.yaml
 
-            source_path=$(yq e ".source" /tmp/file-config.yaml)
-            dest_path=$(yq e ".dest" /tmp/file-config.yaml)
-            replace=$(yq e ".replace" /tmp/file-config.yaml)
-            delete_orphaned=$(yq e ".delete-orphaned" /tmp/file-config.yaml)
+            source_path=$(yq ".source" /tmp/file-config.yaml)
+            dest_path=$(yq ".dest" /tmp/file-config.yaml)
+            replace=$(yq ".replace" /tmp/file-config.yaml)
+            delete_orphaned=$(yq ".delete-orphaned" /tmp/file-config.yaml)
 
             source_file="/tmp/repository/$source_path"
             if [ -f "$source_file" ]; then
               if [ -f "$dest_path" ] && [ "$replace" != "true" ]; then
                 echo "Skip copying to $dest_path."
-                yq -i e ".skipped += [\"$dest_path\"]" /tmp/result.yaml
+                yq -i ".skipped += [\"$dest_path\"]" /tmp/result.yaml
                 continue
               fi
 
@@ -108,23 +108,23 @@ runs:
                 echo "Newly copy $source_path to $dest_path."
                 mkdir -p $(dirname "$dest_path")
                 cp "$source_file" "$dest_path"
-                yq -i e ".added += [\"$dest_path\"]" /tmp/result.yaml
+                yq -i ".added += [\"$dest_path\"]" /tmp/result.yaml
               elif ! diff "$source_file" "$dest_path"; then
                 echo "Copy $source_path to $dest_path."
                 cp "$source_file" "$dest_path"
-                yq -i e ".changed += [\"$dest_path\"]" /tmp/result.yaml
+                yq -i ".changed += [\"$dest_path\"]" /tmp/result.yaml
               else
                 echo "$source_path and $dest_path are the same."
-                yq -i e ".not-changed += [\"$dest_path\"]" /tmp/result.yaml
+                yq -i ".not-changed += [\"$dest_path\"]" /tmp/result.yaml
               fi
             elif [ "$delete_orphaned" = "true" ]; then
               if [ -f "$dest_path" ]; then
                 echo "Delete $dest_path."
                 rm "$dest_path"
-                yq -i e ".deleted += [\"$dest_path\"]" /tmp/result.yaml
+                yq -i ".deleted += [\"$dest_path\"]" /tmp/result.yaml
               else
                 echo "$dest_path was not found."
-                yq -i e ".not-found += [\"$dest_path\"]" /tmp/result.yaml
+                yq -i ".not-found += [\"$dest_path\"]" /tmp/result.yaml
               fi
             fi
           done
@@ -143,7 +143,7 @@ runs:
           key="$2"
 
           body_lines+=("## $title" "")
-          for f in $(yq e ".$key[]" /tmp/result.yaml); do
+          for f in $(yq ".$key[]" /tmp/result.yaml); do
             body_lines+=("- $f")
           done
           body_lines+=("")
