@@ -67,7 +67,7 @@ The specifications are:
 In the `pre-command` and `post-command` options, the following special variables can be used:
 
 - `{source}`: The sync source file
-- `{target}`: The sync target file
+- `{dest}`: The sync dest file
 
 ## Inputs
 
