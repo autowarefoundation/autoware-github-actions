@@ -98,15 +98,15 @@ runs:
             dest_path=$(yq ".dest" /tmp/file-config.yaml)
             replace=$(yq ".replace" /tmp/file-config.yaml)
             delete_orphaned=$(yq ".delete-orphaned" /tmp/file-config.yaml)
-            pre_command=$(yq ".pre-command" /tmp/file-config.yaml)
-            post_command=$(yq ".post-command" /tmp/file-config.yaml)
+            pre_commands=$(yq ".pre-commands" /tmp/file-config.yaml)
+            post_commands=$(yq ".post-commands" /tmp/file-config.yaml)
 
             modified_source_path="/tmp/repository/$source_path"
 
-            pre_command=$(echo "$pre_command" | sed "s|{source}|$modified_source_path|g" | sed "s|{dest}|$dest_path|g")
-            post_command=$(echo "$post_command" | sed "s|{source}|$modified_source_path|g" | sed "s|{dest}|$dest_path|g")
-            [ -n "$pre_command" ] && echo "pre_command for $source_path: $pre_command"
-            [ -n "$post_command" ] && echo "post_command for $source_path: $post_command"
+            pre_commands=$(echo "$pre_commands" | sed "s|{source}|$modified_source_path|g" | sed "s|{dest}|$dest_path|g")
+            post_commands=$(echo "$post_commands" | sed "s|{source}|$modified_source_path|g" | sed "s|{dest}|$dest_path|g")
+            [ -n "$pre_commands" ] && echo "pre_commands for $source_path: $pre_commands"
+            [ -n "$post_commands" ] && echo "post_commands for $source_path: $post_commands"
 
             if [ -f "$modified_source_path" ]; then
               if [ -f "$dest_path" ] && [ "$replace" != "true" ]; then
@@ -119,17 +119,17 @@ runs:
                 echo "Newly copy $source_path to $dest_path."
                 mkdir -p $(dirname "$dest_path")
 
-                eval "$pre_command" || true
+                eval "$pre_commands" || true
                 cp "$modified_source_path" "$dest_path"
-                eval "$post_command"
+                eval "$post_commands"
 
                 yq -i ".added += [\"$dest_path\"]" /tmp/result.yaml
               elif ! diff "$modified_source_path" "$dest_path"; then
                 echo "Copy $source_path to $dest_path."
 
-                eval "$pre_command"
+                eval "$pre_commands"
                 cp "$modified_source_path" "$dest_path"
-                eval "$post_command"
+                eval "$post_commands"
 
                 yq -i ".changed += [\"$dest_path\"]" /tmp/result.yaml
               else
