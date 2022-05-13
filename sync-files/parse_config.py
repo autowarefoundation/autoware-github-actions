@@ -36,6 +36,12 @@ def main():
             if "delete-orphaned" not in item:
                 item["delete-orphaned"] = True
 
+            if "pre-command" not in item:
+                item["pre-command"] = ""
+
+            if "post-command" not in item:
+                item["post-command"] = ""
+
     print(yaml.dump(config))
 
 

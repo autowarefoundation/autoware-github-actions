@@ -61,6 +61,13 @@ The specifications are:
 | files/dest            | false    | The same as `files/source`.                  | The path where to place the synced file in the base repository.                          |
 | files/replace         | false    | `true`                                       | Whether to replace the synced file if it already exists.                                 |
 | files/delete-orphaned | false    | `true`                                       | Whether to delete the synced file if it does not exist in the target repository anymore. |
+| files/pre-command     | false    | `""`                                         | The command executed before copying the file.                                            |
+| files/post-command    | false    | `""`                                         | The command executed after copying the file.                                             |
+
+In the `pre-command` and `post-command` options, the following special variables can be used:
+
+- `{source}`: The sync source file
+- `{target}`: The sync target file
 
 ## Inputs
 
