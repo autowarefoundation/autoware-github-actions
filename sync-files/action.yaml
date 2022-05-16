@@ -61,6 +61,9 @@ runs:
       with:
         yq-version: v4.25.1
 
+    - name: Set up sd
+      uses: kenji-miyake/setup-sd@v1
+
     - name: Parse config
       run: |
         pip3 install pyyaml
@@ -95,9 +98,17 @@ runs:
             dest_path=$(yq ".dest" /tmp/file-config.yaml)
             replace=$(yq ".replace" /tmp/file-config.yaml)
             delete_orphaned=$(yq ".delete-orphaned" /tmp/file-config.yaml)
+            pre_commands=$(yq ".pre-commands" /tmp/file-config.yaml)
+            post_commands=$(yq ".post-commands" /tmp/file-config.yaml)
 
-            source_file="/tmp/repository/$source_path"
-            if [ -f "$source_file" ]; then
+            modified_source_path="/tmp/repository/$source_path"
+
+            pre_commands=$(echo "$pre_commands" | sed "s|{source}|$modified_source_path|g" | sed "s|{dest}|$dest_path|g")
+            post_commands=$(echo "$post_commands" | sed "s|{source}|$modified_source_path|g" | sed "s|{dest}|$dest_path|g")
+            [ -n "$pre_commands" ] && echo "pre_commands for $source_path: $pre_commands"
+            [ -n "$post_commands" ] && echo "post_commands for $source_path: $post_commands"
+
+            if [ -f "$modified_source_path" ]; then
               if [ -f "$dest_path" ] && [ "$replace" != "true" ]; then
                 echo "Skip copying to $dest_path."
                 yq -i ".skipped += [\"$dest_path\"]" /tmp/result.yaml
@@ -107,11 +118,19 @@ runs:
               if ! [ -f "$dest_path" ]; then
                 echo "Newly copy $source_path to $dest_path."
                 mkdir -p $(dirname "$dest_path")
-                cp "$source_file" "$dest_path"
+
+                eval "$pre_commands" || true
+                cp "$modified_source_path" "$dest_path"
+                eval "$post_commands"
+
                 yq -i ".added += [\"$dest_path\"]" /tmp/result.yaml
-              elif ! diff "$source_file" "$dest_path"; then
+              elif ! diff "$modified_source_path" "$dest_path"; then
                 echo "Copy $source_path to $dest_path."
-                cp "$source_file" "$dest_path"
+
+                eval "$pre_commands"
+                cp "$modified_source_path" "$dest_path"
+                eval "$post_commands"
+
                 yq -i ".changed += [\"$dest_path\"]" /tmp/result.yaml
               else
                 echo "$source_path and $dest_path are the same."
