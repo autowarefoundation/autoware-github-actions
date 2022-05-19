@@ -4,7 +4,6 @@ description: ""
 runs:
   using: composite
   steps:
-
     - name: Check out default_branch
       uses: actions/checkout@v3
       with:
