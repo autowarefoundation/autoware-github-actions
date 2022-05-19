@@ -4,7 +4,26 @@ description: ""
 runs:
   using: composite
   steps:
+
+    - name: Check out default_branch
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.repository.default_branch }}
+        fetch-depth: 0
+
+    - name: Get self packages
+      id: get-self-packages
+      uses: autowarefoundation/autoware-github-actions/get-self-packages@v1
+
+    - name: Check out head branch
+      if: ${{ github.head_ref != '' }}
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.head_ref }}
+        fetch-depth: 0
+
     - name: Remove exec_depend
       run: |
-        find . -name package.xml | xargs -I {} sed -i -rz "s|<exec_depend>\s*[a-zA-Z_0-9]+\s*</exec_depend>\n||g" {}
+        find . -name package.xml | xargs -I {} python3 ${GITHUB_ACTION_PATH}/remove_exec_depend.py --package_xml {} --exclude_packages ${{ steps.get-self-packages.outputs.self-packages }}
+        find . -name package.xml | xargs cat
       shell: bash
