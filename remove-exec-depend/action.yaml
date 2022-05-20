@@ -23,6 +23,6 @@ runs:
 
     - name: Remove exec_depend
       run: |
-        find . -name package.xml | xargs -I {} python3 ${GITHUB_ACTION_PATH}/remove_exec_depend.py --package_xml {} --exclude_packages ${{ steps.get-self-packages.outputs.self-packages }}
+        find . -name package.xml | xargs -I {} python3 ${GITHUB_ACTION_PATH}/remove_exec_depend.py --package-xml {} --exclude-packages ${{ steps.get-self-packages.outputs.self-packages }}
         find . -name package.xml | xargs cat
       shell: bash

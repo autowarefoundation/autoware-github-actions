@@ -5,8 +5,8 @@ from pathlib import Path
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--package_xml", required=True)
-    parser.add_argument("--exclude_packages", required=False, nargs="*", type=str)
+    parser.add_argument("--package-xml", required=True)
+    parser.add_argument("--exclude-packages", required=False, nargs="*", type=str)
     args = parser.parse_args()
 
     exclude_packages = args.exclude_packages if args.exclude_packages is not None else []
