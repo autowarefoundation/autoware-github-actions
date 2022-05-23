@@ -56,6 +56,7 @@ runs:
         git remote add sync-target "${{ inputs.sync-target-repository }}"
         git fetch -pPtf --all
         git reset --hard "sync-target/${{ inputs.sync-target-branch }}"
+        git remote rm sync-target
       shell: bash
 
     - name: Generate changelog
