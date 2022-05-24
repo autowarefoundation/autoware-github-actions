@@ -20,6 +20,6 @@ runs:
       shell: bash
 
     - name: Run spell check
-      uses: streetsidesoftware/cspell-action@v1
+      uses: streetsidesoftware/cspell-action@v2
       with:
         config: .cspell.json
