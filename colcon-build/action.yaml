@@ -72,4 +72,4 @@ runs:
         path: |
           ./build
           ./install
-        key: build-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
+        key: build-${{ inputs.rosdistro }}-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
