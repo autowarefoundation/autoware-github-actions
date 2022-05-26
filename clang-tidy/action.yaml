@@ -73,7 +73,7 @@ runs:
         path: |
           ./build
           ./install
-        key: build-${{ github.sha }}
+        key: build-${{ inputs.rosdistro }}-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
 
     - name: Build
       if: ${{ steps.restore-build-files.outputs.cache-hit != 'true' }}
