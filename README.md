@@ -1,11 +1,5 @@
 # autoware-github-actions
 
-This is one of the prototype repositories for Autoware Core/Universe that AWF agreed to create in the [TSC meeting on 2021/11/17](https://discourse.ros.org/t/technical-steering-committee-tsc-meeting-36-2021-11-17-minutes/23168).
-
-See [autowarefoundation/autoware](https://github.com/autowarefoundation/autoware) for more details.
-
----
-
 This repository contains [Reusable Workflows](https://docs.github.com/ja/actions/learn-github-actions/reusing-workflows) and [Composite Actions](https://docs.github.com/en/actions/creating-actions/about-custom-actions) for [Autoware](https://github.com/autowarefoundation/autoware).
 
 ## Supported reusable workflows
