@@ -19,7 +19,7 @@ runs:
         go-version: ^1.16
 
     - name: Run pre-commit
-      uses: pre-commit/action@v2.0.3
+      uses: pre-commit/action@v3.0.0
       with:
         extra_args: --all-files --config ${{ inputs.pre-commit-config }}
         token: ${{ inputs.token }}
