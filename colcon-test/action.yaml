@@ -41,8 +41,12 @@ runs:
     - name: Install packages for coverage commands
       run: |
         sudo apt-get -yqq update
-        sudo apt-get -yqq install lcov python3-pip
-        pip3 install colcon-lcov-result colcon-coveragepy-result
+        sudo apt-get -yqq install \
+          lcov \
+          python3-pip \
+          python3-colcon-coveragepy-result \
+          python3-colcon-lcov-result \
+          python3-pytest-cov
       shell: bash
 
     - name: Set git config
