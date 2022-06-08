@@ -46,7 +46,7 @@ runs:
           python3-pip \
           python3-colcon-coveragepy-result \
           python3-colcon-lcov-result \
-          python3-colcon-pytest-cov
+          python3-pytest-cov
       shell: bash
 
     - name: Set git config
