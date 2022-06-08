@@ -11,3 +11,5 @@ mike
 plantuml-markdown
 pymdown-extensions
 python-markdown-math
+mkdocstrings
+mkdocstrings[python]
