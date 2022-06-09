@@ -25,11 +25,11 @@ jobs:
 
 ## Inputs
 
-| Name                | Required | Description                           |
-| ------------------- | -------- | ------------------------------------- |
-| token               | true     | The token for push to `gh-pages`.     |
-| latest              | true     | Whether to create the `latest` alias. |
-| mkdocs-requirements-txt | false    | `requirements.txt` for MkDocs  |
+| Name                    | Required | Description                           |
+| ----------------------- | -------- | ------------------------------------- |
+| token                   | true     | The token for push to `gh-pages`.     |
+| latest                  | true     | Whether to create the `latest` alias. |
+| mkdocs-requirements-txt | false    | `requirements.txt` for MkDocs         |
 
 ## Outputs
 
