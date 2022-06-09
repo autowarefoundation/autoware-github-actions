@@ -29,7 +29,7 @@ jobs:
 | ------------------- | -------- | ------------------------------------- |
 | token               | true     | The token for push to `gh-pages`.     |
 | latest              | true     | Whether to create the `latest` alias. |
-| mkdocs-requirements | false    | Optional requirements.txt for MkDocs  |
+| mkdocs-requirements-txt | false    | `requirements.txt` for MkDocs  |
 
 ## Outputs
 
