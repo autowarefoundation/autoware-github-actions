@@ -8,7 +8,7 @@ inputs:
   latest:
     description: ""
     required: false
-  mkdocs-requirements:
+  mkdocs-requirements-txt:
     description: ""
     required: false
     default: ${GITHUB_ACTION_PATH}/mkdocs-requirements.txt
