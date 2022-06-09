@@ -55,6 +55,8 @@ runs:
 
     - name: Set up Python
       uses: actions/setup-python@v4
+      with:
+        python-version: 3.8
 
     - name: Set up yq
       uses: chrisdickinson/setup-yq@v1.0.1
