@@ -8,6 +8,10 @@ inputs:
   latest:
     description: ""
     required: false
+  mkdocs-requirements-txt:
+    description: ""
+    required: false
+    default: ${GITHUB_ACTION_PATH}/mkdocs-requirements.txt
 
 runs:
   using: composite
@@ -20,7 +24,7 @@ runs:
     - name: Install MkDocs
       run: |
         pip3 install -U wheel
-        pip3 install -r ${GITHUB_ACTION_PATH}/mkdocs-requirements.txt
+        pip3 install -r ${{ inputs.mkdocs-requirements-txt }}
       shell: bash
 
     # TODO: Remove after v1.2.0 or v2.0.0 is released
