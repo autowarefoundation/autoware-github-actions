@@ -46,6 +46,12 @@ done
 comment_lines=("Documentation URL: $base_url")
 comment_lines+=("Modified URLs:")
 for markdown_path in "${markdown_paths[@]}"; do
+    lang=""
+    if [[ $markdown_path =~ .*\..*\.md$ ]]; then
+        lang=$(echo "$markdown_path" | sed -r 's|.*\.(\w+)\.md|\1|')/
+        markdown_path=$(echo "$markdown_path" | sed -r 's|(.*)\.\w+(\.md)|\1\2|')
+    fi
+
     if [[ $markdown_path =~ README\.md$ ]]; then
         url_path=${markdown_path/README.md/}
     elif [[ $markdown_path =~ index\.md$ ]]; then
@@ -54,7 +60,7 @@ for markdown_path in "${markdown_paths[@]}"; do
         url_path=${markdown_path/.md/\/}
     fi
 
-    comment_lines+=("- $base_url$url_path")
+    comment_lines+=("- $base_url$url_path$lang")
 done
 
 # Workaround for multiline strings
