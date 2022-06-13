@@ -117,11 +117,12 @@ runs:
                 continue
               fi
 
+              eval "$pre_commands" || true
+
               if ! [ -f "$dest_path" ]; then
                 echo "Newly copy $source_path to $dest_path."
                 mkdir -p $(dirname "$dest_path")
 
-                eval "$pre_commands" || true
                 cp "$modified_source_path" "$dest_path"
                 eval "$post_commands"
 
@@ -129,7 +130,6 @@ runs:
               elif ! diff "$modified_source_path" "$dest_path"; then
                 echo "Copy $source_path to $dest_path."
 
-                eval "$pre_commands"
                 cp "$modified_source_path" "$dest_path"
                 eval "$post_commands"
 
