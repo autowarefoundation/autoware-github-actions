@@ -117,7 +117,7 @@ runs:
                 continue
               fi
 
-              eval "$pre_commands" || true
+              eval "$pre_commands"
 
               if ! [ -f "$dest_path" ]; then
                 echo "Newly copy $source_path to $dest_path."
