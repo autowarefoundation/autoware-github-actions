@@ -117,25 +117,25 @@ runs:
                 continue
               fi
 
+              eval "$pre_commands"
+
               if ! [ -f "$dest_path" ]; then
-                echo "Newly copy $source_path to $dest_path."
+                echo "Newly copy $modified_source_path to $dest_path."
                 mkdir -p $(dirname "$dest_path")
 
-                eval "$pre_commands" || true
                 cp "$modified_source_path" "$dest_path"
                 eval "$post_commands"
 
                 yq -i ".added += [\"$dest_path\"]" /tmp/result.yaml
               elif ! diff "$modified_source_path" "$dest_path"; then
-                echo "Copy $source_path to $dest_path."
+                echo "Copy $modified_source_path to $dest_path."
 
-                eval "$pre_commands"
                 cp "$modified_source_path" "$dest_path"
                 eval "$post_commands"
 
                 yq -i ".changed += [\"$dest_path\"]" /tmp/result.yaml
               else
-                echo "$source_path and $dest_path are the same."
+                echo "$modified_source_path and $dest_path are the same."
                 yq -i ".not-changed += [\"$dest_path\"]" /tmp/result.yaml
               fi
             elif [ "$delete_orphaned" = "true" ]; then
