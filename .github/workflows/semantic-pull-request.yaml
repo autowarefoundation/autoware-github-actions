@@ -30,7 +30,6 @@ jobs:
             revert
           subjectPattern: ^(?![A-Z]).+$
           validateSingleCommit: true
-          validateSingleCommitMatchesPrTitle: true
           ignoreLabels: |
             bot
             ignore-semantic-pull-request
