@@ -20,11 +20,11 @@ inputs:
   pr-title:
     description: ""
     required: false
-    default: "chore: sync files"
+    default: "chore: update CODEOWNERS"
   pr-commit-message:
     description: ""
     required: false
-    default: "chore: sync files"
+    default: "chore: update CODEOWNERS"
   pr-labels:
     description: ""
     required: false
