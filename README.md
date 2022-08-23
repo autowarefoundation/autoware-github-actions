@@ -96,3 +96,4 @@ See the `README.md` in each directory.
 - [spell-check](./spell-check/README.md)
 - [sync-branches](./sync-branches/README.md)
 - [sync-files](./sync-files/README.md)
+- [update-codeowners-from-packages](./update-codeowners-from-packages/README.md)

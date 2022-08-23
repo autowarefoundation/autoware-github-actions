@@ -152,3 +152,12 @@ updates:
     labels:
       - bot
       - github-actions
+
+  - package-ecosystem: github-actions
+    directory: /update-codeowners-from-packages
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 1
+    labels:
+      - bot
+      - github-actions
