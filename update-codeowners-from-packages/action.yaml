@@ -1,0 +1,106 @@
+name: update-codeowners-from-packages
+description: ""
+
+inputs:
+  token:
+    description: ""
+    required: true
+  codeowners-manual:
+    description: ""
+    required: false
+    default: .github/CODEOWNERS-manual
+  pr-base:
+    description: ""
+    required: false
+    default: ${{ github.event.repository.default_branch }}
+  pr-branch:
+    description: ""
+    required: false
+    default: update-codeowners-from-packages
+  pr-title:
+    description: ""
+    required: false
+    default: "chore: update CODEOWNERS"
+  pr-commit-message:
+    description: ""
+    required: false
+    default: "chore: update CODEOWNERS"
+  pr-labels:
+    description: ""
+    required: false
+    default: ""
+  pr-assignees:
+    description: ""
+    required: false
+    default: ""
+  pr-reviewers:
+    description: ""
+    required: false
+    default: ""
+  auto-merge-method:
+    description: ""
+    required: false
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - name: Check out repository
+      uses: actions/checkout@v3
+
+    - name: Set git config
+      uses: autowarefoundation/autoware-github-actions/set-git-config@v1
+      with:
+        token: ${{ inputs.token }}
+
+    - name: Update CODEOWNERS
+      run: |
+        # Initialize CODEOWNERS
+        echo "### Copied from ${{ inputs.codeowners-manual }} ###" >.github/CODEOWNERS
+        touch ${{ inputs.codeowners-manual }}
+        cat ${{ inputs.codeowners-manual }} >> .github/CODEOWNERS
+        echo "" >>.github/CODEOWNERS
+
+        # List package maintainers
+        echo "### Automatically generated from package.xml ###" >>.github/CODEOWNERS
+        for package_xml in $(find . -name package.xml | sed "s|^./||"); do
+            package_dir=$(dirname "$package_xml")
+            line="$package_dir/*"
+
+            for maintainer in $(grep '<maintainer' "$package_xml" | sed -E 's|.*email="(.*)".*|\1|'); do
+                line+=" $maintainer"
+            done
+
+            echo "$line" >>.github/CODEOWNERS
+        done
+      shell: bash
+
+    - name: Create PR
+      id: create-pr
+      uses: peter-evans/create-pull-request@v4
+      with:
+        token: ${{ inputs.token }}
+        base: ${{ inputs.pr-base }}
+        branch: ${{ inputs.pr-branch }}
+        title: ${{ inputs.pr-title }}
+        commit-message: ${{ inputs.pr-commit-message }}
+        body: ""
+        labels: ${{ inputs.pr-labels }}
+        assignees: ${{ inputs.pr-assignees }}
+        reviewers: ${{ inputs.pr-reviewers }}
+        signoff: true
+        delete-branch: true
+
+    - name: Check outputs
+      run: |
+        echo "Pull Request Number - ${{ steps.create-pr.outputs.pull-request-number }}"
+        echo "Pull Request URL - ${{ steps.create-pr.outputs.pull-request-url }}"
+      shell: bash
+
+    - name: Enable auto-merge
+      if: ${{ inputs.auto-merge-method != '' && steps.create-pr.outputs.pull-request-operation == 'created' }}
+      uses: peter-evans/enable-pull-request-automerge@v2
+      with:
+        token: ${{ inputs.token }}
+        pull-request-number: ${{ steps.create-pr.outputs.pull-request-number }}
+        merge-method: ${{ inputs.auto-merge-method }}
