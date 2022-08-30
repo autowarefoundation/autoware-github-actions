@@ -36,7 +36,7 @@ jobs:
 | Name                  | Required | Description                                         |
 | --------------------- | -------- | --------------------------------------------------- |
 | rosdistro             | true     | The ROS distro.                                     |
-| target-packages       | true     | The target packages to analyse by Clang-Tidy.       |
+| target-packages       | true     | The target packages to analyze by Clang-Tidy.       |
 | clang-tidy-config-url | true     | The URL to `.clang-tidy`.                           |
 | build-depends-repos   | false    | The `.repos` file that includes build dependencies. |
 | token                 | false    | The token for build dependencies and `.clang-tidy`. |
