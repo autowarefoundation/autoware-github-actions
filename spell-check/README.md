@@ -19,14 +19,16 @@ jobs:
         uses: autowarefoundation/autoware-github-actions/spell-check@v1
         with:
           cspell-json-url: https://raw.githubusercontent.com/tier4/autoware-spell-check-dict/main/.cspell.json
+          local-cspell-json: .cspell.json
 ```
 
 ## Inputs
 
-| Name            | Required | Description                   |
-| --------------- | -------- | ----------------------------- |
-| cspell-json-url | true     | The URL to `.cspell.json`.    |
-| token           | false    | The token for `.cspell.json`. |
+| Name              | Required | Description                              |
+| ----------------- | -------- | ---------------------------------------- |
+| cspell-json-url   | true     | The URL to the remote `.cspell.json`.    |
+| local-cspell-json | false    | The path to the local `.cspell.json`.    |
+| token             | false    | The token for the remote `.cspell.json`. |
 
 ## Outputs
 

@@ -5,6 +5,10 @@ inputs:
   cspell-json-url:
     description: ""
     required: true
+  local-cspell-json:
+    description: ""
+    required: false
+    default: .cspell.json
   token:
     description: ""
     required: false
@@ -13,10 +17,25 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Retrieve spell check dictionary
+    - name: Retrieve remote dictionary
       run: |
-        curl -fsSL -o .cspell.json ${{ inputs.cspell-json-url }} \
+        curl -fsSL -o remote.cspell.json ${{ inputs.cspell-json-url }} \
           -H "Authorization: token ${{ inputs.token }}"
+      shell: bash
+
+    - name: Prepare local dictionary
+      run: |
+        if [ -f "${{ inputs.local-cspell-json }}" ]; then
+          cp ${{ inputs.local-cspell-json }} local.cspell.json || true
+        else
+          echo "No local dictionary found."
+          echo "{}" > local.cspell.json
+        fi
+      shell: bash
+
+    - name: Create combined dictionary
+      run: |
+        echo '{ "import": ["./remote.cspell.json", "./local.cspell.json"] }' > .cspell.json
       shell: bash
 
     - name: Run spell check
