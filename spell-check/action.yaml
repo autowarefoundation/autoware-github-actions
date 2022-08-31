@@ -25,8 +25,12 @@ runs:
 
     - name: Prepare local dictionary
       run: |
-        echo "{}" > local.cspell.json
-        cp ${{ inputs.local-cspell-json }} local.cspell.json || true
+        if [ -f "${{ inputs.local-cspell-json }}" ]; then
+          cp ${{ inputs.local-cspell-json }} local.cspell.json || true
+        else
+          echo "No local dictionary found."
+          echo "{}" > local.cspell.json
+        fi
       shell: bash
 
     - name: Create combined dictionary
