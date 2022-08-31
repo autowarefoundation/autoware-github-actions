@@ -98,7 +98,7 @@ runs:
       id: get-target-files
       run: |
         if [ "${{ inputs.target-files }}" != "" ]; then
-          target_files=${{ inputs.target-files }}
+          target_files="${{ inputs.target-files }}"
         else
           package_path=$(colcon list --paths-only --packages-select ${{ inputs.target-packages }})
           target_files=$(find $package_path -name "*.cpp" -or -name "*.hpp")
