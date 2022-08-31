@@ -5,10 +5,10 @@ inputs:
   rosdistro:
     description: ""
     required: true
-  target-packages:
+  clang-tidy-config-url:
     description: ""
     required: true
-  clang-tidy-config-url:
+  target-packages:
     description: ""
     required: true
   build-depends-repos:
