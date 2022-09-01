@@ -5,12 +5,15 @@ inputs:
   rosdistro:
     description: ""
     required: true
-  target-packages:
-    description: ""
-    required: true
   clang-tidy-config-url:
     description: ""
     required: true
+  target-packages:
+    description: ""
+    required: true
+  target-files:
+    description: ""
+    required: false
   build-depends-repos:
     description: ""
     required: false
@@ -22,9 +25,10 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Show target files
+    - name: Show targets
       run: |
         echo "target packages: ${{ inputs.target-packages }}"
+        echo "target files: ${{ inputs.target-files }}"
       shell: bash
 
     - name: Install curl
@@ -93,8 +97,13 @@ runs:
     - name: Get target files
       id: get-target-files
       run: |
-        package_path=$(colcon list --paths-only --packages-select ${{ inputs.target-packages }})
-        target_files=$(find $package_path -name "*.cpp" -or -name "*.hpp")
+        if [ "${{ inputs.target-files }}" != "" ]; then
+          target_files="${{ inputs.target-files }}"
+        else
+          package_path=$(colcon list --paths-only --packages-select ${{ inputs.target-packages }})
+          target_files=$(find $package_path -name "*.cpp" -or -name "*.hpp")
+        fi
+
         echo ::set-output name=target-files::$target_files
       shell: bash
 
