@@ -29,7 +29,6 @@ jobs:
             chore
             revert
           subjectPattern: ^(?![A-Z]).+$
-          validateSingleCommit: true
           ignoreLabels: |
             bot
             ignore-semantic-pull-request
