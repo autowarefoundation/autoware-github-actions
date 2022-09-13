@@ -9,6 +9,11 @@ inputs:
     description: ""
     required: false
     default: .cspell.json
+  dict-packages:
+    description: ""
+    required: false
+    default: |
+      https://github.com/tier4/cspell-dicts
   token:
     description: ""
     required: false
@@ -17,6 +22,14 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Install dict packages
+      run: |
+        for package in $(IFS=" " echo "${{ inputs.dict-packages }}"); do
+          echo "Install $package."
+          npm install $package
+        done
+      shell: bash
+
     - name: Retrieve remote dictionary
       run: |
         curl -fsSL -o remote.cspell.json ${{ inputs.cspell-json-url }} \
