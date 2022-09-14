@@ -65,7 +65,7 @@ runs:
         echo "### Automatically generated from package.xml ###" >>.github/CODEOWNERS
         for package_xml in $(find . -name package.xml | sed "s|^./||"); do
             package_dir=$(dirname "$package_xml")
-            line="$package_dir/*"
+            line="$package_dir/**"
 
             for maintainer in $(grep '<maintainer' "$package_xml" | sed -E 's|.*email="(.*)".*|\1|'); do
                 line+=" $maintainer"
