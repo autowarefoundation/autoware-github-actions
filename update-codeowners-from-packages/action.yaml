@@ -63,7 +63,7 @@ runs:
 
         # List package maintainers
         echo "### Automatically generated from package.xml ###" >>.github/CODEOWNERS
-        for package_xml in $(find . -name package.xml | sed "s|^./||"); do
+        for package_xml in $(find . -name package.xml | sed "s|^./||" | sort); do
             package_dir=$(dirname "$package_xml")
             line="$package_dir/**"
 
