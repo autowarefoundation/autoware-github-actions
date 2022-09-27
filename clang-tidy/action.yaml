@@ -85,7 +85,7 @@ runs:
         . /opt/ros/${{ inputs.rosdistro }}/setup.sh
         colcon build --event-handlers console_cohesion+ \
           --packages-up-to ${{ inputs.target-packages }} \
-          --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+          --cmake-args -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
       shell: bash
 
     - name: Retrieve .clang-tidy
