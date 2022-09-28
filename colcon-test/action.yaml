@@ -77,7 +77,7 @@ runs:
         path: |
           ./build
           ./install
-        key: build-${{ inputs.rosdistro }}-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
+        key: build-${{ inputs.rosdistro }}-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cmake-build-type }}-${{ github.sha }}
 
     - name: Test
       run: |
