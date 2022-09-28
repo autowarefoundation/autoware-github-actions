@@ -40,6 +40,7 @@ jobs:
 | target-packages       | true     | The target packages to analyze by Clang-Tidy.       |
 | target-files          | false    | The target files.                                   |
 | build-depends-repos   | false    | The `.repos` file that includes build dependencies. |
+| cmake-build-type      | false    | The value for `CMAKE_BUILD_TYPE`.                   |
 | token                 | false    | The token for build dependencies and `.clang-tidy`. |
 
 ## Outputs

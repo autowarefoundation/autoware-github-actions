@@ -11,6 +11,10 @@ inputs:
   build-depends-repos:
     description: ""
     required: false
+  cmake-build-type:
+    description: ""
+    required: false
+    default: Release
   token:
     description: ""
     required: false
@@ -62,7 +66,7 @@ runs:
         . /opt/ros/${{ inputs.rosdistro }}/setup.sh
         colcon build --event-handlers console_cohesion+ \
           --packages-above-and-dependencies ${{ inputs.target-packages }} \
-          --cmake-args -DCMAKE_BUILD_TYPE=Release \
+          --cmake-args -DCMAKE_BUILD_TYPE=${{ inputs.cmake-build-type }} \
           --mixin coverage-gcc coverage-pytest compile-commands
       shell: bash
 

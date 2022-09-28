@@ -35,6 +35,7 @@ jobs:
 | rosdistro           | true     | ROS distro.                                         |
 | target-packages     | true     | The target packages to build.                       |
 | build-depends-repos | false    | The `.repos` file that includes build dependencies. |
+| cmake-build-type    | false    | The value for `CMAKE_BUILD_TYPE`.                   |
 | token               | false    | The token for build dependencies.                   |
 
 ## Outputs
