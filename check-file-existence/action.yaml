@@ -44,7 +44,7 @@ runs:
           else
             echo "::set-output name=exists::false"
           fi
-        elif [[ ${{ inputs.condition }} = "and" ]]; then
+        elif [[ "${{ inputs.condition }}" = "and" ]]; then
           num_input_files=${#input_files[@]}
           if [[ "$num_found_files" -eq "$num_input_files" ]]; then
             echo "::set-output name=exists::true"
