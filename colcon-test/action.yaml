@@ -108,13 +108,13 @@ runs:
           --packages-above ${{ inputs.target-packages }} || true
       shell: bash
 
-    - name: Check lcov coverage file exists
+    - name: Check if the lcov coverage file exists
       id: lcov-coverage-file-existence
       uses: autowarefoundation/autoware-github-actions/check-file-existence@v1
       with:
         files: lcov/total_coverage.info
 
-    - name: Check coveragepy coverage file exists
+    - name: Check if the coveragepy coverage file exists
       id: coveragepy-coverage-file-existence
       uses: autowarefoundation/autoware-github-actions/check-file-existence@v1
       with:
