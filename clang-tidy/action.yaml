@@ -116,18 +116,26 @@ runs:
       run: |
         mkdir /tmp/clang-tidy-result
         clang-tidy -p build/ -export-fixes /tmp/clang-tidy-result/fixes.yaml ${{ steps.get-target-files.outputs.target-files }} || true
-      shell: bash
-
-    - name: Save PR metadata
-      if: ${{ steps.get-target-files.outputs.target-files != '' }}
-      run: |
         echo "${{ github.event.number }}" > /tmp/clang-tidy-result/pr-id.txt
         echo "${{ github.event.pull_request.head.repo.full_name }}" > /tmp/clang-tidy-result/pr-head-repo.txt
         echo "${{ github.event.pull_request.head.ref }}" > /tmp/clang-tidy-result/pr-head-ref.txt
       shell: bash
 
-    - uses: actions/upload-artifact@v3
-      if: ${{ steps.get-target-files.outputs.target-files != '' }}
+    - name: Check if the fixes.yaml file exists
+      id: check-fixes-yaml-existence
+      uses: autowarefoundation/autoware-github-actions/check-file-existence@v1
+      with:
+        files: /tmp/clang-tidy-result/fixes.yaml
+
+    - name: Upload artifacts
+      if: ${{ steps.check-fixes-yaml-existence.outputs.exists == 'true' }}
+      uses: actions/upload-artifact@v3
       with:
         name: clang-tidy-result
         path: /tmp/clang-tidy-result/
+
+    - name: Mark the workflow as failed if the fixes.yaml file exists
+      if: ${{ steps.check-fixes-yaml-existence.outputs.exists == 'true' }}
+      run: |
+        exit 1
+      shell: bash
