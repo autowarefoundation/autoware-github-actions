@@ -7,7 +7,8 @@ inputs:
     required: true
   condition:
     description: ""
-    required: true
+    required: false
+    default: and
 outputs:
   exists:
     description: ""

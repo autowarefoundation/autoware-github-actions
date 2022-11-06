@@ -30,7 +30,7 @@ jobs:
 | Name      | Required | Description                                           |
 | --------- | -------- | ----------------------------------------------------- |
 | files     | true     | The file names to check the existence.                |
-| condition | true     | The `and` or `or` condition for file existence check. |
+| condition | false    | The `and` or `or` condition for file existence check. |
 
 ## Outputs
 
