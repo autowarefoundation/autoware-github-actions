@@ -2,7 +2,7 @@
 
 ## Description
 
-This action checks if the PR has miss spellings.
+This action checks if the PR has miss spellings.  
 As it is difficult to perfectly detect all miss spellings, it is recommended not to set this as [Required](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/defining-the-mergeability-of-pull-requests/troubleshooting-required-status-checks).
 
 ## Usage
