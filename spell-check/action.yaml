@@ -19,7 +19,7 @@ inputs:
     required: false
     default: ${{ github.token }}
   incremental-files-only:
-    description: "set false if you want to check all files"
+    description: ""
     required: false
     default: "true"
 
