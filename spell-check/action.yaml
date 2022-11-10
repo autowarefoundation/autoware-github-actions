@@ -21,7 +21,7 @@ inputs:
   incremental-files-only:
     description: "set false if you want to check all files"
     required: false
-    default: true
+    default: "true"
 
 runs:
   using: composite
