@@ -22,16 +22,18 @@ jobs:
           local-cspell-json: .cspell.json
           dict-packages: |
             https://github.com/tier4/cspell-dicts
+          incremental-files-only: false
 ```
 
 ## Inputs
 
-| Name              | Required | Description                                           |
-| ----------------- | -------- | ----------------------------------------------------- |
-| cspell-json-url   | true     | The URL to the remote `.cspell.json`.                 |
-| local-cspell-json | false    | The path to the local `.cspell.json`.                 |
-| dict-packages     | false    | The dict packages names referenced in `.cspell.json`. |
-| token             | false    | The token for the remote `.cspell.json`.              |
+| Name                   | Required | Description                                                      |
+| ---------------------- | -------- | ---------------------------------------------------------------- |
+| cspell-json-url        | true     | The URL to the remote `.cspell.json`.                            |
+| local-cspell-json      | false    | The path to the local `.cspell.json`.                            |
+| dict-packages          | false    | The dict packages names referenced in `.cspell.json`.            |
+| token                  | false    | The token for the remote `.cspell.json`.                         |
+| incremental-files-only | false    | Limit the files checked to the ones in the pull request or push. |
 
 ## Outputs
 

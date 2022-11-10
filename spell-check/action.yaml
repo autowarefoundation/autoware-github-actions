@@ -18,6 +18,10 @@ inputs:
     description: ""
     required: false
     default: ${{ github.token }}
+  incremental-files-only:
+    description: ""
+    required: false
+    default: "true"
 
 runs:
   using: composite
@@ -55,3 +59,4 @@ runs:
       uses: streetsidesoftware/cspell-action@v2
       with:
         config: .cspell.json
+        incremental_files_only: ${{ inputs.incremental-files-only }}
