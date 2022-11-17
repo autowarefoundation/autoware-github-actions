@@ -36,6 +36,7 @@ If you want to combine the automatically generated `CODEOWNERS` with the manuall
 | ----------------- | -------- | ----------------------------------------------------- |
 | token             | true     | The token for pull requests.                          |
 | codeowners-manual | false    | The path to the manually maintained `CODEOWNERS`.     |
+| global-codeowners | false    | The GitHub IDs of global codeowners.                  |
 | pr-base           | false    | Refer to `peter-evans/create-pull-request`.           |
 | pr-branch         | false    | The same as above.                                    |
 | pr-title          | false    | The same as above.                                    |

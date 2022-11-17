@@ -9,6 +9,9 @@ inputs:
     description: ""
     required: false
     default: .github/CODEOWNERS-manual
+  global-codeowners:
+    description: ""
+    required: false
   pr-base:
     description: ""
     required: false
@@ -69,6 +72,10 @@ runs:
 
             for maintainer in $(grep '<maintainer' "$package_xml" | sed -E 's|.*email="(.*)".*|\1|' | sort -u); do
                 line+=" $maintainer"
+
+                if [ -n "${{ inputs.global-codeowners }}" ]; then
+                  line+=" ${{ inputs.global-codeowners }}"
+                fi
             done
 
             echo "$line" >>.github/CODEOWNERS
