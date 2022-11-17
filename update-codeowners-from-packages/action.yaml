@@ -72,11 +72,11 @@ runs:
 
             for maintainer in $(grep '<maintainer' "$package_xml" | sed -E 's|.*email="(.*)".*|\1|' | sort -u); do
                 line+=" $maintainer"
-
-                if [ -n "${{ inputs.global-codeowners }}" ]; then
-                  line+=" ${{ inputs.global-codeowners }}"
-                fi
             done
+
+            if [ -n "${{ inputs.global-codeowners }}" ]; then
+              line+=" ${{ inputs.global-codeowners }}"
+            fi
 
             echo "$line" >>.github/CODEOWNERS
         done
