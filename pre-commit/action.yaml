@@ -29,8 +29,7 @@ runs:
       shell: bash
 
     - name: Push pre-commit fixes
-      # Prevent a workflow from stopping when pre-commit fails
-      if: always()
+      if: always() # Push changes even when pre-commit fails
       run: |
         if ! git diff --quiet; then
           git add -u
