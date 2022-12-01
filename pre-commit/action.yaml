@@ -18,22 +18,14 @@ runs:
       with:
         go-version: ^1.16
 
-    - name: Install pre-commit
-      run: |
-        python -m pip install pre-commit
-      shell: bash
-
     - name: Run pre-commit
-      run: |
-        pre-commit run -a --config ${{ inputs.pre-commit-config }}
-      shell: bash
+      uses: pre-commit/action@v3.0.0
+      with:
+        extra_args: --all-files --config ${{ inputs.pre-commit-config }}
+        token: ${{ steps.generate-token.outputs.token }}
 
     - name: Push pre-commit fixes
       if: always() # Push changes even when pre-commit fails
-      run: |
-        if ! git diff --quiet; then
-          git add -u
-          git commit -m "pre-commit fixes"
-          git push
-        fi
-      shell: bash
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: "style(pre-commit): autofix"
