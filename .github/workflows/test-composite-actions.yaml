@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
       matrix:
         rosdistro:
-          - galactic
+          - humble
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -40,7 +40,7 @@ jobs:
       fail-fast: false
       matrix:
         rosdistro:
-          - galactic
+          - humble
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -121,7 +121,7 @@ jobs:
       fail-fast: false
       matrix:
         rosdistro:
-          - galactic
+          - humble
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -145,8 +145,8 @@ jobs:
       fail-fast: false
       matrix:
         container:
-          - ros:galactic
-          - ghcr.io/autowarefoundation/autoware-universe:latest
+          - ros:humble
+          - ghcr.io/autowarefoundation/autoware-universe:humble-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
