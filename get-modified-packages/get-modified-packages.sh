@@ -6,7 +6,7 @@ set -e
 
 # Parse arguments
 args=()
-while [ "${1:-}" != "" ]; do
+while [ "${1-}" != "" ]; do
     case "$1" in
     *)
         args+=("$1")
