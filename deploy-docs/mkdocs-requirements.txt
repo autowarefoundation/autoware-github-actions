@@ -8,6 +8,7 @@ mkdocs-macros-plugin
 mkdocs-material
 mkdocs-same-dir
 mkdocs-static-i18n
+mkdocs-video
 mike
 plantuml-markdown
 pymdown-extensions
