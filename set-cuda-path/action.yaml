@@ -4,7 +4,7 @@ description: ""
 runs:
   using: composite
   steps:
-    - name: Set cuda path
+    - name: Set CUDA path
       run: |
         CUDA_PATH=/usr/local/cuda
         echo "CUDA_PATH=${CUDA_PATH}" >> $GITHUB_ENV
