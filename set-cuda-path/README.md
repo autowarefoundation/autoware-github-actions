@@ -11,8 +11,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
 
       - name: Set CUDA path
         id: set-cuda-path
