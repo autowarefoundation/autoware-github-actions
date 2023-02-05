@@ -15,6 +15,7 @@ jobs:
       - name: Set CUDA path
         id: set-cuda-path
         uses: autowarefoundation/autoware-github-actions/set-cuda-path@v1
+```
 
 ## Inputs
 
@@ -23,4 +24,3 @@ None.
 ## Outputs
 
 None.
-```
