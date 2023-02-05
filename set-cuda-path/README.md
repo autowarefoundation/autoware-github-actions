@@ -1,6 +1,6 @@
 # set-cuda-path
 
-This action set the cuda path into GITHUB_ENV amd GITHUB_PATH.
+This action set the CUDA path into GITHUB_ENV amd GITHUB_PATH.
 
 ## Usage
 
@@ -14,10 +14,9 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set cuda path
+      - name: Set CUDA path
         id: set-cuda-path
         uses: autowarefoundation/autoware-github-actions/set-cuda-path@v1
-```
 
 ## Inputs
 
