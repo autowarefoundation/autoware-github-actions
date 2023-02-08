@@ -13,6 +13,7 @@ inputs:
     description: ""
     required: false
     default: |
+      https://github.com/tier4/autoware-spell-check-dict
       https://github.com/tier4/cspell-dicts
   token:
     description: ""
