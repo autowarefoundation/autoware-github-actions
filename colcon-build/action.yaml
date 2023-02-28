@@ -22,7 +22,6 @@ inputs:
   include-eol-distros:
     description: ""
     required: false
-    default: "false"
 
 runs:
   using: composite
