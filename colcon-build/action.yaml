@@ -19,10 +19,10 @@ inputs:
     description: ""
     required: false
     default: ${{ github.token }}
-  rosdep-update-arguments:
+  include-eol-distros:
     description: ""
     required: false
-    default: ""
+    default: false
 
 runs:
   using: composite
