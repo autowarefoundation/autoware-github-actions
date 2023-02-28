@@ -22,7 +22,6 @@ inputs:
   include-eol-distros:
     description: ""
     required: false
-    default: "false"
 outputs:
   coverage-report-files:
     description: ""
