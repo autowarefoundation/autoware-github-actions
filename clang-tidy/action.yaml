@@ -25,6 +25,9 @@ inputs:
     description: ""
     required: false
     default: ${{ github.token }}
+  include-eol-distros:
+    description: ""
+    required: false
 
 runs:
   using: composite
@@ -70,7 +73,11 @@ runs:
       run: |
         package_paths=$(colcon list -p --packages-above-and-dependencies ${{ inputs.target-packages }} --base-paths . dependency_ws)
         sudo apt-get -yqq update
-        rosdep update
+        if [ "${{ inputs.include-eol-distros }}" = "true" ]; then
+            rosdep update --include-eol-distros
+        else
+            rosdep update
+        fi
         DEBIAN_FRONTEND=noninteractive rosdep install -yqq --from-paths ${package_paths} --ignore-src --rosdistro ${{ inputs.rosdistro }}
       shell: bash
 
