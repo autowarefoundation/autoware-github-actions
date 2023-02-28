@@ -19,6 +19,10 @@ inputs:
     description: ""
     required: false
     default: ${{ github.token }}
+  rosdep-update-arguments:
+    description: ""
+    required: false
+    default: ""
 
 runs:
   using: composite
@@ -51,7 +55,7 @@ runs:
       run: |
         package_paths=$(colcon list -p --packages-above-and-dependencies ${{ inputs.target-packages }} --base-paths . dependency_ws)
         sudo apt-get -yqq update
-        rosdep update
+        rosdep update ${{ inputs.rosdep-update-arguments }}
         DEBIAN_FRONTEND=noninteractive rosdep install -yqq --from-paths ${package_paths} --ignore-src --rosdistro ${{ inputs.rosdistro }}
       shell: bash
 
