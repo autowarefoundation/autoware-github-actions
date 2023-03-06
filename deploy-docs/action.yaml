@@ -61,13 +61,13 @@ runs:
     - name: Deploy docs
       run: |
         git fetch
-        mike deploy --push --rebase ${{ steps.set-docs-version-name.outputs.version-name }}
+        mike deploy --push ${{ steps.set-docs-version-name.outputs.version-name }}
       shell: bash
 
     - name: Create alias 'latest'
       if: ${{ inputs.latest == 'true' }}
       run: |
-        mike deploy --push --rebase latest
+        mike deploy --push latest
       shell: bash
 
     - name: Create comment body

@@ -68,6 +68,6 @@ runs:
           git fetch
 
           echo "Delete docs version: $closed_docs_version."
-          mike delete --push --rebase "$closed_docs_version"
+          mike delete --push "$closed_docs_version"
         done
       shell: bash
