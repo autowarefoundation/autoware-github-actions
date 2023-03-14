@@ -14,6 +14,11 @@ inputs:
     description: ""
     required: false
     default: "true"
+  save-json-output:
+    description: ""
+    required: false
+    default: false
+
 outputs:
   changelog:
     description: ""
@@ -23,16 +28,18 @@ runs:
   using: composite
   steps:
     - name: Set up git-cliff
-      uses: kenji-miyake/setup-git-cliff@v1
+      uses: kenji-miyake/setup-git-cliff@v1.1.0
+      with:
+        version: 1.1.2
 
     - name: Generate changelog
       id: generate-changelog
       shell: bash
+      if: ${{ inputs.save-json-output == 'false' }}
       run: |
         # Generate changelog
         git cliff --output CHANGELOG.md --config ${{ inputs.git-cliff-config }} \
           -vv --strip header ${{ inputs.git-cliff-args }}
-
         r=$(cat CHANGELOG.md)
         rm CHANGELOG.md
 
@@ -41,16 +48,28 @@ runs:
           r="$(printf "$r" | tail -n +3)"
         fi
 
-        # Workaround for https://github.community/t/set-output-truncates-multiline-strings/16852
-        r="${r//'%'/'%25'}"
-        r="${r//$'\n'/'%0A'}"
-        r="${r//$'\r'/'%0D'}"
-
-        echo "::set-output name=changelog::$r"
+        delimiter="$(openssl rand -hex 8)"
+        echo "changelog<<${delimiter}" >> "${GITHUB_OUTPUT}"
+        echo $r >> "${GITHUB_OUTPUT}"
+        echo "${delimiter}" >> "${GITHUB_OUTPUT}"
 
     - name: Show result
+      shell: bash
+      if: ${{ inputs.save-json-output == 'false' }}
       run: |
         echo "$CHANGELOG"
       env:
         CHANGELOG: ${{ steps.generate-changelog.outputs.changelog }}
+
+    - name: Generate changelog JSON
+      id: generate-changelog-json
       shell: bash
+      if: ${{ inputs.save-json-output == 'true' }}
+      run: |
+        git cliff --config ${{ inputs.git-cliff-config }} \
+          -vv --strip all ${{ inputs.git-cliff-args }} --context --output context.json
+
+        delimiter="$(openssl rand -hex 8)"
+        echo "changelog<<${delimiter}" >> "${GITHUB_OUTPUT}"
+        echo $r | sed "s/'//" >> "${GITHUB_OUTPUT}"
+        echo "${delimiter}" >> "${GITHUB_OUTPUT}"
