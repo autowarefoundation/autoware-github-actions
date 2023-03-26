@@ -100,6 +100,15 @@ updates:
       - github-actions
 
   - package-ecosystem: github-actions
+    directory: /pre-commit-autoupdate
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 1
+    labels:
+      - bot
+      - github-actions
+
+  - package-ecosystem: github-actions
     directory: /register-autonomoustuff-repository
     schedule:
       interval: daily
@@ -110,6 +119,15 @@ updates:
 
   - package-ecosystem: github-actions
     directory: /remove-exec-depend
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 1
+    labels:
+      - bot
+      - github-actions
+
+  - package-ecosystem: github-actions
+    directory: /set-cuda-path
     schedule:
       interval: daily
     open-pull-requests-limit: 1
