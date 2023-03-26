@@ -213,5 +213,6 @@ runs:
 
     - name: Enable auto-merge
       run: gh pr merge --squash --${{ inputs.auto-merge-method }} "${{ steps.create-pr.outputs.pull-request-number }}"
+      shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
