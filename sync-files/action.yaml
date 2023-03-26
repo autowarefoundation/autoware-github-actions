@@ -212,9 +212,6 @@ runs:
       shell: bash
 
     - name: Enable auto-merge
-      if: ${{ inputs.auto-merge-method != '' && steps.create-pr.outputs.pull-request-operation == 'created' }}
-      uses: peter-evans/enable-pull-request-automerge@v3
-      with:
-        token: ${{ inputs.token }}
-        pull-request-number: ${{ steps.create-pr.outputs.pull-request-number }}
-        merge-method: ${{ inputs.auto-merge-method }}
+      run: gh pr merge --squash --${{ inputs.auto-merge-method }} "${{ steps.create-pr.outputs.pull-request-number }}"
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
