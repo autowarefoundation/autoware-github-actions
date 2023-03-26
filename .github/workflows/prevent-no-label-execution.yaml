@@ -46,7 +46,7 @@ jobs:
             return
           }
 
-          echo ::set-output name=run::"$(check)"
+          echo "run=$(check)" >> $GITHUB_OUTPUT
         shell: bash
 
       - name: Show result

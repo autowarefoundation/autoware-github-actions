@@ -52,10 +52,10 @@ runs:
           VERSION_NAME="${GITHUB_REF#refs/heads/}"
         fi
 
-        echo ::set-output name=pr-number::"$PR_NUMBER"
+        echo "pr-number=$PR_NUMBER" >> $GITHUB_OUTPUT
 
         # Replace invalid character '/' by '-'
-        echo ::set-output name=version-name::"${VERSION_NAME//\//-}"
+        echo "version-name=${VERSION_NAME//\//-}" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Deploy docs
@@ -77,7 +77,13 @@ runs:
         mkdocs_yaml=$(find . -type f -path './mkdocs.yaml' -or -path './mkdocs.yml')
         site_url=$(grep -oP "site_url:\s+\K(.*)" "$mkdocs_yaml")
         base_url="$site_url/${{ steps.set-docs-version-name.outputs.version-name }}/"
-        ${GITHUB_ACTION_PATH}/create-doc-comment.sh "$base_url" "origin/$GITHUB_BASE_REF"
+        comment_lines=$(${GITHUB_ACTION_PATH}/create-doc-comment.sh "$base_url" "origin/$GITHUB_BASE_REF")
+
+        # Output multiline strings: https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
+        EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+        echo "comment-body<<$EOF" >> $GITHUB_OUTPUT
+        echo "$comment_lines" >> $GITHUB_OUTPUT
+        echo "$EOF" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Find PR comment

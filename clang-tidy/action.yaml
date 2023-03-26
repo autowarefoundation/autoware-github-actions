@@ -115,7 +115,7 @@ runs:
           target_files=$(find $package_path -name "*.cpp" -or -name "*.hpp")
         fi
 
-        echo ::set-output name=target-files::$target_files
+        echo "target-files=$target_files" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Analyze
