@@ -12,7 +12,8 @@ runs:
     - name: Get packages in this repository
       id: get-self-packages
       run: |
-        echo ::set-output name=self-packages::$(colcon list --names-only)
+        self_packages=$(colcon list --names-only)
+        echo "self-packages=$(printf "%s " $self_packages | sed 's/\s*$//')" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Show result

@@ -68,12 +68,12 @@ runs:
     - name: Replace PR number to URL
       id: replace-pr-number-to-url
       run: |
-        r=$(echo "$CHANGELOG" | sed -r "s|\(#([0-9]+)\)|("${REPO_URL%.git}"/pull/\1)|g")
-        # Workaround for https://github.community/t/set-output-truncates-multiline-strings/16852
-        r="${r//'%'/'%25'}"
-        r="${r//$'\n'/'%0A'}"
-        r="${r//$'\r'/'%0D'}"
-        echo ::set-output name=changelog::$r
+        # Output multiline strings: https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#example-of-a-multiline-string
+        changelog=$(echo "$CHANGELOG" | sed -r "s|\(#([0-9]+)\)|("${REPO_URL%.git}"/pull/\1)|g")
+        EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+        echo "changelog<<$EOF" >> $GITHUB_OUTPUT
+        echo "$changelog" >> $GITHUB_OUTPUT
+        echo "$EOF" >> $GITHUB_OUTPUT
       env:
         CHANGELOG: ${{ steps.generate-changelog.outputs.changelog }}
         REPO_URL: ${{ inputs.sync-target-repository }}

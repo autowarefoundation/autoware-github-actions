@@ -178,15 +178,11 @@ runs:
         add-section "Deleted" "deleted"
         add-section "Not found" "not-found"
 
-        # Workaround for multiline strings
-        # https://github.community/t/set-output-truncates-multiline-strings/16852
-        body=$(printf "%s\n" "${body_lines[@]}")
-        body="${body//'%'/'%25'}"
-        body="${body//$'\n'/'%0A'}"
-        body="${body//$'\r'/'%0D'}"
-
-        # Output
-        echo ::set-output name=body::"$(printf "%s\n" "${body[@]}")"
+        # Output multiline strings: https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
+        EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+        echo "body<<$EOF" >> $GITHUB_OUTPUT
+        echo "$(printf "%s\n" "${body_lines[@]}")" >> $GITHUB_OUTPUT
+        echo "$EOF" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Create PR

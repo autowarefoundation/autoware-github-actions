@@ -33,20 +33,19 @@ runs:
         git cliff --output CHANGELOG.md --config ${{ inputs.git-cliff-config }} \
           -vv --strip header ${{ inputs.git-cliff-args }}
 
-        r=$(cat CHANGELOG.md)
+        changelog=$(cat CHANGELOG.md)
         rm CHANGELOG.md
 
         # Trim version and date
         if [ "${{ inputs.trim-version-and-date }}" = "true" ]; then
-          r="$(printf "$r" | tail -n +3)"
+          changelog="$(printf "$changelog" | tail -n +3)"
         fi
 
-        # Workaround for https://github.community/t/set-output-truncates-multiline-strings/16852
-        r="${r//'%'/'%25'}"
-        r="${r//$'\n'/'%0A'}"
-        r="${r//$'\r'/'%0D'}"
-
-        echo "::set-output name=changelog::$r"
+        # Output multiline strings: https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
+        EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+        echo "changelog<<$EOF" >> $GITHUB_OUTPUT
+        echo "$changelog" >> $GITHUB_OUTPUT
+        echo "$EOF" >> $GITHUB_OUTPUT
 
     - name: Show result
       run: |

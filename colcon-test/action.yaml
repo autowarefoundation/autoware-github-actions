@@ -141,5 +141,5 @@ runs:
 
         # Join coverage file names
         coverage_files_str="$(IFS=,; echo "${coverage_files[*]}")"
-        echo ::set-output name=coverage-reports::$coverage_files_str
+        echo "coverage-reports=$coverage_files_str" >> $GITHUB_OUTPUT
       shell: bash

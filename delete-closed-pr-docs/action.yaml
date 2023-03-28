@@ -29,7 +29,7 @@ runs:
       id: get-docs-versions
       run: |
         echo "site_name: dummy" > mkdocs.yaml
-        echo ::set-output name=docs-versions::$(mike list | grep -oP "pr-\w+")
+        echo "docs-versions=$(mike list | grep -oP "pr-\w+")" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Find closed docs versions
@@ -52,7 +52,7 @@ runs:
           fi
         done
 
-        echo ::set-output name=closed-docs-versions::"${closed_docs_versions[@]}"
+        echo "closed-docs-versions=${closed_docs_versions[@]}" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Set git config
