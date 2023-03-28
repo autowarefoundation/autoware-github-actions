@@ -212,6 +212,7 @@ runs:
       shell: bash
 
     - name: Enable auto-merge
+      if: ${{ inputs.auto-merge-method != '' && steps.create-pr.outputs.pull-request-operation == 'created' }}
       run: gh pr merge --${{ inputs.auto-merge-method }} --auto "${{ steps.create-pr.outputs.pull-request-number }}"
       shell: bash
       env:
