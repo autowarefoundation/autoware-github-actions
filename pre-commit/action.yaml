@@ -8,15 +8,20 @@ inputs:
   token:
     description: ""
     required: false
+    default: ${{ github.token }}
 
 runs:
   using: composite
   steps:
+    - name: Set git config
+      uses: autowarefoundation/autoware-github-actions/set-git-config@v1
+      with:
+        token: ${{ inputs.token }}
+
     - name: Run pre-commit
       uses: pre-commit/action@v3.0.0
       with:
         extra_args: --all-files --config ${{ inputs.pre-commit-config }}
-        token: ${{ steps.generate-token.outputs.token }}
 
     - name: Push pre-commit fixes
       if: always() # Push changes even when pre-commit fails
