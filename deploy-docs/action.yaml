@@ -97,7 +97,7 @@ runs:
 
     - name: Update PR comment
       if: ${{ steps.set-docs-version-name.outputs.pr-number != '' }}
-      uses: peter-evans/create-or-update-comment@v2
+      uses: peter-evans/create-or-update-comment@v3
       with:
         comment-id: ${{ steps.find-comment.outputs.comment-id }}
         issue-number: ${{ steps.set-docs-version-name.outputs.pr-number }}
