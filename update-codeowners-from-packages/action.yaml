@@ -9,7 +9,7 @@ inputs:
     description: ""
     required: false
     default: .github/CODEOWNERS-manual
-  global-codeowners:
+  codeowners-group:
     description: ""
     required: false
   pr-base:
@@ -66,20 +66,7 @@ runs:
 
         # List package maintainers
         echo "### Automatically generated from package.xml ###" >>.github/CODEOWNERS
-        for package_xml in $(find . -name package.xml | sed "s|^./||" | sort); do
-            package_dir=$(dirname "$package_xml")
-            line="$package_dir/**"
-
-            for maintainer in $(grep '<maintainer' "$package_xml" | sed -E 's|.*email="(.*)".*|\1|' | sort -u); do
-                line+=" $maintainer"
-            done
-
-            if [ -n "${{ inputs.global-codeowners }}" ]; then
-              line+=" ${{ inputs.global-codeowners }}"
-            fi
-
-            echo "$line" >>.github/CODEOWNERS
-        done
+        python ${GITHUB_ACTION_PATH}/update-code-owners.py . --groups ${{ inputs.codeowners-group }} >> .github/CODEOWNERS
       shell: bash
 
     - name: Create PR
