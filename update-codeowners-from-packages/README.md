@@ -2,7 +2,7 @@
 
 ## Description
 
-This action updates the `CODEOWNERS` file from ROS packages.  
+This action updates the `CODEOWNERS` file from ROS packages and codeowners.yaml.
 It uses [peter-evans/create-pull-request](https://github.com/peter-evans/create-pull-request/) for creating pull requests.
 
 Note that you need `workflow` permission for the token if you copy workflow files of GitHub Actions.
@@ -36,7 +36,7 @@ If you want to combine the automatically generated `CODEOWNERS` with the manuall
 | ----------------- | -------- | ----------------------------------------------------- |
 | token             | true     | The token for pull requests.                          |
 | codeowners-manual | false    | The path to the manually maintained `CODEOWNERS`.     |
-| global-codeowners | false    | The GitHub IDs of global codeowners.                  |
+| codeowners-group  | false    | The path to the group definition.                     |
 | pr-base           | false    | Refer to `peter-evans/create-pull-request`.           |
 | pr-branch         | false    | The same as above.                                    |
 | pr-title          | false    | The same as above.                                    |
@@ -49,3 +49,24 @@ If you want to combine the automatically generated `CODEOWNERS` with the manuall
 ## Outputs
 
 None.
+
+## File format
+
+codeowners.yaml
+
+```yaml
+users:
+  - "@user-name"
+  - "email.address@example.com"
+groups:
+  - "group-name"
+```
+
+codeowners-group.yaml
+
+```yaml
+group-name:
+  - user-name-1
+  - user-name-2
+  - user-name-3
+```
