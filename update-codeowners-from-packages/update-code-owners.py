@@ -77,4 +77,4 @@ for path in sorted(owners.keys()):
     if not owner.maintainers:
         continue
     users = set(owner.maintainers + owner.resolve_codeowners())
-    print(path.relative_to(root) / "**", " ".join(users))
+    print(path.relative_to(root) / "**", " ".join(sorted(users)))
