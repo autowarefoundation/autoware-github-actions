@@ -55,7 +55,7 @@ class CodeOwners:
 
 parser = ArgumentParser()
 parser.add_argument("path")
-parser.add_argument("--groups")
+parser.add_argument("groups")
 args = parser.parse_args()
 root = Path(args.path)
 
