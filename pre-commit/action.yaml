@@ -18,10 +18,21 @@ runs:
       with:
         token: ${{ inputs.token }}
 
+    - name: Get modified files
+      id: get-modified-files
+      run: |
+        echo "modified-files=$(git diff --name-only "${{ inputs.base-branch }}"...HEAD)" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: Show result
+      run: |
+        echo "modified-files: ${{ steps.get-modified-files.outputs.modified-files }}"
+      shell: bash
+
     - name: Run pre-commit
       uses: pre-commit/action@v3.0.0
       with:
-        extra_args: --all-files --config ${{ inputs.pre-commit-config }}
+        extra_args: --config ${{ inputs.pre-commit-config }} --files ${{ steps.get-modified-files.outputs.modified-files }}
 
     - name: Push pre-commit fixes
       if: always() # Push changes even when pre-commit fails
