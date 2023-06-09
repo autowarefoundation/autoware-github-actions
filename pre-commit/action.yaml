@@ -9,6 +9,10 @@ inputs:
     description: ""
     required: false
     default: ${{ github.token }}
+  base-branch:
+    description: ""
+    required: false
+    default: ${{ github.base_ref }}
 
 runs:
   using: composite
