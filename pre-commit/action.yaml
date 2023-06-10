@@ -5,14 +5,14 @@ inputs:
   pre-commit-config:
     description: ""
     required: true
-  token:
-    description: ""
-    required: false
-    default: ${{ github.token }}
   base-branch:
     description: ""
     required: false
     default: ${{ github.base_ref }}
+  token:
+    description: ""
+    required: false
+    default: ${{ github.token }}
 
 runs:
   using: composite
@@ -25,6 +25,8 @@ runs:
     - name: Get modified files
       id: get-modified-files
       run: |
+        git log -1 --oneline HEAD
+        git log -1 --oneline "${{ inputs.base-branch }}"
         modified_files=$(git diff --name-only "${{ inputs.base-branch }}"...HEAD)
         echo "modified-files=${modified_files}" >> $GITHUB_OUTPUT
       shell: bash
