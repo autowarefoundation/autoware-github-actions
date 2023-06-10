@@ -25,8 +25,8 @@ runs:
     - name: Get modified files
       id: get-modified-files
       run: |
-        set -e
-        echo "modified-files=$(git diff --name-only "${{ inputs.base-branch }}"...HEAD)" >> $GITHUB_OUTPUT
+        modified_files=$(git diff --name-only "${{ inputs.base-branch }}"...HEAD)
+        echo "modified-files=${modified_files}" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Show result
