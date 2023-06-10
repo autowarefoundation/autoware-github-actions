@@ -8,7 +8,6 @@ inputs:
   base-branch:
     description: ""
     required: false
-    default: origin/${{ github.base_ref }}
   token:
     description: ""
     required: false
@@ -22,24 +21,26 @@ runs:
       with:
         token: ${{ inputs.token }}
 
-    - name: Get modified files
-      id: get-modified-files
+    - name: Set target files
+      id: set-target-files
       run: |
-        git log -1 --oneline HEAD
-        git log -1 --oneline "${{ inputs.base-branch }}"
-        modified_files=$(git diff --name-only "${{ inputs.base-branch }}"...HEAD)
-        echo "modified-files=${modified_files}" >> $GITHUB_OUTPUT
+        if [ -z "${{ inputs.base-branch }}" ]; then
+          echo "option=--all-files" >> $GITHUB_OUTPUT
+          exit 0
+        fi
+        target_files=$(git diff --name-only "${{ inputs.base-branch }}"...HEAD)
+        echo "option=--files ${target_files}" >> $GITHUB_OUTPUT
       shell: bash
 
-    - name: Show result
+    - name: Get target files
       run: |
-        echo "modified-files: ${{ steps.get-modified-files.outputs.modified-files }}"
+        echo "target-files-option: ${{ steps.set-target-files.outputs.option }}"
       shell: bash
 
     - name: Run pre-commit
       uses: pre-commit/action@v3.0.0
       with:
-        extra_args: --config ${{ inputs.pre-commit-config }} --files ${{ steps.get-modified-files.outputs.modified-files }}
+        extra_args: --config ${{ inputs.pre-commit-config }} ${{ steps.set-target-files.outputs.option }}
 
     - name: Push pre-commit fixes
       if: always() # Push changes even when pre-commit fails
