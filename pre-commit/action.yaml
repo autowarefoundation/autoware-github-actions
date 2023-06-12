@@ -21,8 +21,8 @@ runs:
       with:
         token: ${{ inputs.token }}
 
-    - name: Set target files
-      id: set-target-files
+    - name: Set option
+      id: set-option
       run: |
         if [ -z "${{ inputs.base-branch }}" ]; then
           echo "option=--all-files" >> $GITHUB_OUTPUT
@@ -31,15 +31,10 @@ runs:
         echo "option=--from-ref ${{ inputs.base-branch }} --to-ref HEAD" >> $GITHUB_OUTPUT
       shell: bash
 
-    - name: Get target files
-      run: |
-        echo "target-files-option: ${{ steps.set-target-files.outputs.option }}"
-      shell: bash
-
     - name: Run pre-commit
       uses: pre-commit/action@v3.0.0
       with:
-        extra_args: --config ${{ inputs.pre-commit-config }} ${{ steps.set-target-files.outputs.option }}
+        extra_args: --config ${{ inputs.pre-commit-config }} ${{ steps.set-option.outputs.option }}
 
     - name: Push pre-commit fixes
       if: always() # Push changes even when pre-commit fails
