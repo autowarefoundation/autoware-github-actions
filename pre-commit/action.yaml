@@ -28,8 +28,7 @@ runs:
           echo "option=--all-files" >> $GITHUB_OUTPUT
           exit 0
         fi
-        target_files=$(git diff --name-only "${{ inputs.base-branch }}"...HEAD)
-        echo "option=--files ${target_files}" >> $GITHUB_OUTPUT
+        echo "option=--from-ref ${{ inputs.base-branch }} --to-ref HEAD" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Get target files
