@@ -32,10 +32,11 @@ jobs:
 
 ## Inputs
 
-| Name              | Required | Description                            |
-| ----------------- | -------- | -------------------------------------- |
-| pre-commit-config | true     | The path to `.pre-commit-config.yaml`. |
-| token             | false    | The token for auto-fix.                |
+| Name              | Required | Description                                                             |
+| ----------------- | -------- | ----------------------------------------------------------------------- |
+| pre-commit-config | true     | The path to `.pre-commit-config.yaml`.                                  |
+| base-branch       | false    | The base branch to search for modified files. Check all files if empty. |
+| token             | false    | The token for auto-fix.                                                 |
 
 > Note: Setting `GITHUB_TOKEN` for `token` doesn't work completely because it doesn't have `workflow` permission.
 
