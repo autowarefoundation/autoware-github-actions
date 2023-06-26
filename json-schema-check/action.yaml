@@ -1,0 +1,15 @@
+name: json-schema-check
+description: ""
+
+runs:
+  using: composite
+  steps:
+    - name: Install JSON Schema packages
+      run: |
+        pip3 install -U check-jsonschema
+      shell: bash
+
+    - name: Check configuration files
+      run: |
+        find -wholename '*/schema/*.schema.json' -execdir bash -c 'check-jsonschema --schemafile "$1" ../config/*.param.yaml' bash '{}' +
+      shell: bash
