@@ -89,6 +89,7 @@ See the `README.md` in each directory.
 - [generate-changelog](./generate-changelog/README.md)
 - [get-modified-packages](./get-modified-packages/README.md)
 - [get-self-packages](./get-self-packages/README.md)
+- [json-schema-check](./json-schema-check/README.md)
 - [pre-commit](./pre-commit/README.md)
 - [register-autonomoustuff-repository](./register-autonomoustuff-repository/README.md)
 - [remove-exec-depend](./remove-exec-depend/README.md)
