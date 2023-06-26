@@ -2,7 +2,7 @@
 
 ## Description
 
-This action checks if the ROS2 parameter files (`config/*.param.yaml`) of packages comply with the format of their template JSON Schema file (`schema/*.schema.json`).
+This action checks if the ROS 2 parameter files (`config/*.param.yaml`) of packages comply with the format of their template JSON Schema file (`schema/*.schema.json`).
 
 ## Usage
 
