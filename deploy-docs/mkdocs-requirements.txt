@@ -1,5 +1,5 @@
 fontawesome_markdown
-markdown==3.3.7
+markdown
 mdx_truly_sane_lists
 mkdocs
 mkdocs-awesome-pages-plugin
