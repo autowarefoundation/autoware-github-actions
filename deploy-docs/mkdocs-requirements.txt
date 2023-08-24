@@ -2,7 +2,7 @@ fontawesome_markdown
 markdown==3.3.7
 mdx_truly_sane_lists
 mkdocs==1.4.3
-mkdocs-awesome-pages-plugin
+mkdocs-awesome-pages-plugin==2.9.1
 mkdocs-exclude
 mkdocs-macros-plugin
 mkdocs-material
