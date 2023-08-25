@@ -178,20 +178,16 @@ runs:
         add-section "Deleted" "deleted"
         add-section "Not found" "not-found"
 
-        # Workaround for multiline strings
-        # https://github.community/t/set-output-truncates-multiline-strings/16852
-        body=$(printf "%s\n" "${body_lines[@]}")
-        body="${body//'%'/'%25'}"
-        body="${body//$'\n'/'%0A'}"
-        body="${body//$'\r'/'%0D'}"
-
-        # Output
-        echo ::set-output name=body::"$(printf "%s\n" "${body[@]}")"
+        # Output multiline strings: https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
+        EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+        echo "body<<$EOF" >> $GITHUB_OUTPUT
+        echo "$(printf "%s\n" "${body_lines[@]}")" >> $GITHUB_OUTPUT
+        echo "$EOF" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Create PR
       id: create-pr
-      uses: peter-evans/create-pull-request@v4
+      uses: peter-evans/create-pull-request@v5
       with:
         token: ${{ inputs.token }}
         base: ${{ inputs.pr-base }}
@@ -213,8 +209,7 @@ runs:
 
     - name: Enable auto-merge
       if: ${{ inputs.auto-merge-method != '' && steps.create-pr.outputs.pull-request-operation == 'created' }}
-      uses: peter-evans/enable-pull-request-automerge@v2
-      with:
-        token: ${{ inputs.token }}
-        pull-request-number: ${{ steps.create-pr.outputs.pull-request-number }}
-        merge-method: ${{ inputs.auto-merge-method }}
+      run: gh pr merge --${{ inputs.auto-merge-method }} --auto "${{ steps.create-pr.outputs.pull-request-number }}"
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}

@@ -84,7 +84,7 @@ runs:
 
     - name: Create PR
       id: create-pr
-      uses: peter-evans/create-pull-request@v4
+      uses: peter-evans/create-pull-request@v5
       with:
         token: ${{ inputs.token }}
         base: ${{ inputs.pr-base }}
@@ -106,8 +106,7 @@ runs:
 
     - name: Enable auto-merge
       if: ${{ inputs.auto-merge-method != '' && steps.create-pr.outputs.pull-request-operation == 'created' }}
-      uses: peter-evans/enable-pull-request-automerge@v2
-      with:
-        token: ${{ inputs.token }}
-        pull-request-number: ${{ steps.create-pr.outputs.pull-request-number }}
-        merge-method: ${{ inputs.auto-merge-method }}
+      run: gh pr merge --${{ inputs.auto-merge-method }} --auto "${{ steps.create-pr.outputs.pull-request-number }}"
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}

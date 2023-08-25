@@ -69,4 +69,4 @@ fi
 
 # Output
 # shellcheck disable=SC2086
-echo ::set-output name=modified-packages::$modified_packages
+printf "%s " $modified_packages | sed 's/\s*$//'

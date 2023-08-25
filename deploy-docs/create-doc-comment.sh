@@ -63,12 +63,5 @@ for markdown_path in "${markdown_paths[@]}"; do
     comment_lines+=("- $base_url$url_path$lang")
 done
 
-# Workaround for multiline strings
-# https://github.community/t/set-output-truncates-multiline-strings/16852
-comment_body=$(printf "%s\n" "${comment_lines[@]}")
-comment_body="${comment_body//'%'/'%25'}"
-comment_body="${comment_body//$'\n'/'%0A'}"
-comment_body="${comment_body//$'\r'/'%0D'}"
-
 # Output
-echo ::set-output name=comment-body::"$(printf "%s\n" "${comment_body[@]}")"
+printf "%s\n" "${comment_lines[@]}"

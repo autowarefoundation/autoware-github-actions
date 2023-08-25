@@ -68,12 +68,12 @@ runs:
     - name: Replace PR number to URL
       id: replace-pr-number-to-url
       run: |
-        r=$(echo "$CHANGELOG" | sed -r "s|\(#([0-9]+)\)|("${REPO_URL%.git}"/pull/\1)|g")
-        # Workaround for https://github.community/t/set-output-truncates-multiline-strings/16852
-        r="${r//'%'/'%25'}"
-        r="${r//$'\n'/'%0A'}"
-        r="${r//$'\r'/'%0D'}"
-        echo ::set-output name=changelog::$r
+        # Output multiline strings: https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#example-of-a-multiline-string
+        changelog=$(echo "$CHANGELOG" | sed -r "s|\(#([0-9]+)\)|("${REPO_URL%.git}"/pull/\1)|g")
+        EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+        echo "changelog<<$EOF" >> $GITHUB_OUTPUT
+        echo "$changelog" >> $GITHUB_OUTPUT
+        echo "$EOF" >> $GITHUB_OUTPUT
       env:
         CHANGELOG: ${{ steps.generate-changelog.outputs.changelog }}
         REPO_URL: ${{ inputs.sync-target-repository }}
@@ -81,7 +81,7 @@ runs:
 
     - name: Create PR
       id: create-pr
-      uses: peter-evans/create-pull-request@v4
+      uses: peter-evans/create-pull-request@v5
       with:
         token: ${{ inputs.token }}
         base: ${{ inputs.base-branch }}
@@ -102,8 +102,7 @@ runs:
 
     - name: Enable auto-merge
       if: ${{ inputs.auto-merge-method != '' && steps.create-pr.outputs.pull-request-operation == 'created' }}
-      uses: peter-evans/enable-pull-request-automerge@v2
-      with:
-        token: ${{ inputs.token }}
-        pull-request-number: ${{ steps.create-pr.outputs.pull-request-number }}
-        merge-method: ${{ inputs.auto-merge-method }}
+      run: gh pr merge --${{ inputs.auto-merge-method }} --auto "${{ steps.create-pr.outputs.pull-request-number }}"
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}

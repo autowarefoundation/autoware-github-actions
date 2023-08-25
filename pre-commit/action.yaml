@@ -5,24 +5,36 @@ inputs:
   pre-commit-config:
     description: ""
     required: true
+  base-branch:
+    description: ""
+    required: false
   token:
     description: ""
     required: false
+    default: ${{ github.token }}
 
 runs:
   using: composite
   steps:
-    # shfmt requires Go 1.16+
-    - name: Set up go
-      uses: actions/setup-go@v3
+    - name: Set git config
+      uses: autowarefoundation/autoware-github-actions/set-git-config@v1
       with:
-        go-version: ^1.16
+        token: ${{ inputs.token }}
+
+    - name: Set option
+      id: set-option
+      run: |
+        if [ -z "${{ inputs.base-branch }}" ]; then
+          echo "option=--all-files" >> $GITHUB_OUTPUT
+          exit 0
+        fi
+        echo "option=--from-ref ${{ inputs.base-branch }} --to-ref HEAD" >> $GITHUB_OUTPUT
+      shell: bash
 
     - name: Run pre-commit
       uses: pre-commit/action@v3.0.0
       with:
-        extra_args: --all-files --config ${{ inputs.pre-commit-config }}
-        token: ${{ steps.generate-token.outputs.token }}
+        extra_args: --config ${{ inputs.pre-commit-config }} ${{ steps.set-option.outputs.option }}
 
     - name: Push pre-commit fixes
       if: always() # Push changes even when pre-commit fails

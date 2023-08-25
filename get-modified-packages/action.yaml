@@ -23,7 +23,7 @@ runs:
     - name: Get modified packages
       id: get-modified-packages
       run: |
-        ${GITHUB_ACTION_PATH}/get-modified-packages.sh origin/${{ inputs.base-branch }}
+        echo "modified-packages=$(${GITHUB_ACTION_PATH}/get-modified-packages.sh origin/${{ inputs.base-branch }})" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Show result
