@@ -67,7 +67,7 @@ runs:
       run: |
         git cliff --config ${{ inputs.git-cliff-config }} \
           -vv --strip all ${{ inputs.git-cliff-args }} --context --output context.json
-        
+
         # Output multiline strings: https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
         EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
         echo "changelog<<$EOF" >> $GITHUB_OUTPUT
