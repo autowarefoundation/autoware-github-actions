@@ -73,3 +73,10 @@ runs:
         echo "changelog<<$EOF" >> $GITHUB_OUTPUT
         echo "$changelog" | sed "s/'//" >> $GITHUB_OUTPUT
         echo "$EOF" >> $GITHUB_OUTPUT
+
+    - name: Upload changelog JSON
+      id: upload-changelog-json
+      uses: actions/upload-artifact@v2
+      with:
+        name: changelog-json
+        path: ./context.json

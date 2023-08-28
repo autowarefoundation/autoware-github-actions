@@ -34,6 +34,7 @@ jobs:
 | git-cliff-args        | false    | The arguments for the `git-cliff` command.               |
 | git-cliff-config      | false    | The path to the `git-cliff` config file.                 |
 | trim-version-and-date | false    | Whether to trim the version and date from the changelog. |
+| save-json-output      | false    | Save the output contents to artifact in json format.     |
 
 ## Outputs
 
