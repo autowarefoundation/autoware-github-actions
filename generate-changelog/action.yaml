@@ -14,6 +14,11 @@ inputs:
     description: ""
     required: false
     default: "true"
+  save-json-output:
+    description: ""
+    required: false
+    default: false
+
 outputs:
   changelog:
     description: ""
@@ -28,11 +33,11 @@ runs:
     - name: Generate changelog
       id: generate-changelog
       shell: bash
+      if: ${{ inputs.save-json-output == 'false' }}
       run: |
         # Generate changelog
         git cliff --output CHANGELOG.md --config ${{ inputs.git-cliff-config }} \
           -vv --strip header ${{ inputs.git-cliff-args }}
-
         changelog=$(cat CHANGELOG.md)
         rm CHANGELOG.md
 
@@ -48,8 +53,30 @@ runs:
         echo "$EOF" >> $GITHUB_OUTPUT
 
     - name: Show result
+      shell: bash
+      if: ${{ inputs.save-json-output == 'false' }}
       run: |
         echo "$CHANGELOG"
       env:
         CHANGELOG: ${{ steps.generate-changelog.outputs.changelog }}
+
+    - name: Generate changelog JSON
+      id: generate-changelog-json
       shell: bash
+      if: ${{ inputs.save-json-output == 'true' }}
+      run: |
+        git cliff --config ${{ inputs.git-cliff-config }} \
+          -vv --strip all ${{ inputs.git-cliff-args }} --context --output context.json
+
+        # Output multiline strings: https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
+        EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+        echo "changelog<<$EOF" >> $GITHUB_OUTPUT
+        echo "$changelog" | sed "s/'//" >> $GITHUB_OUTPUT
+        echo "$EOF" >> $GITHUB_OUTPUT
+
+    - name: Upload changelog JSON
+      id: upload-changelog-json
+      uses: actions/upload-artifact@v2
+      with:
+        name: changelog-json
+        path: ./context.json
