@@ -22,6 +22,10 @@ inputs:
     description: set git cliff version
     required: false
     default: ""
+  token:
+    description: setup-git-cliff token
+    required: false
+    default: ""
 
 outputs:
   changelog:
@@ -35,6 +39,7 @@ runs:
       uses: kenji-miyake/setup-git-cliff@v1
       with:
         version: ${{ inputs.version }}
+        token: ${{ inputs.token }}
 
     - name: Generate changelog
       id: generate-changelog
