@@ -11,5 +11,5 @@ runs:
 
     - name: Check configuration files
       run: |
-        find -wholename '*/schema/*.schema.json' -execdir bash -c 'check-jsonschema --schemafile "$1" ../config/*.param.yaml' bash '{}' +
+        find -wholename '*/schema/*.schema.json' -execdir bash -c 'for f in $@; do check-jsonschema --schemafile $f ../config/`basename $f .schema.json`.param.yaml; done' bash '{}' +
       shell: bash
