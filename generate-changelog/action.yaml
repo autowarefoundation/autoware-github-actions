@@ -21,11 +21,11 @@ inputs:
   version:
     description: The version of git-cliff
     required: false
-    default: ""
+    default: latest
   token:
     description: The token for GitHub API
     required: false
-    default: ""
+    default: ${{ github.token }}
 
 outputs:
   changelog:
