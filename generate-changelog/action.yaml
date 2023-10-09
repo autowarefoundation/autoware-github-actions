@@ -19,11 +19,11 @@ inputs:
     required: false
     default: false
   version:
-    description: set git cliff version
+    description: The version of git-cliff
     required: false
     default: ""
   token:
-    description: setup-git-cliff token
+    description: The token for GitHub API
     required: false
     default: ""
 
