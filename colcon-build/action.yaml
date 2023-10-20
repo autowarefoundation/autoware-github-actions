@@ -71,10 +71,17 @@ runs:
     - name: Build
       run: |
         . /opt/ros/${{ inputs.rosdistro }}/setup.sh
+        # Cannot use unshare inside a Docker container, so we just disable
+        # DNS lookups instead.
+        cat /etc/nsswitch.conf
+        sed -e 's#hosts:\(.*\)dns\(.*\)#hosts:\1\2#g' -i.bak /etc/nsswitch.conf
+        cat /etc/nsswitch.conf
         colcon build --event-handlers console_cohesion+ \
           --packages-above-and-dependencies ${{ inputs.target-packages }} \
           --cmake-args -DCMAKE_BUILD_TYPE=${{ inputs.cmake-build-type }} \
           --mixin coverage-gcc coverage-pytest compile-commands
+        mv /etc/nsswitch.conf.bak /etc/nsswitch.conf
+        cat /etc/nsswitch.conf
       shell: bash
 
     - name: Cache build artifacts
