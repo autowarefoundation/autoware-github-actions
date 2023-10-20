@@ -70,6 +70,7 @@ runs:
         labels: ${{ inputs.pr-labels }}
         assignees: ${{ inputs.pr-assignees }}
         reviewers: ${{ inputs.pr-reviewers }}
+        author: github-actions <github-actions@github.com>
         signoff: true
         delete-branch: true
 

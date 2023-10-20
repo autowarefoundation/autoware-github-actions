@@ -18,6 +18,14 @@ inputs:
     description: ""
     required: false
     default: false
+  version:
+    description: The version of git-cliff
+    required: false
+    default: latest
+  token:
+    description: The token for GitHub API
+    required: false
+    default: ${{ github.token }}
 
 outputs:
   changelog:
@@ -29,6 +37,9 @@ runs:
   steps:
     - name: Set up git-cliff
       uses: kenji-miyake/setup-git-cliff@v1
+      with:
+        version: ${{ inputs.version }}
+        token: ${{ inputs.token }}
 
     - name: Generate changelog
       id: generate-changelog
