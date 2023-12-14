@@ -1,4 +1,5 @@
 import argparse
+import os
 import re
 from pathlib import Path
 
@@ -41,6 +42,9 @@ def main():
 
             if "post-commands" not in item:
                 item["post-commands"] = ""
+
+            if "source-dir" in repo_config:
+                item["source"] = os.path.join(repo_config["source-dir"], item["source"])
 
     print(yaml.dump(config))
 
