@@ -36,7 +36,7 @@ runs:
   using: composite
   steps:
     - name: Set up git-cliff
-      uses: kenji-miyake/setup-git-cliff@v1
+      uses: kenji-miyake/setup-git-cliff@v2
       with:
         version: ${{ inputs.version }}
         token: ${{ inputs.token }}
