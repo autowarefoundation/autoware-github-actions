@@ -57,6 +57,7 @@ The specifications are:
 | --------------------- | -------- | -------------------------------------------- | ---------------------------------------------------------------------------------------- |
 | repository            | true     | -                                            | The target repository.                                                                   |
 | ref                   | false    | The default branch of the target repository. | The version of the target repository.                                                    |
+| source-dir            | false    | Not prefixed.                                | The prefix common to `files/source`. This does not apply to the default of `files/dest`. |
 | files/source          | true     | -                                            | The path to the file in the target repository.                                           |
 | files/dest            | false    | The same as `files/source`.                  | The path where to place the synced file in the base repository.                          |
 | files/replace         | false    | `true`                                       | Whether to replace the synced file if it already exists.                                 |
