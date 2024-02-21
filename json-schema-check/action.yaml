@@ -4,12 +4,10 @@ description: ""
 runs:
   using: composite
   steps:
-    - name: Install JSON Schema packages
-      run: |
-        pip3 install -U check-jsonschema
+    - name: Install dependencies
+      run: pip install check-jsonschema colorama
       shell: bash
 
-    - name: Check configuration files
-      run: |
-        find -wholename '*/schema/*.schema.json' -printf '%p: ' -execdir bash -c 'check-jsonschema --schemafile "$1" ../config/"${1:2:-12}"*.param.yaml' bash '{}' +
+    - name: Validate schemas
+      run: python ${GITHUB_ACTION_PATH}/validate_json_schemas.py
       shell: bash
