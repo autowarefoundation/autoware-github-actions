@@ -13,9 +13,10 @@ def main():
         base_name = os.path.basename(schema_file).replace('.schema.json', '')
         config_dir = os.path.dirname(schema_file).replace('schema', 'config')
 
+        str_indentation = ' ' * 4
         config_files = glob.glob(f'{config_dir}/{base_name}*.param.yaml')
         if not config_files:
-            print(colorama.Fore.YELLOW + f'No configuration files found for schema {schema_file}.')
+            print(colorama.Fore.YELLOW + f'{str_indentation}No configuration files found for schema {schema_file}.')
             continue
 
         for config_file in config_files:
@@ -33,7 +34,7 @@ def main():
                 print(colorama.Fore.RED + '❌ Failed')
                 for line in result.stdout.decode('utf-8').split('\n'):
                     if line:
-                        print(colorama.Fore.RED + line)
+                        print(colorama.Fore.RED + str_indentation + line)
                 validation_failed = True
             else:
                 print(colorama.Fore.GREEN + '✅ Passed')
