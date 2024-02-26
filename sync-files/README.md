@@ -9,7 +9,7 @@ Note that you need `workflow` permission for the token if you copy workflow file
 
 ## Initial setup (within `autowarefoundation` org)
 
-This action uses the https://github.com/apps/awf-autoware-bot app to create pull requests.
+This action uses the <https://github.com/apps/awf-autoware-bot> app to create pull requests.
 
 ### Secrets
 
@@ -21,11 +21,13 @@ For this action to use this bot, it requires the following secrets:
   - Can be found/generated in [awf-autoware-bot App Settings](https://github.com/organizations/autowarefoundation/settings/apps/awf-autoware-bot) General, Private keys section.
 
 Then these secrets need to be set in the repository settings.
+
 - Target Repository GitHub Page, Settings, Secrets and variables, Actions, New repository secret, `APP_ID` and `PRIVATE_KEY`
 
 ### App settings
 
 Also, you need to install the app to the target repository.
+
 - [awf-autoware-bot App Settings](https://github.com/organizations/autowarefoundation/settings/apps/awf-autoware-bot) Install App section, Repository access, Only select repositories, add the target repository.
 
 ## Usage
