@@ -30,6 +30,11 @@ Also, you need to install the app to the target repository.
 
 - [awf-autoware-bot App Settings](https://github.com/organizations/autowarefoundation/settings/apps/awf-autoware-bot) Install App section, Repository access, Only select repositories, add the target repository.
 
+### Additional repository settings
+
+For this action to work properly, the following settings are required in the target repository.
+- Target Repository GitHub Page, Settings, General, Pull Requests, Allow auto-merge # Enable
+
 ## Usage
 
 ```yaml
