@@ -33,6 +33,7 @@ Also, you need to install the app to the target repository.
 ### Additional repository settings
 
 For this action to work properly, the following settings are required in the target repository.
+
 - Target Repository GitHub Page, Settings, General, Pull Requests, Allow auto-merge # Enable
 
 ## Usage
