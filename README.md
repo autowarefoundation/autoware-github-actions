@@ -12,7 +12,6 @@ This workflow checks if a certain secret is set.
 
 ```yaml
 jobs:
-jobs:
   check-secret:
     uses: autowarefoundation/autoware-github-actions/.github/workflows/check-secret.yaml@v1
     secrets:
