@@ -58,14 +58,8 @@ runs:
 
     - name: Update CODEOWNERS
       run: |
-        # Initialize CODEOWNERS
-        echo "### Copied from ${{ inputs.codeowners-manual }} ###" >.github/CODEOWNERS
-        touch ${{ inputs.codeowners-manual }}
-        cat ${{ inputs.codeowners-manual }} >> .github/CODEOWNERS
-        echo "" >>.github/CODEOWNERS
-
-        # List package maintainers
-        echo "### Automatically generated from package.xml ###" >>.github/CODEOWNERS
+        # Initialize CODEOWNERS with package maintainers
+        echo "### Automatically generated from package.xml ###" >.github/CODEOWNERS
         for package_xml in $(find . -name package.xml | sed "s|^./||" | sort); do
             package_dir=$(dirname "$package_xml")
             line="$package_dir/**"
@@ -80,6 +74,13 @@ runs:
 
             echo "$line" >>.github/CODEOWNERS
         done
+        echo "" >>.github/CODEOWNERS
+
+        # Add manually defined CODEOWNERS
+        echo "### Copied from ${{ inputs.codeowners-manual }} ###" >>.github/CODEOWNERS
+        touch ${{ inputs.codeowners-manual }}
+        cat ${{ inputs.codeowners-manual }} >> .github/CODEOWNERS
+
       shell: bash
 
     - name: Create PR
