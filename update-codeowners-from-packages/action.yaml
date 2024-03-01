@@ -74,12 +74,12 @@ runs:
 
             echo "$line" >>.github/CODEOWNERS
         done
+        echo "" >>.github/CODEOWNERS
 
         # Add manually defined CODEOWNERS
         echo "### Copied from ${{ inputs.codeowners-manual }} ###" >>.github/CODEOWNERS
         touch ${{ inputs.codeowners-manual }}
         cat ${{ inputs.codeowners-manual }} >> .github/CODEOWNERS
-        echo "" >>.github/CODEOWNERS
 
       shell: bash
 
