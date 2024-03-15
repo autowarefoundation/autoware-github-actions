@@ -54,7 +54,7 @@ runs:
     - name: sync-target-branch is tag?
       id: target-is-tag
       run: |
-        result=$(git show-ref --tags --dereference | grep ${{ inputs.sync-target-branch }} | awk '{print $2}' | sort | tail -1 | sed -e "s/refs\/tags\///g" -e "s/\^{}//g")
+        result=$(git show-ref --tags --dereference | grep ${{ inputs.sync-target-branch }})
       shell: bash
 
     - name: Sync branches
