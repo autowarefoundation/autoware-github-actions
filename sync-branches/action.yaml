@@ -58,7 +58,7 @@ runs:
       shell: bash
 
     - name: Sync branches
-      if: $ {{ steps.target-is-tag.outputs.result == '' }}
+      if: ${{ steps.target-is-tag.outputs.result == '' }}
       run: |
         git remote add sync-target "${{ inputs.sync-target-repository }}"
         git fetch -pPtf --all
@@ -67,7 +67,7 @@ runs:
       shell: bash
 
     - name: Sync tags
-      if: $ {{ steps.target-is-tag.outputs.result != '' }}
+      if: ${{ steps.target-is-tag.outputs.result != '' }}
       run: |
         git remote add sync-target "${{ inputs.sync-target-repository }}"
         git fetch -pPtf --all
