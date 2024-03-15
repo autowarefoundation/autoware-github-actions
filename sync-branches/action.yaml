@@ -51,27 +51,31 @@ runs:
       with:
         token: ${{ inputs.token }}
 
+    - name: register sync-target repository
+      run: |
+        git remote add sync-target "${{ inputs.sync-target-repository }}"
+        git fetch -pPtf --all
+
     - name: sync-target-branch is tag?
       id: target-is-tag
       run: |
-        result=$(git show-ref --tags --dereference | grep ${{ inputs.sync-target-branch }})
+        result=$(git tag | sed -n -E -e '/${{ inputs.sync-target-branch }}/p')
       shell: bash
 
     - name: Sync branches
       if: ${{ steps.target-is-tag.outputs.result == '' }}
       run: |
-        git remote add sync-target "${{ inputs.sync-target-repository }}"
-        git fetch -pPtf --all
         git reset --hard "sync-target/${{ inputs.sync-target-branch }}"
-        git remote rm sync-target
       shell: bash
 
     - name: Sync tags
       if: ${{ steps.target-is-tag.outputs.result != '' }}
       run: |
-        git remote add sync-target "${{ inputs.sync-target-repository }}"
-        git fetch -pPtf --all
         git reset --hard "${{ inputs.sync-target-branch }}"
+      shell: bash
+
+    - name: Remove sync-target-repository
+      run: |
         git remote rm sync-target
       shell: bash
 
