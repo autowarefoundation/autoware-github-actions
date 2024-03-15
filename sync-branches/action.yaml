@@ -17,6 +17,9 @@ inputs:
   sync-target-branch:
     description: ""
     required: true
+  sync-target-tag:
+    description: ""
+    required: false
   pr-title:
     description: ""
     required: true
@@ -57,24 +60,16 @@ runs:
         git fetch -pPtf --all
       shell: bash
 
-    - name: sync-target-branch is tag?
-      id: target-is-tag
+    - name: Sync tags
+      if: ${{ inputs.sync-target-tag != '' }}
       run: |
-        result=$(git tag | sed -n -E -e '/${{ inputs.sync-target-branch }}/p')
-        echo "$result"
-        echo "result=$result" >> $GITHUB_OUTPUT
+        git reset --hard "${{ inputs.sync-target-tag }}"
       shell: bash
 
     - name: Sync branches
-      if: ${{ steps.target-is-tag.outputs.result == '' }}
+      if: ${{ inputs.sync-target-tag == '' }}
       run: |
         git reset --hard "sync-target/${{ inputs.sync-target-branch }}"
-      shell: bash
-
-    - name: Sync tags
-      if: ${{ steps.target-is-tag.outputs.result != '' }}
-      run: |
-        git reset --hard "${{ inputs.sync-target-branch }}"
       shell: bash
 
     - name: Remove sync-target-repository
