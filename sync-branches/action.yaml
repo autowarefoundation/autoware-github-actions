@@ -61,6 +61,7 @@ runs:
       id: target-is-tag
       run: |
         result=$(git tag | sed -n -E -e '/${{ inputs.sync-target-branch }}/p')
+        echo "$result" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Sync branches
