@@ -41,3 +41,4 @@ runs:
       uses: stefanzweifel/git-auto-commit-action@v5
       with:
         commit_message: "style(pre-commit): autofix"
+        add_options: -u
