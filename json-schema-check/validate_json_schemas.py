@@ -14,7 +14,7 @@ def main():
         config_dir = os.path.dirname(schema_file).replace('schema', 'config')
 
         str_indentation = ' ' * 4
-        config_files = glob.glob(f'{config_dir}/{base_name}*.param.yaml')
+        config_files = glob.glob(f'{config_dir}/**/{base_name}*.param.yaml', recursive=True)
         if not config_files:
             print(colorama.Fore.YELLOW + f'{str_indentation}No configuration files found for schema {schema_file}.')
             continue
