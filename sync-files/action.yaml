@@ -91,7 +91,7 @@ runs:
           fi
 
           rm -rf /tmp/repository
-          git clone "$repository" /tmp/repository ${git_options[@]}
+          git clone --depth 1 "$repository" /tmp/repository ${git_options[@]}
 
           for source_file in $(yq ".files[].source" /tmp/repo-config.yaml); do
             yq ".files[] | select(.source == \"$source_file\")" /tmp/repo-config.yaml > /tmp/file-config.yaml
