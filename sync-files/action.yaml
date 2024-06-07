@@ -93,7 +93,7 @@ runs:
           rm -rf /tmp/repository
           git clone --depth 1 "$repository" /tmp/repository ${git_options[@]}
 
-          for dest_file in $(yq ".files[].source" /tmp/repo-config.yaml); do
+          for dest_file in $(yq ".files[].dest" /tmp/repo-config.yaml); do
             yq ".files[] | select(.dest == \"$dest_file\")" /tmp/repo-config.yaml > /tmp/file-config.yaml
 
             source_path=$(yq ".source" /tmp/file-config.yaml)
