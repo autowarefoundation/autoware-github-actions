@@ -103,7 +103,10 @@ runs:
             pre_commands=$(yq ".pre-commands" /tmp/file-config.yaml)
             post_commands=$(yq ".post-commands" /tmp/file-config.yaml)
 
-            modified_source_path="/tmp/repository/$source_path"
+            full_source_path="/tmp/repository/$source_path"
+
+            modified_source_path=$(mktemp)
+            cp "$full_source_path" "$modified_source_path"
 
             pre_commands=$(echo "$pre_commands" | sed "s|{source}|$modified_source_path|g" | sed "s|{dest}|$dest_path|g")
             post_commands=$(echo "$post_commands" | sed "s|{source}|$modified_source_path|g" | sed "s|{dest}|$dest_path|g")
