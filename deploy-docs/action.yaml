@@ -89,7 +89,7 @@ runs:
     - name: Find PR comment
       if: ${{ steps.set-docs-version-name.outputs.pr-number != '' }}
       id: find-comment
-      uses: peter-evans/find-comment@v2
+      uses: peter-evans/find-comment@v3
       with:
         issue-number: ${{ steps.set-docs-version-name.outputs.pr-number }}
         comment-author: github-actions[bot]
