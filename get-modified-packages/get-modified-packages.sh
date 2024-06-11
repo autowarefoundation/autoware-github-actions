@@ -49,11 +49,22 @@ function find_package_dir() {
     return 1
 }
 
-# Ensure base branch is fetched
-git fetch --depth=1 origin "$base_branch":refs/remotes/origin/"$base_branch"
+# Function to check if the base ref SHA is in the commit history
+check_base_ref_in_history() {
+    git rev-list HEAD | grep -q "$(git rev-parse origin/"$base_branch")"
+}
 
-# Find modified files from base branch
-modified_files=$(git diff --name-only refs/remotes/origin/"$base_branch"...HEAD)
+# Fetch the initial shallow clone depth
+depth=1
+
+# Loop to deepen the fetch until the base ref SHA is included
+while ! check_base_ref_in_history; do
+    depth=$((depth * 2))
+    git fetch --deepen=$depth
+done
+
+# Get the modified files between base ref and HEAD
+modified_files=$(git diff --name-only origin/"$base_branch"...HEAD)
 
 # Find modified packages
 modified_package_dirs=()
