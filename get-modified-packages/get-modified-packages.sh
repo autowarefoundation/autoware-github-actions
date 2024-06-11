@@ -50,10 +50,10 @@ function find_package_dir() {
 }
 
 # Ensure base branch is fetched
-git fetch --depth=1 origin "$base_branch"
+git fetch --depth=1 origin "$base_branch":refs/remotes/origin/"$base_branch"
 
 # Find modified files from base branch
-modified_files=$(git diff --name-only "$base_branch"...HEAD)
+modified_files=$(git diff --name-only refs/remotes/origin/"$base_branch"...HEAD)
 
 # Find modified packages
 modified_package_dirs=()
