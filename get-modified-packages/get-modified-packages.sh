@@ -51,7 +51,7 @@ function find_package_dir() {
 
 # Function to check if the base ref SHA is in the commit history
 check_base_ref_in_history() {
-    git rev-list HEAD | grep -q "$(git rev-parse origin/"$base_branch")"
+    git rev-list HEAD | grep -q "$(git rev-parse "$base_branch")"
 }
 
 # Fetch the initial shallow clone depth
@@ -64,7 +64,7 @@ while ! check_base_ref_in_history; do
 done
 
 # Get the modified files between base ref and HEAD
-modified_files=$(git diff --name-only origin/"$base_branch"...HEAD)
+modified_files=$(git diff --name-only $base_branch"...HEAD)
 
 # Find modified packages
 modified_package_dirs=()
