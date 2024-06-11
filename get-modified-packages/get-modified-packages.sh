@@ -49,6 +49,9 @@ function find_package_dir() {
     return 1
 }
 
+# Ensure base branch is fetched
+git fetch --depth=1 origin "$base_branch"
+
 # Find modified files from base branch
 modified_files=$(git diff --name-only "$base_branch"...HEAD)
 
