@@ -15,8 +15,9 @@ while [ "${1-}" != "" ]; do
     shift
 done
 
-base_branch="${args[0]}"
 # base_branch is like "origin/main"
+base_branch="${args[0]}"
+echo "base_branch: $base_branch"
 
 # Check args
 if [ "$base_branch" = "" ]; then
