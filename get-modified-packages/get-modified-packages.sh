@@ -60,6 +60,10 @@ depth=1
 # Loop to deepen the fetch until the base ref SHA is included
 while ! check_base_ref_in_history; do
     depth=$((depth * 2))
+    # NOTE: need to specify the bese_branch
+    # OK: git fetch origin/main --deepen=1
+    # NG: git fetch origin main --deepen=1
+    # => $base_branch need to be transformed from "origin/main" to "origin main"
     git fetch --deepen=$depth
 done
 
