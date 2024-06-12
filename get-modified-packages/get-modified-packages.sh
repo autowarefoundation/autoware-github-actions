@@ -49,8 +49,7 @@ function find_package_dir() {
 }
 
 # Find modified files from the base branch
-modified_files=$(git diff --name-only "$base_branch"...HEAD)
-if [ $? -ne 0 ]; then
+if ! modified_files=$(git diff --name-only "$base_branch"...HEAD); then
     echo -e "\e[31mFailed to determine modified files. Please check if the base branch exists and fetch depth is sufficient.\e[m"
     exit 1
 fi
