@@ -16,9 +16,25 @@ jobs:
     outputs:
       result: ${{ steps.make-sure-label-is-present.outputs.result }}
     steps:
+      - name: Check if new label is input label
+        id: check-if-new-label-is-input-label
+        if: github.event.label.name == inputs.label
+        run: |
+          echo "new_label_is_input_label=true" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Skip if new label is not input label
+        if: steps.check-if-new-label-is-input-label.outputs.new_label_is_input_label != 'true'
+        run: |
+          echo "Skipping execution since a different label '${{ github.event.label.name }}' is added."
+          echo "result=false" >> $GITHUB_OUTPUT
+        shell: bash
+
       - name: Check if label is present
         id: make-sure-label-is-present
-        if: contains(github.event.pull_request.labels.*.name, inputs.label)
+        if: |
+          (contains(github.event.pull_request.labels.*.name, inputs.label) && 
+          steps.check-if-new-label-is-input-label.outputs.new_label_is_input_label == 'true')
         run: |
           echo "result=true" >> $GITHUB_OUTPUT
         shell: bash
