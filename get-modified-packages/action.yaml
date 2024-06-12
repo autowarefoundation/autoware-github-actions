@@ -2,7 +2,7 @@ name: get-modified-packages
 description: ""
 
 inputs:
-  base-branch:
+  base-ref:
     description: ""
     required: false
     default: ${{ github.base_ref }}
@@ -20,10 +20,16 @@ runs:
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
       shell: bash
 
+    - name: Fetch the base branch with enough history for a common merge-base commit
+      run: |
+        git fetch origin ${{ inputs.base-ref }}
+      shell: bash
+
     - name: Get modified packages
       id: get-modified-packages
       run: |
-        echo "modified-packages=$(${GITHUB_ACTION_PATH}/get-modified-packages.sh origin/${{ inputs.base-branch }})" >> $GITHUB_OUTPUT
+        modified_packages=$(${GITHUB_ACTION_PATH}/get-modified-packages.sh origin/${{ inputs.base-ref }})
+        echo "modified-packages=$modified_packages" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Show result
