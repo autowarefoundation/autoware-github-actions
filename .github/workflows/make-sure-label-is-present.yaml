@@ -1,0 +1,31 @@
+name: make-sure-label-is-present
+
+on:
+  workflow_call:
+    inputs:
+      label:
+        required: true
+        type: string
+    outputs:
+      result:
+        value: ${{ jobs.make-sure-label-is-present.outputs.result }}
+
+jobs:
+  make-sure-label-is-present:
+    runs-on: ubuntu-latest
+    outputs:
+      result: ${{ steps.make-sure-label-is-present.outputs.result }}
+    steps:
+      - name: Check if label is present
+        id: make-sure-label-is-present
+        if: contains(github.event.pull_request.labels.*.name, inputs.label)
+        run: |
+          echo "result=true" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Skip if label is not present
+        if: steps.make-sure-label-is-present.outputs.result != 'true'
+        run: |
+          echo "Please add the label '${{ inputs.label }}' to run this workflow."
+          echo "result=false" >> $GITHUB_OUTPUT
+        shell: bash
