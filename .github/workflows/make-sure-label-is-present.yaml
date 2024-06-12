@@ -33,7 +33,7 @@ jobs:
       - name: Check if label is present
         id: make-sure-label-is-present
         if: |
-          (contains(github.event.pull_request.labels.*.name, inputs.label) && 
+          (contains(github.event.pull_request.labels.*.name, inputs.label) &&
           steps.check-if-new-label-is-input-label.outputs.new_label_is_input_label == 'true')
         run: |
           echo "result=true" >> $GITHUB_OUTPUT
