@@ -52,7 +52,6 @@ runs:
 
     - name: Run rosdep install
       run: |
-        package_paths=$(colcon list -p --packages-above-and-dependencies ${{ inputs.target-packages }} --base-paths . dependency_ws)
         sudo apt-get -yqq update
         if [ "${{ inputs.include-eol-distros }}" = "true" ]; then
             rosdep update --include-eol-distros
