@@ -22,6 +22,10 @@ inputs:
   include-eol-distros:
     description: ""
     required: false
+  cache-build-artifacts:
+    description: "Caches the build and install folders for clang-tidy to use"
+    required: false
+    default: "false"
 
 runs:
   using: composite
@@ -85,6 +89,7 @@ runs:
       shell: bash
 
     - name: Cache build artifacts
+      if: ${{ inputs.cache-build-artifacts == 'true' }}
       uses: actions/cache@v4
       with:
         path: |
