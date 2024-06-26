@@ -92,7 +92,7 @@ runs:
         path: |
           ./build
           ./install
-        key: build-${{ inputs.rosdistro }}-${{ runner.arch }}-${{ inputs.cache-key-element }}-${{ inputs.cmake-build-type }}-${{ github.sha }}
+        key: build-${{ runner.arch }}-${{ inputs.rosdistro }}-${{ inputs.cache-key-element }}-${{ inputs.cmake-build-type }}-${{ github.sha }}
 
     - name: Build
       if: ${{ steps.restore-build-files.outputs.cache-hit != 'true' }}
