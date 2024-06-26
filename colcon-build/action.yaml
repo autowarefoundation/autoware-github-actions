@@ -22,6 +22,10 @@ inputs:
   include-eol-distros:
     description: ""
     required: false
+  cache-key-element:
+    description: "Will be part of the cache key"
+    default: "default"
+    required: false
 
 runs:
   using: composite
@@ -90,4 +94,4 @@ runs:
         path: |
           ./build
           ./install
-        key: build-${{ inputs.rosdistro }}-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cmake-build-type }}-${{ github.sha }}
+        key: build-${{ inputs.rosdistro }}-${{ runner.arch }}-${{ inputs.cache-key-element }}-${{ inputs.cmake-build-type }}-${{ github.sha }}

@@ -11,6 +11,10 @@ inputs:
   build-depends-repos:
     description: ""
     required: false
+  cmake-build-type:
+    description: ""
+    required: false
+    default: Release
   label-regex:
     description: ""
     required: false
@@ -21,6 +25,10 @@ inputs:
     default: ${{ github.token }}
   include-eol-distros:
     description: ""
+    required: false
+  cache-key-element:
+    description: "Will be part of the cache key"
+    default: "default"
     required: false
 outputs:
   coverage-report-files:
@@ -84,7 +92,7 @@ runs:
         path: |
           ./build
           ./install
-        key: build-${{ inputs.rosdistro }}-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cmake-build-type }}-${{ github.sha }}
+        key: build-${{ inputs.rosdistro }}-${{ runner.arch }}-${{ inputs.cache-key-element }}-${{ inputs.cmake-build-type }}-${{ github.sha }}
 
     - name: Test
       run: |
