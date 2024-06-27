@@ -23,8 +23,8 @@ inputs:
     description: ""
     required: false
   cache-key-element:
-    description: "Will be part of the cache key"
-    default: "default"
+    description: Will be part of the cache key
+    default: default
     required: false
 
 runs:
