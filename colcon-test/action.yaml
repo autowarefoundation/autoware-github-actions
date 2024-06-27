@@ -11,10 +11,6 @@ inputs:
   build-depends-repos:
     description: ""
     required: false
-  cmake-build-type:
-    description: ""
-    required: false
-    default: Release
   label-regex:
     description: ""
     required: false
@@ -25,10 +21,6 @@ inputs:
     default: ${{ github.token }}
   include-eol-distros:
     description: ""
-    required: false
-  cache-key-element:
-    description: "Will be part of the cache key"
-    default: "default"
     required: false
 outputs:
   coverage-report-files:
@@ -84,15 +76,6 @@ runs:
         fi
         DEBIAN_FRONTEND=noninteractive rosdep install -yqq --from-paths ${package_paths} --ignore-src --rosdistro ${{ inputs.rosdistro }}
       shell: bash
-
-    - name: Restore build files from cache
-      id: restore-build-files
-      uses: actions/cache@v4
-      with:
-        path: |
-          ./build
-          ./install
-        key: build-${{ runner.arch }}-${{ inputs.rosdistro }}-${{ inputs.cache-key-element }}-${{ inputs.cmake-build-type }}-${{ github.sha }}
 
     - name: Test
       run: |
