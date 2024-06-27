@@ -77,15 +77,6 @@ runs:
         DEBIAN_FRONTEND=noninteractive rosdep install -yqq --from-paths ${package_paths} --ignore-src --rosdistro ${{ inputs.rosdistro }}
       shell: bash
 
-    - name: Restore build files from cache
-      id: restore-build-files
-      uses: actions/cache@v4
-      with:
-        path: |
-          ./build
-          ./install
-        key: build-${{ inputs.rosdistro }}-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cmake-build-type }}-${{ github.sha }}
-
     - name: Test
       run: |
         set -e

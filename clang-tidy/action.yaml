@@ -28,6 +28,10 @@ inputs:
   include-eol-distros:
     description: ""
     required: false
+  cache-key-element:
+    description: Will be part of the cache key
+    default: default
+    required: false
 
 runs:
   using: composite
@@ -83,12 +87,12 @@ runs:
 
     - name: Restore build files from cache
       id: restore-build-files
-      uses: actions/cache@v4
+      uses: actions/cache/restore@v4
       with:
         path: |
           ./build
           ./install
-        key: build-${{ inputs.rosdistro }}-${{ runner.os }}-${{ runner.arch }}-${{ inputs.cmake-build-type }}-${{ github.sha }}
+        key: build-${{ runner.arch }}-${{ inputs.rosdistro }}-${{ inputs.cache-key-element }}-${{ inputs.cmake-build-type }}-${{ github.sha }}
 
     - name: Build
       if: ${{ steps.restore-build-files.outputs.cache-hit != 'true' }}
