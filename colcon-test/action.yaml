@@ -93,7 +93,6 @@ runs:
         colcon test --event-handlers console_cohesion+ \
           --mixin coverage-pytest \
           --packages-above ${{ inputs.target-packages }} \
-          --ctest-args -L "${{ inputs.label-regex }}" \
           --executor sequential \
           --return-code-on-test-failure
 
