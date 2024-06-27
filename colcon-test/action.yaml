@@ -11,10 +11,6 @@ inputs:
   build-depends-repos:
     description: ""
     required: false
-  label-regex:
-    description: ""
-    required: false
-    default: .* # Run all tests
   token:
     description: ""
     required: false
