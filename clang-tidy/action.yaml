@@ -126,11 +126,17 @@ runs:
       if: ${{ steps.get-target-files.outputs.target-files != '' }}
       run: |
         mkdir /tmp/clang-tidy-result
-        clang-tidy -p build/ -export-fixes /tmp/clang-tidy-result/fixes.yaml ${{ steps.get-target-files.outputs.target-files }} || true
+        clang-tidy -p build/ -export-fixes /tmp/clang-tidy-result/fixes.yaml ${{ steps.get-target-files.outputs.target-files }} > /tmp/clang-tidy-result/report.txt || true
         echo "${{ github.event.number }}" > /tmp/clang-tidy-result/pr-id.txt
         echo "${{ github.event.pull_request.head.repo.full_name }}" > /tmp/clang-tidy-result/pr-head-repo.txt
         echo "${{ github.event.pull_request.head.ref }}" > /tmp/clang-tidy-result/pr-head-ref.txt
       shell: bash
+
+    - name: Check if the report.txt file exists
+      id: check-report-txt-existence
+      uses: autowarefoundation/autoware-github-actions/check-file-existence@v1
+      with:
+        files: /tmp/clang-tidy-result/report.txt
 
     - name: Check if the fixes.yaml file exists
       id: check-fixes-yaml-existence
@@ -139,14 +145,16 @@ runs:
         files: /tmp/clang-tidy-result/fixes.yaml
 
     - name: Upload artifacts
-      if: ${{ steps.check-fixes-yaml-existence.outputs.exists == 'true' }}
+      if: ${{ steps.check-report-txt-existence.outputs.exists == 'true' && steps.check-fixes-yaml-existence.outputs.exists == 'true' }}
       uses: actions/upload-artifact@v4
       with:
         name: clang-tidy-result
         path: /tmp/clang-tidy-result/
 
-    - name: Mark the workflow as failed if the fixes.yaml file exists
-      if: ${{ steps.check-fixes-yaml-existence.outputs.exists == 'true' }}
+    - name: Mark the workflow as failed if clang-tidy find an error
+      if: ${{ steps.check-report-txt-existence.outputs.exists == 'true' }}
       run: |
-        exit 1
+        if [ -n "$(grep ": error:" /tmp/clang-tidy-result/report.txt)" ]; then
+          exit 1
+        fi
       shell: bash
