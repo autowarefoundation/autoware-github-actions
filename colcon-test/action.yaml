@@ -94,6 +94,7 @@ runs:
 
         colcon lcov-result \
           --verbose \
+          --filter "*/test/*" \
           --packages-above ${{ inputs.target-packages }} || true
 
         colcon coveragepy-result \
