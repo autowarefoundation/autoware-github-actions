@@ -27,9 +27,9 @@ inputs:
     default: default
     required: false
   nice-command:
-    description: "See `man nice` for details"
+    description: See `man nice` for details
     required: false
-    default: "nice -n 19"
+    default: nice -n 19
 
 runs:
   using: composite
