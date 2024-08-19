@@ -31,7 +31,7 @@ jobs:
 ## Inputs
 
 | Name                | Required | Description                                                                  |
-|---------------------| -------- |------------------------------------------------------------------------------|
+| ------------------- | -------- | ---------------------------------------------------------------------------- |
 | rosdistro           | true     | ROS distro.                                                                  |
 | target-packages     | true     | The target packages to build.                                                |
 | build-depends-repos | false    | The `.repos` file that includes build dependencies.                          |
