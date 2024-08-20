@@ -30,16 +30,16 @@ jobs:
 
 ## Inputs
 
-| Name                | Required | Description                                                                  |
-| ------------------- | -------- | ---------------------------------------------------------------------------- |
-| rosdistro           | true     | ROS distro.                                                                  |
-| target-packages     | true     | The target packages to build.                                                |
-| build-depends-repos | false    | The `.repos` file that includes build dependencies.                          |
-| cmake-build-type    | false    | The value for `CMAKE_BUILD_TYPE`.                                            |
-| token               | false    | The token for build dependencies.                                            |
-| include-eol-distros | false    | If true, adds `--include-eol-distros` to `rosdep update`.                    |
-| cache-key-element   | false    | This value is added to the github actions cache key.                         |
-| nice-command        | false    | This command is prepended to the `colcon build` to avoid draining resources. |
+| Name                         | Required | Description                                                                                                             |
+| ---------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------- |
+| rosdistro                    | true     | ROS distro.                                                                                                             |
+| target-packages              | true     | The target packages to build.                                                                                           |
+| build-depends-repos          | false    | The `.repos` file that includes build dependencies.                                                                     |
+| cmake-build-type             | false    | The value for `CMAKE_BUILD_TYPE`.                                                                                       |
+| token                        | false    | The token for build dependencies.                                                                                       |
+| include-eol-distros          | false    | If true, adds `--include-eol-distros` to `rosdep update`.                                                               |
+| cache-key-element            | false    | This value is added to the github actions cache key.                                                                    |
+| nice-command                 | false    | This command is prepended to the `colcon build` to avoid draining resources.                                            |
 | colcon-parallel-workers-flag | false    | Will be appended to the colcon build command to limit number of packages built in parallel. e.g. "--parallel-workers 3" |
 | makeflags                    | false    | Will be exported as MAKEFLAGS environment variable for colcon build step. e.g. "-j 4"                                   |
 
