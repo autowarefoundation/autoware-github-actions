@@ -26,6 +26,10 @@ inputs:
     description: Will be part of the cache key
     default: default
     required: false
+  nice-command:
+    description: See `man nice` for details
+    required: false
+    default: nice -n 19
 
 runs:
   using: composite
@@ -80,7 +84,7 @@ runs:
         cat /etc/nsswitch.conf
         sed -e 's#hosts:\(.*\)dns\(.*\)#hosts:\1\2#g' -i.bak /etc/nsswitch.conf
         cat /etc/nsswitch.conf
-        colcon build --event-handlers console_cohesion+ \
+        ${{ inputs.nice-command }} colcon build --event-handlers console_cohesion+ \
           --packages-above-and-dependencies ${{ inputs.target-packages }} \
           --cmake-args -DCMAKE_BUILD_TYPE=${{ inputs.cmake-build-type }} \
           --mixin coverage-gcc coverage-pytest compile-commands
