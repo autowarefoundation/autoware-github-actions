@@ -40,6 +40,8 @@ jobs:
 | include-eol-distros | false    | If true, adds `--include-eol-distros` to `rosdep update`.                    |
 | cache-key-element   | false    | This value is added to the github actions cache key.                         |
 | nice-command        | false    | This command is prepended to the `colcon build` to avoid draining resources. |
+| colcon-parallel-workers-flag | false    | Will be appended to the colcon build command to limit number of packages built in parallel. e.g. "--parallel-workers 3" |
+| makeflags                    | false    | Will be exported as MAKEFLAGS environment variable for colcon build step. e.g. "-j 4"                                   |
 
 ## Outputs
 
