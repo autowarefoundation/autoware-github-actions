@@ -30,6 +30,14 @@ inputs:
     description: See `man nice` for details
     required: false
     default: nice -n 19
+  colcon-parallel-workers-flag:
+    description: Will be appended to the colcon build command to limit number of packages built in parallel. e.g. "--parallel-workers 3"
+    default: ""
+    required: false
+  makeflags:
+    description: Will be exported as MAKEFLAGS environment variable. e.g. "-j 4"
+    default: ""
+    required: false
 
 runs:
   using: composite
@@ -84,7 +92,10 @@ runs:
         cat /etc/nsswitch.conf
         sed -e 's#hosts:\(.*\)dns\(.*\)#hosts:\1\2#g' -i.bak /etc/nsswitch.conf
         cat /etc/nsswitch.conf
-        ${{ inputs.nice-command }} colcon build --event-handlers console_cohesion+ \
+        MAKEFLAGS="${{ inputs.makeflags }}"
+        echo "MAKEFLAGS=$MAKEFLAGS"  # for debugging
+        ${{ inputs.nice-command }} colcon build ${{ inputs.colcon-parallel-workers-flag }} \
+          --event-handlers console_cohesion+ \
           --packages-above-and-dependencies ${{ inputs.target-packages }} \
           --cmake-args -DCMAKE_BUILD_TYPE=${{ inputs.cmake-build-type }} \
           --mixin coverage-gcc coverage-pytest compile-commands
