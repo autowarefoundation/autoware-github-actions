@@ -26,8 +26,8 @@ inputs:
     description: Will be part of the cache key
     default: default
     required: false
-  nice-command:
-    description: See `man nice` for details
+  build-pre-command:
+    description: Will be prepended to the colcon build command. e.g. "nice -n 19" or "taskset --cpu-list 0-2"
     required: false
     default: nice -n 19
   colcon-parallel-workers-flag:
@@ -94,7 +94,7 @@ runs:
         cat /etc/nsswitch.conf
         MAKEFLAGS="${{ inputs.makeflags }}"
         echo "MAKEFLAGS=$MAKEFLAGS"  # for debugging
-        ${{ inputs.nice-command }} colcon build ${{ inputs.colcon-parallel-workers-flag }} \
+        ${{ inputs.build-pre-command }} colcon build ${{ inputs.colcon-parallel-workers-flag }} \
           --event-handlers console_cohesion+ \
           --packages-above-and-dependencies ${{ inputs.target-packages }} \
           --cmake-args -DCMAKE_BUILD_TYPE=${{ inputs.cmake-build-type }} \
