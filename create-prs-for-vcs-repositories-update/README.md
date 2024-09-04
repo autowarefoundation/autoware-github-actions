@@ -31,7 +31,7 @@ jobs:
           private_key: ${{ secrets.PRIVATE_KEY }}
 
       - name: Run 
-        uses: sasakisasaki/autoware-github-actions/create-prs-for-vcs-repositories-update@feat/add/create_prs_for_vcs_repositories_update
+        uses: sasakisasaki/autoware-github-actions/create-prs-for-vcs-repositories-update@add-feature-for-creating-prs-which-update-vcs-repositories
         with:
           token: ${{ steps.generate-token.outputs.token }}
           repo_name: autowarefoundation/autoware_dummy_repository
