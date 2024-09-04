@@ -31,7 +31,7 @@ jobs:
           app_id: ${{ secrets.APP_ID }}
           private_key: ${{ secrets.PRIVATE_KEY }}
 
-      - name: Run 
+      - name: Run
         uses: autowarefoundation/autoware-github-actions/create-prs-for-vcs-repositories-update@v1
         with:
           token: ${{ steps.generate-token.outputs.token }}
@@ -45,15 +45,15 @@ jobs:
 
 ## Inputs
 
-| Name                     | Required | Default                                      | Description                                                                                                                   |
-| ------------------------ | -------- | -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| token                    | true     |                                              | The token for pull requests.                                                                                                  |
-| repo_name                | true     |                                              | The name of the repository to create pull requests.                                                                           |
-| parent_dir               | false    | .                                            | The parent directory of the repository.                                                                                       |
-| base_branch              | false    | main                                         | The base branch to create pull requests.                                                                                      |
-| new_branch_prefix        | false    | feat/update-                                 | The prefix of the new branch name. The branch name will be `{new_branch_prefix}-{user_name}/{repository_name}/{new_version}`. |
-| autoware_repos_file_name | false    | autoware.repos                               | The name of the vcs imported repository's file (e.g. autoware.repos).                                                         |
-| verbosity                | false    | 0                                            | The verbosity level (0 - 2).                                                                                                  |
+| Name                     | Required | Default        | Description                                                                                                                   |
+| ------------------------ | -------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| token                    | true     |                | The token for pull requests.                                                                                                  |
+| repo_name                | true     |                | The name of the repository to create pull requests.                                                                           |
+| parent_dir               | false    | .              | The parent directory of the repository.                                                                                       |
+| base_branch              | false    | main           | The base branch to create pull requests.                                                                                      |
+| new_branch_prefix        | false    | feat/update-   | The prefix of the new branch name. The branch name will be `{new_branch_prefix}-{user_name}/{repository_name}/{new_version}`. |
+| autoware_repos_file_name | false    | autoware.repos | The name of the vcs imported repository's file (e.g. autoware.repos).                                                         |
+| verbosity                | false    | 0              | The verbosity level (0 - 2).                                                                                                  |
 
 ## Outputs
 
