@@ -1,31 +1,31 @@
 name: create_prs_for_vcs_repositories_update
-description: 'Create PRs for VCS repositories update'
+description: "Create PRs for VCS repositories update"
 
 inputs:
   token:
-    description: 'GitHub token'
+    description: "GitHub token"
     required: true
   repo_name:
-    description: 'Repository name'
+    description: "Repository name"
     required: true
   parent_dir:
-    description: 'Parent directory'
+    description: "Parent directory"
     required: false
-    default: './'
+    default: "./"
   base_branch:
-    description: 'Base branch'
+    description: "Base branch"
     required: false
-    default: 'main'
+    default: "main"
   new_branch_prefix:
     description: 'New branch prefix. The branch name will be "<new_branch_prefix>-<user_name>/<repository_name>/<new_version>".'
     required: false
-    default: 'feat/update-'
+    default: "feat/update-"
   autoware_repos_file_name:
-    description: 'Autoware repositories file name'
+    description: "Autoware repositories file name"
     required: false
-    default: 'autoware.repos'
+    default: "autoware.repos"
   verbosity:
-    description: 'Verbosity level'
+    description: "Verbosity level"
     required: false
     default: 0
 
@@ -37,7 +37,7 @@ runs:
       with:
         python-version: "3.12"
         architecture: "x64"
-        
+
     - name: Install dependencies
       shell: bash
       run: python -m pip install --upgrade ruamel.yaml PyGithub GitPython packaging
