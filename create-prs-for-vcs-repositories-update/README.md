@@ -2,6 +2,7 @@
 
 ## Description
 
+This action creates pull requests for updating the vcs repositories in the autoware repository.
 
 ## Initial setup (within `autowarefoundation` org)
 
