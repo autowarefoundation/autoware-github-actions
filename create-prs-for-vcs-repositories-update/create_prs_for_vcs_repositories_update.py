@@ -8,7 +8,7 @@ from ruamel.yaml import YAML
 from packaging import version
 import git
 import github
-from github import Github    # noqa: To avoid spell check error due to a word "Github"
+from github import Github    # cspell: ignore Github
 
 
 # Parse arguments
@@ -142,11 +142,11 @@ class GitHubInterface:
     URL_PATTERN = r'https://github.com/([^/]+)/([^/]+?)(?:\.git)?$'
 
     def __init__(self, token: str):
-        self.g = Github(token)    # noqa
+        self.g = Github(token)    # cspell: ignore Github
 
     def url_to_repository_name(self, url:str) -> str:
         # Get repository name from url
-        match = re.search(GitHubInterface.URL_PATTERN, url)    # noqa
+        match = re.search(GitHubInterface.URL_PATTERN, url)    # cspell: ignore Github
         assert match is not None, f"URL {url} is invalid"
         user_name = match.group(1)
         repo_name = match.group(2)
@@ -218,7 +218,7 @@ def create_version_update_pr(args: argparse.Namespace) -> None:
     github_token: str = os.getenv("GITHUB_TOKEN", default=None)
     if github_token == "None":
         raise ValueError("Please set GITHUB_TOKEN as an environment variable")
-    github_interface = GitHubInterface(token = github_token)    # noqa
+    github_interface = GitHubInterface(token = github_token)    # cspell: ignore Github
 
     autoware_repos: AutowareRepos = AutowareRepos(autoware_repos_file_name = args.autoware_repos_file_name)
 
