@@ -38,6 +38,7 @@ runs:
         architecture: "x64"
         
     - name: Install dependencies
+      shell: bash
       run: python -m pip install --upgrade ruamel.yaml PyGithub GitPython packaging
 
     - name: Set git config
@@ -46,9 +47,11 @@ runs:
         token: ${{ inputs.token }}
 
     - name: Fetch all branches
+      shell: bash
       run: git fetch --all
 
     - name: Run Python
+      shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
       run: |
