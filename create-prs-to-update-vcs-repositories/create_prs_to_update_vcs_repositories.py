@@ -11,50 +11,6 @@ import github
 from github import Github    # cspell: ignore Github
 
 
-# Parse arguments
-parser = argparse.ArgumentParser(description="Create a PR to update version in autoware.repos")
-
-# Verbosity count
-parser.add_argument("-v", "--verbose", action="count", default=0, help="Verbosity level")
-
-# Repository information
-args_repo = parser.add_argument_group("Repository information")
-args_repo.add_argument("--parent_dir", type=str, default="./", help="The parent directory of the repository")
-args_repo.add_argument("--repo_name", type=str, default="autowarefoundation/autoware_dummy_repository", help="The repository name to create a PR")
-args_repo.add_argument("--base_branch", type=str, default="main", help="The base branch of autoware.repos")
-args_repo.add_argument("--new_branch_prefix", type=str, default="feat/update-", help="The prefix of the new branch name")
-
-'''
-Following default pattern = r'\b(v?\d+\.\d+(?:\.\d+)?(?:-\w+)?(?:\+\w+(\.\d+)?)?)\b'
-can parse the following example formats:
-    "0.0.1",
-    "v0.0.1",
-    "ros2-v0.0.4",
-    "xxx-1.0.0-yyy",
-    "2.3.4",
-    "v1.2.3-beta",
-    "v1.0",
-    "v2",
-    "1.0.0-alpha+001",
-    "v1.0.0-rc1+build.1",
-    "2.0.0+build.1848",
-    "2.0.1-alpha.1227",
-    "1.0.0-alpha.beta",
-    "ros_humble-v0.10.2"
-'''
-args_repo.add_argument("--semantic_version_pattern",
-                       type=str,
-                       default=r'\b(v?\d+\.\d+(?:\.\d+)?(?:-\w+)?(?:\+\w+(\.\d+)?)?)\b',
-                       help="The pattern of semantic version"
-)
-
-# For the Autoware
-args_aw = parser.add_argument_group("Autoware")
-args_aw.add_argument("--autoware_repos_file_name", type=str, default="autoware.repos", help="The path to autoware.repos")
-
-args = parser.parse_args()
-
-
 class AutowareRepos:
     """
     This class gets information from autoware.repos and updates it
@@ -158,6 +114,54 @@ class GitHubInterface:
             head=head,
             base=base,
         )
+
+
+def parse_args() -> argparse.Namespace:
+
+    # Parse arguments
+    parser = argparse.ArgumentParser(description="Create a PR to update version in autoware.repos")
+
+    # Verbosity count
+    parser.add_argument("-v", "--verbose", action="count", default=0, help="Verbosity level")
+
+    # Repository information
+    args_repo = parser.add_argument_group("Repository information")
+    args_repo.add_argument("--parent_dir", type=str, default="./", help="The parent directory of the repository")
+    args_repo.add_argument("--repo_name", type=str, default="autowarefoundation/autoware_dummy_repository", help="The repository name to create a PR")
+    args_repo.add_argument("--base_branch", type=str, default="main", help="The base branch of autoware.repos")
+    args_repo.add_argument("--new_branch_prefix", type=str, default="feat/update-", help="The prefix of the new branch name")
+
+    '''
+    Following default pattern = r'\b(v?\d+\.\d+(?:\.\d+)?(?:-\w+)?(?:\+\w+(\.\d+)?)?)\b'
+    can parse the following example formats:
+        "0.0.1",
+        "v0.0.1",
+        "ros2-v0.0.4",
+        "xxx-1.0.0-yyy",
+        "2.3.4",
+        "v1.2.3-beta",
+        "v1.0",
+        "v2",
+        "1.0.0-alpha+001",
+        "v1.0.0-rc1+build.1",
+        "2.0.0+build.1848",
+        "2.0.1-alpha.1227",
+        "1.0.0-alpha.beta",
+        "ros_humble-v0.10.2"
+    '''
+    args_repo.add_argument(
+        "--semantic_version_pattern",
+        type=str,
+        default=r'\b(v?\d+\.\d+(?:\.\d+)?(?:-\w+)?(?:\+\w+(\.\d+)?)?)\b',
+        help="The pattern of semantic version"
+    )
+
+    # For the Autoware
+    args_aw = parser.add_argument_group("Autoware")
+    args_aw.add_argument("--autoware_repos_file_name", type=str, default="autoware.repos", help="The path to autoware.repos")
+
+    return parser.parse_args()
+
 
 def get_logger(verbose: int) -> logging.Logger:
 
@@ -333,4 +337,4 @@ def main(args: argparse.Namespace) -> None:
 
 if __name__ == "__main__":
 
-    main(args)
+    main(parse_args())
