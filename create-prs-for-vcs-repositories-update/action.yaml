@@ -1,5 +1,5 @@
-name: create-prs-for-vcs-repositories-update
-description: Create PRs for VCS repositories update
+name: create-prs-to-update-vcs-repositories
+description: Create PRs to update VCS repositories
 
 inputs:
   token:
@@ -60,7 +60,7 @@ runs:
         for i in $(seq 1 ${{ inputs.verbosity }}); do
           VERBOSITY="$VERBOSITY -v"
         done
-        python ${GITHUB_ACTION_PATH}/create_prs_for_vcs_repositories_update.py \
+        python ${GITHUB_ACTION_PATH}/create_prs_to_update_vcs_repositories.py \
         --repo_name ${{ inputs.repo_name }} \
         --parent_dir ${{ inputs.parent_dir }} \
         --base_branch ${{ inputs.base_branch }} \

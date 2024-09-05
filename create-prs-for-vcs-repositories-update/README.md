@@ -1,8 +1,8 @@
-# create-prs-for-vcs-repositories-update
+# create-prs-to-update-vcs-repositories
 
 ## Description
 
-This action creates pull requests for updating the vcs repositories in the autoware repository.
+This action creates pull requests to update the vcs repositories in the autoware repository.
 
 ## Initial setup (within `autowarefoundation` org)
 
@@ -32,7 +32,7 @@ jobs:
           private_key: ${{ secrets.PRIVATE_KEY }}
 
       - name: Run
-        uses: autowarefoundation/autoware-github-actions/create-prs-for-vcs-repositories-update@v1
+        uses: autowarefoundation/autoware-github-actions/create-prs-to-update-vcs-repositories@v1
         with:
           token: ${{ steps.generate-token.outputs.token }}
           repo_name: autowarefoundation/autoware
