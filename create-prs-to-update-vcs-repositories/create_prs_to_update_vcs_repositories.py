@@ -43,7 +43,7 @@ class AutowareRepos:
         }
         return repository_url_version_dict
 
-    def pickup_semver_respositories(self, semantic_version_pattern: str) -> dict[str, str]:
+    def pickup_semver_repositories(self, semantic_version_pattern: str) -> dict[str, str]:
         """
         pick up repositories with semantic version tags
 
@@ -51,16 +51,16 @@ class AutowareRepos:
             semantic_version_pattern (str): a regular expression pattern for semantic version. e.g. r'(v\d+\.\d+\.\d+)'
 
         Returns:
-            repository_url_semantic_version_dict (dict[str, str]): a dictionary of GitHub repository URLs and semantic versions. e.g. {'https://github.com/tier4/glog.git': 'v0.6.0'}
+            repositories_url_semantic_version_dict (dict[str, str]): a dictionary of GitHub repository URLs and semantic versions. e.g. {'https://github.com/tier4/glog.git': 'v0.6.0'}
 
         """
         repository_url_version_dict = self._parse_repos()
 
-        repository_url_semantic_version_dict: dict[str, Optional[str]] = {
+        repositories_url_semantic_version_dict: dict[str, Optional[str]] = {
             url: (match.group(1) if (match := re.search(semantic_version_pattern, version)) else None)
             for url, version in repository_url_version_dict.items()
         }
-        return repository_url_semantic_version_dict
+        return repositories_url_semantic_version_dict
 
     def update_repository_version(self, url: str, new_version: str) -> None:
         """
@@ -230,7 +230,7 @@ def main(args: argparse.Namespace) -> None:
     autoware_repos: AutowareRepos = AutowareRepos(autoware_repos_file_name = args.autoware_repos_file_name)
 
     # Get the repositories with semantic version tags
-    repository_url_semantic_version_dict: dict[str, str] = autoware_repos.pickup_semver_respositories(semantic_version_pattern = args.semantic_version_pattern)
+    repositories_url_semantic_version_dict: dict[str, str] = autoware_repos.pickup_semver_repositories(semantic_version_pattern = args.semantic_version_pattern)
 
     # Get reference to the repository
     repo = git.Repo(args.parent_dir)
@@ -238,7 +238,7 @@ def main(args: argparse.Namespace) -> None:
     # Get all the branches
     branches = [r.remote_head for r in repo.remote().refs]
 
-    for url, current_version in repository_url_semantic_version_dict.items():
+    for url, current_version in repositories_url_semantic_version_dict.items():
         '''
         Description:
             In this loop, the script will create a PR to update the version of the repository specified by the URL.
