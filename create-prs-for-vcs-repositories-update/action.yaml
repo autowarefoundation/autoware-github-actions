@@ -1,4 +1,4 @@
-name: create_prs_for_vcs_repositories_update
+name: create-prs-for-vcs-repositories-update
 description: Create PRs for VCS repositories update
 
 inputs:
