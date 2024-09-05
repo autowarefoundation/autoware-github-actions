@@ -212,7 +212,7 @@ def create_one_branch(repo: git.Repo, branch_name: str) -> bool:
         return True
 
 
-def create_version_update_pr(args: argparse.Namespace) -> None:
+def main(args: argparse.Namespace) -> None:
 
     # Get GitHub token
     github_token: str = os.getenv("GITHUB_TOKEN", default=None)
@@ -330,4 +330,4 @@ def create_version_update_pr(args: argparse.Namespace) -> None:
 
 if __name__ == "__main__":
 
-    create_version_update_pr(args)
+    main(args)
