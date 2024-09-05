@@ -55,18 +55,6 @@ args_aw.add_argument("--autoware_repos_file_name", type=str, default="autoware.r
 args = parser.parse_args()
 
 
-# Initialize logger depending on the verbosity level
-if args.verbose == 0:
-    logging.basicConfig(level=logging.WARNING)
-elif args.verbose == 1:
-    logging.basicConfig(level=logging.INFO)
-elif args.verbose >= 2:
-    logging.basicConfig(level=logging.DEBUG)
-
-
-logger = logging.getLogger(__name__)
-
-
 class AutowareRepos:
     """
     This class gets information from autoware.repos and updates it
@@ -171,6 +159,18 @@ class GitHubInterface:
             base=base,
         )
 
+def get_logger(verbose: int) -> logging.Logger:
+
+    # Initialize logger depending on the verbosity level
+    if verbose == 0:
+        logging.basicConfig(level=logging.WARNING)
+    elif verbose == 1:
+        logging.basicConfig(level=logging.INFO)
+    elif verbose >= 2:
+        logging.basicConfig(level=logging.DEBUG)
+
+    return logging.getLogger(__name__)
+
 
 def get_latest_tag(tags: list[str], current_version: str) -> Optional[str]:
     '''
@@ -199,7 +199,7 @@ def get_latest_tag(tags: list[str], current_version: str) -> Optional[str]:
     return latest_tag
 
 
-def create_one_branch(repo: git.Repo, branch_name: str) -> bool:
+def create_one_branch(repo: git.Repo, branch_name: str, logger: logging.Logger) -> bool:
 
     # Check if the branch already exists
     if branch_name in repo.heads:
@@ -213,6 +213,9 @@ def create_one_branch(repo: git.Repo, branch_name: str) -> bool:
 
 
 def main(args: argparse.Namespace) -> None:
+
+    # Get logger
+    logger = get_logger(args.verbose)
 
     # Get GitHub token
     github_token: str = os.getenv("GITHUB_TOKEN", default=None)
@@ -282,7 +285,7 @@ def main(args: argparse.Namespace) -> None:
             continue
 
         # First, create a branch
-        create_one_branch(repo, branch_name)
+        create_one_branch(repo, branch_name, logger)
 
         # Switch to the branch
         repo.heads[branch_name].checkout()
