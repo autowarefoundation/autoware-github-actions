@@ -131,28 +131,32 @@ def parse_args() -> argparse.Namespace:
     args_repo.add_argument("--base_branch", type=str, default="main", help="The base branch of autoware.repos")
     args_repo.add_argument("--new_branch_prefix", type=str, default="feat/update-", help="The prefix of the new branch name")
 
+    DEFAULT_SEMANTIC_VERSION_PATTERN = r'\b(?<![^\s])\d+\.\d+\.\d+(?![-\w.+])\b'
     '''
-    Following default pattern = r'\b(v?\d+\.\d+(?:\.\d+)?(?:-\w+)?(?:\+\w+(\.\d+)?)?)\b'
-    can parse the following example formats:
-        "0.0.1",
-        "v0.0.1",
-        "ros2-v0.0.4",
-        "xxx-1.0.0-yyy",
-        "2.3.4",
-        "v1.2.3-beta",
-        "v1.0",
-        "v2",
-        "1.0.0-alpha+001",
-        "v1.0.0-rc1+build.1",
-        "2.0.0+build.1848",
-        "2.0.1-alpha.1227",
-        "1.0.0-alpha.beta",
-        "ros_humble-v0.10.2"
+    The DEFAULT_SEMANTIC_VERSION_PATTERN match/mismatches for following examples:
+
+        "0.0.1",                # match
+        "0.1.0",                # match
+        "1.0.0",                # match
+        "2.1.1",                # match
+        "v0.0.1",               # mismatch
+        "ros2-v0.0.4",          # mismatch
+        "xxx-1.0.0-yyy",        # mismatch
+        "v1.2.3-beta",          # mismatch
+        "v1.0",                 # mismatch
+        "v2",                   # mismatch
+        "1.0.0-alpha+001",      # mismatch
+        "v1.0.0-rc1+build.1",   # mismatch
+        "2.0.0+build.1848",     # mismatch
+        "2.0.1-alpha.1227",     # mismatch
+        "1.0.0-alpha.beta",     # mismatch
+        "ros_humble-v0.10.2"    # mismatch
+
     '''
     args_repo.add_argument(
         "--semantic_version_pattern",
         type=str,
-        default=r'\b(v?\d+\.\d+(?:\.\d+)?(?:-\w+)?(?:\+\w+(\.\d+)?)?)\b',
+        default=DEFAULT_SEMANTIC_VERSION_PATTERN,
         help="The pattern of semantic version"
     )
 
@@ -230,6 +234,10 @@ def main(args: argparse.Namespace) -> None:
     autoware_repos: AutowareRepos = AutowareRepos(autoware_repos_file_name = args.autoware_repos_file_name)
 
     # Get the repositories with semantic version tags
+    # e.g. {
+    #     'https://github.com/user/repo.git': '0.0.1',    # Pattern matched
+    #     'https://github.com/user/repo2.git': None,      # Pattern not matched
+    # }
     repositories_url_semantic_version_dict: dict[str, str] = autoware_repos.pickup_semver_repositories(semantic_version_pattern = args.semantic_version_pattern)
 
     # Get reference to the repository
@@ -252,6 +260,11 @@ def main(args: argparse.Namespace) -> None:
                 7. Create a PR
         '''
 
+        # Skip if the current version has an invalid format
+        if current_version is None:
+            logger.debug(f"The current version ({current_version}) format has a mismatched pattern. Skip for this repository:\n    {url}")
+            continue
+
         # get tags of the repository
         tags: list[str] = github_interface.get_tags_by_url(url)
 
@@ -259,7 +272,7 @@ def main(args: argparse.Namespace) -> None:
 
         # Skip if the expected format is not found
         if latest_tag is None:
-            logger.debug(f"The latest tag with expected format is not found in the repository {url}. Skip for this repository.")
+            logger.debug(f"The latest tag ({latest_tag}) format has a mismatched pattern. Skip for this repository:\n    {url}")
             continue
 
         # Exclude parse failed ones such as 'tier4/universe', 'main', ... etc
@@ -274,8 +287,8 @@ def main(args: argparse.Namespace) -> None:
                 logger.debug(f"Repository {url} has the latest version {current_version}. Skip for this repository.")
                 continue
         except (version.InvalidVersion, TypeError):
-            # If the current version is not a valid version and the latest tag is a valid version, let's update
-            pass
+            # If the current version is not a valid version, skip this repository
+            continue
 
         # Get repository name
         repo_name: str = github_interface.url_to_repository_name(url)
