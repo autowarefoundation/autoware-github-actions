@@ -57,7 +57,7 @@ class AutowareRepos:
         repository_url_version_dict = self._parse_repos()
 
         repositories_url_semantic_version_dict: dict[str, Optional[str]] = {
-            url: (match.group(1) if (match := re.search(semantic_version_pattern, version)) else None)
+            url: (version if re.fullmatch(semantic_version_pattern, version) else None)
             for url, version in repository_url_version_dict.items()
         }
         return repositories_url_semantic_version_dict
