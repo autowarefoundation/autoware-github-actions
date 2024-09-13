@@ -61,9 +61,14 @@ None.
 
 ## What kind of tags are handled
 
-- Monitors all vcs-imported repositories in the ```autoware.repos``` (if default) which have a version with regular expression pattern ```r'\b(?<![^\s])\d+\.\d+\.\d+(?![-\w.+])\b'``` (if default).
+- Monitors all vcs-imported repositories in the `autoware.repos` (if default) which have a version with regular expression pattern `r'\b(?<![^\s])\d+\.\d+\.\d+(?![-\w.+])\b'` (if default).
   - This pattern match/mismatches for the following examples:
+<<<<<<< HEAD
 ```plaintext
+=======
+
+```
+>>>>>>> 308248e3781ee8a9a8ac01373921c19eaeed93ce
         "0.0.1",                # match
         "0.1.0",                # match
         "1.0.0",                # match
@@ -83,17 +88,29 @@ None.
 ```
 
 ## What kind of version update is possible?
+
 - If there is a new version with pattern matched in the vcs-imported repositories, create a PR for each repository, respectively.
 - The valid/invalid version update cases are as follows:
   - Valid ones (PR must be created):
+<<<<<<< HEAD
 ```plaintext
+=======
+
+```
+>>>>>>> 308248e3781ee8a9a8ac01373921c19eaeed93ce
     0.0.1  =>  0.0.2
     1.1.1  =>  1.2.1
     2.4.3  =>  3.0.0
 ```
 
+<<<<<<< HEAD
   - Invalid ones (PR is not created):
 ```plaintext
+=======
+- Invalid ones (PR is not created):
+
+```
+>>>>>>> 308248e3781ee8a9a8ac01373921c19eaeed93ce
     main       =>  0.0.1
     v0.0.1     =>  0.0.2
     xxx-0.0.1  =>  0.0.9
