@@ -63,12 +63,15 @@ None.
 
 - Monitors all vcs-imported repositories in the `autoware.repos` (if default) which have a version with regular expression pattern `r'\b(?<![^\s])\d+\.\d+\.\d+(?![-\w.+])\b'` (if default).
   - This pattern match/mismatches for the following examples:
-<<<<<<< HEAD
+    <<<<<<< HEAD
+
 ```plaintext
 =======
 
 ```
->>>>>>> 308248e3781ee8a9a8ac01373921c19eaeed93ce
+
+> > > > > > > 308248e3781ee8a9a8ac01373921c19eaeed93ce
+
         "0.0.1",                # match
         "0.1.0",                # match
         "1.0.0",                # match
@@ -85,7 +88,8 @@ None.
         "2.0.1-alpha.1227",     # mismatch
         "1.0.0-alpha.beta",     # mismatch
         "ros_humble-v0.10.2"    # mismatch
-```
+
+````
 
 ## What kind of version update is possible?
 
@@ -96,12 +100,15 @@ None.
 ```plaintext
 =======
 
-```
->>>>>>> 308248e3781ee8a9a8ac01373921c19eaeed93ce
+````
+
+> > > > > > > 308248e3781ee8a9a8ac01373921c19eaeed93ce
+
     0.0.1  =>  0.0.2
     1.1.1  =>  1.2.1
     2.4.3  =>  3.0.0
-```
+
+````
 
 <<<<<<< HEAD
   - Invalid ones (PR is not created):
@@ -109,10 +116,15 @@ None.
 =======
 - Invalid ones (PR is not created):
 
-```
->>>>>>> 308248e3781ee8a9a8ac01373921c19eaeed93ce
+````
+
+> > > > > > > 308248e3781ee8a9a8ac01373921c19eaeed93ce
+
     main       =>  0.0.1
     v0.0.1     =>  0.0.2
     xxx-0.0.1  =>  0.0.9
     0.0.1-rc1  =>  0.0.2
+
+```
+
 ```
