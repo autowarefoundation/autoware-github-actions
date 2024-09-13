@@ -80,7 +80,8 @@ None.
         "2.0.1-alpha.1227",     # mismatch
         "1.0.0-alpha.beta",     # mismatch
         "ros_humble-v0.10.2"    # mismatch
-```
+
+````
 
 ## What kind of version update is possible?
 
@@ -91,7 +92,8 @@ None.
     0.0.1  =>  0.0.2
     1.1.1  =>  1.2.1
     2.4.3  =>  3.0.0
-```
+
+````
 
   - Invalid ones (PR is not created):
 ```plaintext
@@ -99,4 +101,7 @@ None.
     v0.0.1     =>  0.0.2
     xxx-0.0.1  =>  0.0.9
     0.0.1-rc1  =>  0.0.2
+
+```
+
 ```
