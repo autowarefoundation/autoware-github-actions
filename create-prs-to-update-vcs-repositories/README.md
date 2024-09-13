@@ -59,7 +59,7 @@ jobs:
 
 None.
 
-## What kind of tags are handled
+## What kind of tags are handled?
 
 - Monitors all vcs-imported repositories in the `autoware.repos` (if default) which have a version with regular expression pattern `r'\b(?<![^\s])\d+\.\d+\.\d+(?![-\w.+])\b'` (if default).
   - This pattern match/mismatches for the following examples:
