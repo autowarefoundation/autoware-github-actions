@@ -10,6 +10,7 @@ mkdocs-same-dir
 mkdocs-static-i18n
 mkdocs-video
 mike
+pathspec
 plantuml-markdown
 pymdown-extensions
 python-markdown-math
