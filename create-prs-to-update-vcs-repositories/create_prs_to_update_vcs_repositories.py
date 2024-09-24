@@ -1,3 +1,47 @@
+'''
+Description:
+
+    In this script, we create a PR to update the version of the repository specified by the URL in autoware.repos.
+    The steps are as follows:
+        1. Get the repositories with semantic version tags
+            1-1. Currently we only support the semantic version pattern of r'\b(?<![^\s])\d+\.\d+\.\d+(?![-\w.+])\b'.
+                This pattern matches/mismatches for the following examples:
+
+                    "0.0.1",                # match
+                    "0.1.0",                # match
+                    "1.0.0",                # match
+                    "2.1.1",                # match
+                    "v0.0.1",               # mismatch
+                    "ros2-v0.0.4",          # mismatch
+                    "xxx-1.0.0-yyy",        # mismatch
+                    "v1.2.3-beta",          # mismatch
+                    "v1.0",                 # mismatch
+                    "v2",                   # mismatch
+                    "1.0.0-alpha+001",      # mismatch
+                    "v1.0.0-rc1+build.1",   # mismatch
+                    "2.0.0+build.1848",     # mismatch
+                    "2.0.1-alpha.1227",     # mismatch
+                    "1.0.0-alpha.beta",     # mismatch
+                    "ros_humble-v0.10.2"    # mismatch
+
+        2. Get the latest tag
+        3. If the latest tag is newer than the current version, create a PR to update the version in autoware.repos
+            3-1. We can create PRs for major, minor, or patch updates
+                For example, if you want to create a PR only for major updates, you can use the --major option as follows:
+
+                ```
+                python create_prs_to_update_vcs_repositories.py --major
+                ```
+
+                If you want to create PRs for major and minor updates, you can use both the --major and --minor options as follows:
+
+                ```
+                python create_prs_to_update_vcs_repositories.py --major --minor
+                ```
+'''
+
+
+
 import os
 import re
 import argparse
@@ -9,6 +53,10 @@ from packaging import version
 import git
 import github
 from github import Github    # cspell: ignore Github
+
+
+# Define the semantic version pattern here
+SUPPORTED_SEMANTIC_VERSION_PATTERN = r'\b(?<![^\s])\d+\.\d+\.\d+(?![-\w.+])\b'
 
 
 class AutowareRepos:
@@ -131,35 +179,6 @@ def parse_args() -> argparse.Namespace:
     args_repo.add_argument("--base_branch", type=str, default="main", help="The base branch of autoware.repos")
     args_repo.add_argument("--new_branch_prefix", type=str, default="feat/update-", help="The prefix of the new branch name")
 
-    DEFAULT_SEMANTIC_VERSION_PATTERN = r'\b(?<![^\s])\d+\.\d+\.\d+(?![-\w.+])\b'
-    '''
-    The DEFAULT_SEMANTIC_VERSION_PATTERN match/mismatches for following examples:
-
-        "0.0.1",                # match
-        "0.1.0",                # match
-        "1.0.0",                # match
-        "2.1.1",                # match
-        "v0.0.1",               # mismatch
-        "ros2-v0.0.4",          # mismatch
-        "xxx-1.0.0-yyy",        # mismatch
-        "v1.2.3-beta",          # mismatch
-        "v1.0",                 # mismatch
-        "v2",                   # mismatch
-        "1.0.0-alpha+001",      # mismatch
-        "v1.0.0-rc1+build.1",   # mismatch
-        "2.0.0+build.1848",     # mismatch
-        "2.0.1-alpha.1227",     # mismatch
-        "1.0.0-alpha.beta",     # mismatch
-        "ros_humble-v0.10.2"    # mismatch
-
-    '''
-    args_repo.add_argument(
-        "--semantic_version_pattern",
-        type=str,
-        default=DEFAULT_SEMANTIC_VERSION_PATTERN,
-        help="The pattern of semantic version"
-    )
-
     # For the Autoware
     args_aw = parser.add_argument_group("Autoware")
     args_aw.add_argument("--autoware_repos_file_name", type=str, default="autoware.repos", help="The path to autoware.repos")
@@ -238,7 +257,7 @@ def main(args: argparse.Namespace) -> None:
     #     'https://github.com/user/repo.git': '0.0.1',    # Pattern matched
     #     'https://github.com/user/repo2.git': None,      # Pattern not matched
     # }
-    repositories_url_semantic_version_dict: dict[str, str] = autoware_repos.pickup_semver_repositories(semantic_version_pattern = args.semantic_version_pattern)
+    repositories_url_semantic_version_dict: dict[str, str] = autoware_repos.pickup_semver_repositories(semantic_version_pattern = SUPPORTED_SEMANTIC_VERSION_PATTERN)
 
     # Get reference to the repository
     repo = git.Repo(args.parent_dir)
