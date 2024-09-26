@@ -38,8 +38,34 @@ Description:
                 ```
                 python create_prs_to_update_vcs_repositories.py --major --minor
                 ```
-'''
 
+Example usage:
+
+    Example 1: Create PRs for major updates
+    ```
+    python create_prs_to_update_vcs_repositories.py --autoware_repos_file_name autoware.repos --targets major
+    ```
+
+    Example 2: Create PRs for minor updates
+    ```
+    python create_prs_to_update_vcs_repositories.py --autoware_repos_file_name autoware.repos --targets minor
+    ```
+
+    Example 3: Create PRs for patch updates
+    ```
+    python create_prs_to_update_vcs_repositories.py --autoware_repos_file_name autoware.repos --targets patch
+    ```
+
+    Example 4: Create PRs for major and minor updates
+    ```
+    python create_prs_to_update_vcs_repositories.py --autoware_repos_file_name files.repos/autoware.repos --targets major minor
+    ```
+
+    Example 5: Create PRs for any updates
+    ```
+    python create_prs_to_update_vcs_repositories.py --autoware_repos_file_name autoware.repos --targets any
+    ```
+'''
 
 
 import os
@@ -179,6 +205,15 @@ def parse_args() -> argparse.Namespace:
     args_repo.add_argument("--base_branch", type=str, default="main", help="The base branch of autoware.repos")
     args_repo.add_argument("--new_branch_prefix", type=str, default="feat/update-", help="The prefix of the new branch name")
 
+    # Define an argument to specify which version components to check
+    args_repo.add_argument(
+        '--targets',
+        choices=['major', 'minor', 'patch', 'any'],  # Restrict choices to 'major', 'minor', 'patch', and 'any'
+        nargs='+',  # Allow multiple values
+        default=['any'],  # Default is 'any': in this case, consider any version newer than the current
+        help='Specify the version component targets to check for updates (e.g., --targets major minor)'
+    )
+
     # For the Autoware
     args_aw = parser.add_argument_group("Autoware")
     args_aw.add_argument("--autoware_repos_file_name", type=str, default="autoware.repos", help="The path to autoware.repos")
@@ -199,29 +234,66 @@ def get_logger(verbose: int) -> logging.Logger:
     return logging.getLogger(__name__)
 
 
-def get_latest_tag(tags: list[str], current_version: str) -> Optional[str]:
+def get_latest_tag(tags: list[str], current_version: str, target_release: str) -> Optional[str]:
     '''
     Description:
-        Get the latest tag from the list of tags
+        Get the latest tag from the list of tags based on the specified target release type.
 
     Args:
-        tags (list[str]): a list of tags
-        current_version (str): the current version of the repository
+        tags (list[str]): A list of tags.
+        current_version (str): The current version of the repository.
+        target_release (str): The type of release to check for updates. Can be 'major', 'minor', 'patch', or 'any'.
+
+    Returns:
+        Optional[str]: The latest tag that matches the target release type, or None if not found.
+
+    Raises:
+        ValueError: If an invalid target_release is specified.
     '''
+
+    valid_releases = {'major', 'minor', 'patch', 'any'}
+    if target_release not in valid_releases:
+        raise ValueError(f"Invalid target_release '{target_release}'. Valid options are: {valid_releases}")
+
+    current_ver = version.parse(current_version)
     latest_tag = None
+
     for tag in tags:
-        # Exclude parse failed ones such as 'tier4/universe', 'main', ... etc
         try:
-            version.parse(tag)
+            parsed_tag = version.parse(tag)
         except (version.InvalidVersion, TypeError):
             continue
 
-        # OK, it's a valid version
-        if latest_tag is None:
-            latest_tag = tag
-        else:
-            if version.parse(tag) > version.parse(latest_tag):
-                latest_tag = tag
+        # Skip pre-releases or development versions if not needed
+        if parsed_tag.is_prerelease or parsed_tag.is_devrelease:
+            continue
+
+        # Determine if the tag matches the required update type
+        if target_release == 'major':
+            if parsed_tag.major > current_ver.major:
+                # Only consider tags with a higher major version
+                if latest_tag is None or parsed_tag < version.parse(latest_tag):
+                    latest_tag = tag
+
+        elif target_release == 'minor':
+            if parsed_tag.major == current_ver.major and parsed_tag.minor > current_ver.minor:
+                # Only consider tags with the same major but higher minor version
+                if latest_tag is None or parsed_tag < version.parse(latest_tag):
+                    latest_tag = tag
+
+        elif target_release == 'patch':
+            if (parsed_tag.major == current_ver.major and
+                parsed_tag.minor == current_ver.minor and
+                parsed_tag.micro > current_ver.micro):
+                # Only consider tags with the same major and minor but higher patch version
+                if latest_tag is None or parsed_tag < version.parse(latest_tag):
+                    latest_tag = tag
+
+        elif target_release == 'any':
+            # Consider any version newer than the current version
+            if parsed_tag > current_ver:
+                if latest_tag is None or parsed_tag < version.parse(latest_tag):
+                    latest_tag = tag
 
     return latest_tag
 
@@ -262,107 +334,110 @@ def main(args: argparse.Namespace) -> None:
     # Get reference to the repository
     repo = git.Repo(args.parent_dir)
 
-    # Get all the branches
-    branches = [r.remote_head for r in repo.remote().refs]
+    # Get all the existing branches
+    existing_branches = [r.remote_head for r in repo.remote().refs]
 
-    for url, current_version in repositories_url_semantic_version_dict.items():
-        '''
-        Description:
-            In this loop, the script will create a PR to update the version of the repository specified by the URL.
-            The step is as follows:
-                1. Get tags of the repository
-                2. Check if the current version is the latest
-                3. Get the latest tag
-                4. Create a new branch
-                5. Update autoware.repos
-                6. Commit and push
-                7. Create a PR
-        '''
+    # Check for each target release type (e.g., major, minor, patch, any)
+    for target in args.targets:
+        # Check for each repository
+        for url, current_version in repositories_url_semantic_version_dict.items():
+            '''
+            Description:
+                In this loop, the script will create a PR to update the version of the repository specified by the URL.
+                The step is as follows:
+                    1. Get tags of the repository
+                    2. Check if the current version is the latest
+                    3. Get the latest tag
+                    4. Create a new branch
+                    5. Update autoware.repos
+                    6. Commit and push
+                    7. Create a PR
+            '''
 
-        # Skip if the current version has an invalid format
-        if current_version is None:
-            logger.debug(f"The current version ({current_version}) format has a mismatched pattern. Skip for this repository:\n    {url}")
-            continue
-
-        # get tags of the repository
-        tags: list[str] = github_interface.get_tags_by_url(url)
-
-        latest_tag: Optional[str] = get_latest_tag(tags, current_version)
-
-        # Skip if the expected format is not found
-        if latest_tag is None:
-            logger.debug(f"The latest tag ({latest_tag}) format has a mismatched pattern. Skip for this repository:\n    {url}")
-            continue
-
-        # Exclude parse failed ones such as 'tier4/universe', 'main', ... etc
-        try:
-            # If current version is a valid version, compare with the current version
-            logger.debug(f"url: {url}, latest_tag: {latest_tag}, current_version: {current_version}")
-            if version.parse(latest_tag) > version.parse(current_version):
-                # OK, the latest tag is newer than the current version
-                pass
-            else:
-                # The current version is the latest
-                logger.debug(f"Repository {url} has the latest version {current_version}. Skip for this repository.")
+            # Skip if the current version has an invalid format
+            if current_version is None:
+                logger.debug(f"The current version ({current_version}) format has a mismatched pattern. Skip for this repository:\n    {url}")
                 continue
-        except (version.InvalidVersion, TypeError):
-            # If the current version is not a valid version, skip this repository
-            continue
 
-        # Get repository name
-        repo_name: str = github_interface.url_to_repository_name(url)
+            # get tags of the repository
+            tags: list[str] = github_interface.get_tags_by_url(url)
 
-        # Set branch name
-        branch_name: str = f"{args.new_branch_prefix}{repo_name}/{latest_tag}"
+            latest_tag: Optional[str] = get_latest_tag(tags, current_version, target_release=target)
 
-        # Check if the remote branch already exists
-        if branch_name in branches:
-            logger.info(f"Branch '{branch_name}' already exists on the remote.")
-            continue
+            # Skip if the expected format is not found
+            if latest_tag is None:
+                logger.debug(f"The latest tag ({latest_tag}) format has a mismatched pattern. Skip for this repository:\n    {url}")
+                continue
 
-        # First, create a branch
-        create_one_branch(repo, branch_name, logger)
+            # Exclude parse failed ones such as 'tier4/universe', 'main', ... etc
+            try:
+                # If current version is a valid version, compare with the current version
+                logger.debug(f"url: {url}, latest_tag: {latest_tag}, current_version: {current_version}")
+                if version.parse(latest_tag) > version.parse(current_version):
+                    # OK, the latest tag is newer than the current version
+                    pass
+                else:
+                    # The current version is the latest
+                    logger.debug(f"Repository {url} has the latest version {current_version}. Skip for this repository.")
+                    continue
+            except (version.InvalidVersion, TypeError):
+                # If the current version is not a valid version, skip this repository
+                continue
 
-        # Switch to the branch
-        repo.heads[branch_name].checkout()
+            # Get repository name
+            repo_name: str = github_interface.url_to_repository_name(url)
 
-        # Change version in autoware.repos
-        autoware_repos.update_repository_version(url, latest_tag)
+            # Set branch name
+            branch_name: str = f"{args.new_branch_prefix}{repo_name}/{latest_tag}"
 
-        # Add
-        repo.index.add([args.autoware_repos_file_name])
+            # Skip if the remote branch already exists
+            if branch_name in existing_branches:
+                logger.info(f"Branch '{branch_name}' already exists on the remote.")
+                continue
 
-        # Commit
-        commit_message = f"feat(autoware.repos): update {repo_name} to {latest_tag}"
-        repo.git.commit(m=commit_message, s=True)
+            # First, create a branch
+            create_one_branch(repo, branch_name, logger)
 
-        # Push
-        origin = repo.remote(name='origin')
-        origin.push(branch_name)
+            # Switch to the branch
+            repo.heads[branch_name].checkout()
 
-        # Switch back to base branch
-        repo.heads[args.base_branch].checkout()
+            # Change version in autoware.repos
+            autoware_repos.update_repository_version(url, latest_tag)
 
-        # Create a PR
-        github_interface.create_pull_request(
-            repo_name = args.repo_name,
-            title = f"feat(autoware.repos): update {repo_name} to {latest_tag}",
-            body = f"This PR updates the version of the repository {repo_name} in autoware.repos",
-            head = branch_name,
-            base = args.base_branch
-        )
+            # Add
+            repo.index.add([args.autoware_repos_file_name])
 
-        # Switch back to base branch
-        repo.heads[args.base_branch].checkout()
+            # Commit
+            title = f"feat({args.autoware_repos_file_name}): {"version" if target == 'any' else target} update {repo_name} to {latest_tag}"
+            repo.git.commit(m=title, s=True)
 
-        # Reset any changes
-        repo.git.reset('--hard', f'origin/{args.base_branch}')
+            # Push
+            origin = repo.remote(name='origin')
+            origin.push(branch_name)
 
-        # Clean untracked files
-        repo.git.clean('-fd')
+            # Switch back to base branch
+            repo.heads[args.base_branch].checkout()
 
-        # Restore base's autoware.repos
-        autoware_repos: AutowareRepos = AutowareRepos(autoware_repos_file_name = args.autoware_repos_file_name)
+            # Create a PR
+            github_interface.create_pull_request(
+                repo_name = args.repo_name,
+                title = title,
+                body = f"This PR updates the version of the repository {repo_name} in autoware.repos",
+                head = branch_name,
+                base = args.base_branch
+            )
+
+            # Switch back to base branch
+            repo.heads[args.base_branch].checkout()
+
+            # Reset any changes
+            repo.git.reset('--hard', f'origin/{args.base_branch}')
+
+            # Clean untracked files
+            repo.git.clean('-fd')
+
+            # Restore base's autoware.repos
+            autoware_repos: AutowareRepos = AutowareRepos(autoware_repos_file_name = args.autoware_repos_file_name)
 
     # Loop end
 
