@@ -265,7 +265,7 @@ def get_latest_tag(tags: list[str], current_version: str, target_release: str) -
             continue
 
         # Skip pre-releases or development versions if not needed
-        if parsed_tag.is_prerelease or parsed_tag.is_devrelease:
+        if parsed_tag.is_prerelease or parsed_tag.is_devrelease:    # cspell: ignore devrelease
             continue
 
         # Determine if the tag matches the required update type
