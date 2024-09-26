@@ -37,6 +37,7 @@ jobs:
           token: ${{ steps.generate-token.outputs.token }}
           repo_name: autowarefoundation/autoware
           parent_dir: .
+          targets: major minor
           base_branch: main
           new_branch_prefix: feat/update-
           autoware_repos_file_name: autoware.repos
@@ -49,6 +50,7 @@ jobs:
 | ------------------------ | -------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | token                    | true     |                | The token for pull requests.                                                                                                  |
 | repo_name                | true     |                | The name of the repository to create pull requests.                                                                           |
+| targets                  | false    | any            | The target release types (choices: any, patch, minor, major).                                                                 |
 | parent_dir               | false    | .              | The parent directory of the repository.                                                                                       |
 | base_branch              | false    | main           | The base branch to create pull requests.                                                                                      |
 | new_branch_prefix        | false    | feat/update-   | The prefix of the new branch name. The branch name will be `{new_branch_prefix}-{user_name}/{repository_name}/{new_version}`. |
@@ -61,7 +63,7 @@ None.
 
 ## What kind of tags are handled?
 
-- Monitors all vcs-imported repositories in the `autoware.repos` (if default) which have a version with regular expression pattern `r'\b(?<![^\s])\d+\.\d+\.\d+(?![-\w.+])\b'` (if default).
+- Monitors all vcs-imported repositories in the `autoware.repos` (if default) which have a version with regular expression pattern `r'\b(?<![^\s])\d+\.\d+\.\d+(?![-\w.+])\b'`.
   - This pattern match/mismatches for the following examples:
 
 ```plaintext
@@ -90,9 +92,9 @@ None.
   - Valid ones (PR must be created):
 
 ```plaintext
-    0.0.1  =>  0.0.2
-    1.1.1  =>  1.2.1
-    2.4.3  =>  3.0.0
+    0.0.1  =>  0.0.2    # If `--target patch` or `--target any` is specified
+    1.1.1  =>  1.2.1    # If `--target minor` or `--target any` is specified
+    2.4.3  =>  3.0.0    # If `--target major` or `--target any` is specified
 ```
 
 - Invalid ones (PR is not created):

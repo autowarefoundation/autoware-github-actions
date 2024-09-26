@@ -12,6 +12,10 @@ inputs:
     description: Parent directory
     required: false
     default: ./
+  targets:
+    description: Target release types
+    required: false
+    default: "any"
   base_branch:
     description: Base branch
     required: false
@@ -63,6 +67,7 @@ runs:
         python ${GITHUB_ACTION_PATH}/create_prs_to_update_vcs_repositories.py \
         --repo_name ${{ inputs.repo_name }} \
         --parent_dir ${{ inputs.parent_dir }} \
+        --targets ${{ inputs.targets }} \
         --base_branch ${{ inputs.base_branch }} \
         --new_branch_prefix ${{ inputs.new_branch_prefix }} \
         --autoware_repos_file_name ${{ inputs.autoware_repos_file_name }} \
