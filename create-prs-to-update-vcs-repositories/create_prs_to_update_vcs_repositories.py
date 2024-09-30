@@ -395,6 +395,9 @@ def main(args: argparse.Namespace) -> None:
                 logger.info(f"Branch '{branch_name}' already exists on the remote.")
                 continue
 
+            # Add this branch to the existing branches
+            existing_branches.append(branch_name)
+
             # First, create a branch
             create_one_branch(repo, branch_name, logger)
 
