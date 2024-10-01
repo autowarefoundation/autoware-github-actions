@@ -15,7 +15,7 @@ inputs:
   targets:
     description: Target release types
     required: false
-    default: "any"
+    default: any
   base_branch:
     description: Base branch
     required: false
