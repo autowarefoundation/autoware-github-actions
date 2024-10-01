@@ -141,9 +141,9 @@ def parse_args() -> argparse.Namespace:
     # Define an argument to specify which version components to check
     args_repo.add_argument(
         '--targets',
-        choices=VALID_RELEASES,  # Restrict choices
-        nargs='+',  # Allow multiple values
-        default=['any'],  # Default is 'any': in this case, consider any version newer than the current
+        choices=VALID_RELEASES, # Restrict choices
+        nargs='+',              # Allow multiple values
+        default=['any'],        # Default is 'any': in this case, consider any version newer than the current
         help='Specify the version component targets to check for updates (e.g., --targets major minor)'
     )
 
