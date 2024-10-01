@@ -14,6 +14,9 @@ from github import Github    # cspell: ignore Github
 # Define the semantic version pattern here
 SUPPORTED_SEMANTIC_VERSION_PATTERN = r'\b(?<![^\s])\d+\.\d+\.\d+(?![-\w.+])\b'
 
+# Define the valid release types here
+VALID_RELEASES = ['major', 'minor', 'patch', 'any']
+
 
 class AutowareRepos:
     """
@@ -138,7 +141,7 @@ def parse_args() -> argparse.Namespace:
     # Define an argument to specify which version components to check
     args_repo.add_argument(
         '--targets',
-        choices=['major', 'minor', 'patch', 'any'],  # Restrict choices to 'major', 'minor', 'patch', and 'any'
+        choices=VALID_RELEASES,  # Restrict choices
         nargs='+',  # Allow multiple values
         default=['any'],  # Default is 'any': in this case, consider any version newer than the current
         help='Specify the version component targets to check for updates (e.g., --targets major minor)'
@@ -181,9 +184,8 @@ def get_latest_tag(tags: list[str], current_version: str, target_release: str) -
         ValueError: If an invalid target_release is specified.
     '''
 
-    valid_releases = {'major', 'minor', 'patch', 'any'}
-    if target_release not in valid_releases:
-        raise ValueError(f"Invalid target_release '{target_release}'. Valid options are: {valid_releases}")
+    if target_release not in VALID_RELEASES:
+        raise ValueError(f"Invalid target_release '{target_release}'. Valid options are: {VALID_RELEASES}")
 
     current_ver = version.parse(current_version)
     latest_tag = None
