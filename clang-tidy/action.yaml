@@ -109,7 +109,7 @@ runs:
       if: ${{ inputs.target-packages != '' }}
       run: |
         mkdir /tmp/clang-tidy-result
-        ament_clang_tidy --export-fixes /tmp/clang-tidy-result/fixes.yaml --packages-select ${{ inputs.target-packages }} > /tmp/clang-tidy-result/report.txt || true
+        ament_clang_tidy --export-fixes /tmp/clang-tidy-result/fixes.yaml --packages-select ${{ inputs.target-packages }} --jobs $(nproc) > /tmp/clang-tidy-result/report.txt || true
         echo "${{ github.event.number }}" > /tmp/clang-tidy-result/pr-id.txt
         echo "${{ github.event.pull_request.head.repo.full_name }}" > /tmp/clang-tidy-result/pr-head-repo.txt
         echo "${{ github.event.pull_request.head.ref }}" > /tmp/clang-tidy-result/pr-head-ref.txt
