@@ -11,9 +11,6 @@ inputs:
   target-packages:
     description: ""
     required: true
-  target-files:
-    description: ""
-    required: false
   build-depends-repos:
     description: ""
     required: false
@@ -39,7 +36,6 @@ runs:
     - name: Show targets
       run: |
         echo "target packages: ${{ inputs.target-packages }}"
-        echo "target files: ${{ inputs.target-files }}"
       shell: bash
 
     - name: Install curl
@@ -54,10 +50,10 @@ runs:
         sudo apt-get -yqq install python3-pip
       shell: bash
 
-    - name: Install Clang-Tidy
+    - name: Install ament_clang_tidy
       run: |
         sudo apt-get -yqq update
-        sudo apt-get -yqq install clang-tidy libomp-dev
+        sudo apt-get -yqq install ros-${{ inputs.rosdistro }}-ament-clang-tidy libomp-dev
       shell: bash
 
     - name: Set git config
@@ -109,24 +105,11 @@ runs:
           -H "Authorization: token ${{ inputs.token }}"
       shell: bash
 
-    - name: Get target files
-      id: get-target-files
-      run: |
-        if [ "${{ inputs.target-files }}" != "" ]; then
-          target_files="${{ inputs.target-files }}"
-        else
-          package_path=$(colcon list --paths-only --packages-select ${{ inputs.target-packages }})
-          target_files=$(find $package_path -name "*.cpp" -or -name "*.hpp")
-        fi
-
-        echo "target-files=$target_files" >> $GITHUB_OUTPUT
-      shell: bash
-
     - name: Analyze
-      if: ${{ steps.get-target-files.outputs.target-files != '' }}
+      if: ${{ inputs.target-packages != '' }}
       run: |
         mkdir /tmp/clang-tidy-result
-        clang-tidy -p build/ -export-fixes /tmp/clang-tidy-result/fixes.yaml ${{ steps.get-target-files.outputs.target-files }} > /tmp/clang-tidy-result/report.txt || true
+        ament_clang_tidy --export-fixes /tmp/clang-tidy-result/fixes.yaml --packages-select ${{ inputs.target-packages }} > /tmp/clang-tidy-result/report.txt || true
         echo "${{ github.event.number }}" > /tmp/clang-tidy-result/pr-id.txt
         echo "${{ github.event.pull_request.head.repo.full_name }}" > /tmp/clang-tidy-result/pr-head-repo.txt
         echo "${{ github.event.pull_request.head.ref }}" > /tmp/clang-tidy-result/pr-head-ref.txt
