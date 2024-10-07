@@ -95,7 +95,7 @@ runs:
       if: ${{ steps.restore-build-files.outputs.cache-hit != 'true' }}
       run: |
         . /opt/ros/${{ inputs.rosdistro }}/setup.sh
-        colcon build --event-handlers console_cohesion+ \
+        colcon build --symlink-install --event-handlers console_cohesion+ \
           --packages-up-to ${{ inputs.target-packages }} \
           --cmake-args -DCMAKE_BUILD_TYPE=${{ inputs.cmake-build-type }} -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
       shell: bash
