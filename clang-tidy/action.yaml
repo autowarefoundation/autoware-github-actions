@@ -53,7 +53,8 @@ runs:
     - name: Install ament_clang_tidy
       run: |
         sudo apt-get -yqq update
-        sudo apt-get -yqq install ros-${{ inputs.rosdistro }}-ament-clang-tidy libomp-dev
+        sudo apt-get -yqq install clang-tidy libomp-dev
+        pip install git+https://github.com/yhisaki/autoware-clang-tidy.git
       shell: bash
 
     - name: Set git config
@@ -107,37 +108,23 @@ runs:
 
     - name: Analyze
       if: ${{ inputs.target-packages != '' }}
+      continue-on-error: true
+      id: clang-tidy-analysis
       run: |
         mkdir /tmp/clang-tidy-result
-        ament_clang_tidy --export-fixes /tmp/clang-tidy-result/fixes.yaml --packages-select ${{ inputs.target-packages }} --jobs $(nproc) > /tmp/clang-tidy-result/report.txt || true
+        autoware-clang-tidy --export-fixes /tmp/clang-tidy-result/fixes.yaml --packages-select ${{ inputs.target-packages }} --jobs $(nproc) --output-dir /tmp/clang-tidy-result/
         echo "${{ github.event.number }}" > /tmp/clang-tidy-result/pr-id.txt
         echo "${{ github.event.pull_request.head.repo.full_name }}" > /tmp/clang-tidy-result/pr-head-repo.txt
         echo "${{ github.event.pull_request.head.ref }}" > /tmp/clang-tidy-result/pr-head-ref.txt
       shell: bash
 
-    - name: Check if the report.txt file exists
-      id: check-report-txt-existence
-      uses: autowarefoundation/autoware-github-actions/check-file-existence@v1
-      with:
-        files: /tmp/clang-tidy-result/report.txt
-
-    - name: Check if the fixes.yaml file exists
-      id: check-fixes-yaml-existence
-      uses: autowarefoundation/autoware-github-actions/check-file-existence@v1
-      with:
-        files: /tmp/clang-tidy-result/fixes.yaml
-
     - name: Upload artifacts
-      if: ${{ steps.check-report-txt-existence.outputs.exists == 'true' && steps.check-fixes-yaml-existence.outputs.exists == 'true' }}
       uses: actions/upload-artifact@v4
       with:
         name: clang-tidy-result
         path: /tmp/clang-tidy-result/
 
     - name: Mark the workflow as failed if clang-tidy find an error
-      if: ${{ steps.check-report-txt-existence.outputs.exists == 'true' }}
-      run: |
-        if [ -n "$(grep ": error:" /tmp/clang-tidy-result/report.txt)" ]; then
-          exit 1
-        fi
+      if: steps.clang-tidy-analysis.outcome == 'failure'
+      run: exit 1
       shell: bash
