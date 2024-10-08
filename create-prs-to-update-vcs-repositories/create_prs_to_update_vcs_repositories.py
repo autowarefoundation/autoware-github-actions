@@ -358,6 +358,7 @@ def main(args: argparse.Namespace) -> None:
 This PR updates the version of the repository {repo_name} in autoware.repos.
 
 ## What's changed
+
 You can see the changes in https://github.com/{repo_name}/compare/{current_version}...{latest_tag}.
 '''
 
