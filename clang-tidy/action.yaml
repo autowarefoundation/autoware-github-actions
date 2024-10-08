@@ -120,6 +120,7 @@ runs:
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
+      if: ${{ inputs.target-packages != '' }}
       with:
         name: clang-tidy-result
         path: /tmp/clang-tidy-result/
