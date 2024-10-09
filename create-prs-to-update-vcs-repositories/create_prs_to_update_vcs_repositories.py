@@ -353,11 +353,20 @@ def main(args: argparse.Namespace) -> None:
             # Switch back to base branch
             repo.heads[args.base_branch].checkout()
 
+            # Compose a PR body
+            pr_body = f'''## Description
+This PR updates the version of the repository {repo_name} in autoware.repos.
+
+## What's changed
+
+You can see the changes in https://github.com/{repo_name}/compare/{current_version}...{latest_tag}.
+'''
+
             # Create a PR
             github_interface.create_pull_request(
                 repo_name = args.repo_name,
                 title = title,
-                body = f"This PR updates the version of the repository {repo_name} in autoware.repos",
+                body = pr_body,
                 head = branch_name,
                 base = args.base_branch
             )
