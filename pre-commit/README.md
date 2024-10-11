@@ -9,7 +9,7 @@ Considering the case that you have both `.pre-commit-config.yaml` and `.pre-comm
 ```yaml
 jobs:
   pre-commit:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Generate token
         id: generate-token

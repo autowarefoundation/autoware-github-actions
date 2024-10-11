@@ -10,7 +10,7 @@ As it is difficult to perfectly detect all miss spellings, it is recommended not
 ```yaml
 jobs:
   spell-check:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out repository
         uses: actions/checkout@v3

@@ -8,7 +8,7 @@ on:
 
 jobs:
   test-register-autonomoustuff-repository:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     container: ros:${{ matrix.rosdistro }}
     strategy:
       fail-fast: false
@@ -34,7 +34,7 @@ jobs:
           rosdep resolve pacmod3_msgs
 
   test-clang-tidy-empty-target:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     container: ros:${{ matrix.rosdistro }}
     strategy:
       fail-fast: false
@@ -53,7 +53,7 @@ jobs:
           clang-tidy-config-url: https://raw.githubusercontent.com/autowarefoundation/autoware/main/.clang-tidy
 
   test-check-file-existence:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -115,7 +115,7 @@ jobs:
           [[ "${{ steps.check-file-existence4.outputs.exists }}" == "true" ]]
 
   test-colcon-build-and-colcon-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     container: ros:${{ matrix.rosdistro }}
     strategy:
       fail-fast: false
@@ -139,7 +139,7 @@ jobs:
           target-packages: empty_target_cmake empty_target_python
 
   test-get-self-packages-and-get-modified-packages:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     container: ${{ matrix.container }}
     strategy:
       fail-fast: false

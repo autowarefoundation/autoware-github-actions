@@ -7,7 +7,7 @@ This action deletes documents of closed pull requests deployed by `deploy-docs` 
 ```yaml
 jobs:
   delete-closed-pr-docs:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
