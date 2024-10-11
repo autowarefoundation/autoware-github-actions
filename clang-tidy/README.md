@@ -8,7 +8,7 @@ This workflow depends on `colcon-build` action.
 ```yaml
 jobs:
   clang-tidy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     container: ros:galactic
     needs: build-and-test
     steps:

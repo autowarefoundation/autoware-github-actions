@@ -7,7 +7,7 @@ This action gets the list of ROS packages in the repository.
 ```yaml
 jobs:
   get-self-packages:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out repository
         uses: actions/checkout@v3

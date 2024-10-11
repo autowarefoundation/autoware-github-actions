@@ -9,7 +9,7 @@ This action get the list of ROS packages modified in the pull request.
 ```yaml
 jobs:
   get-modified-packages:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -26,7 +26,7 @@ jobs:
 ```yaml
 jobs:
   get-modified-packages:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Set PR fetch depth
         run: echo "PR_FETCH_DEPTH=$(( ${{ github.event.pull_request.commits }} + 1 ))" >> "${GITHUB_ENV}"

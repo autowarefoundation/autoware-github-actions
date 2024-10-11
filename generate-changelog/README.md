@@ -9,7 +9,7 @@ This action generates the changelog using [git-cliff](https://github.com/orhun/g
 ```yaml
 jobs:
   generate-changelog:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out repository
         uses: actions/checkout@v3

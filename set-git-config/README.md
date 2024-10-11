@@ -13,7 +13,7 @@ This action sets several git configs.
 ```yaml
 jobs:
   example:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Generate token
         id: generate-token

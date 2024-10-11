@@ -8,6 +8,6 @@ on:
 
 jobs:
   actions-tagger:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: Actions-R-Us/actions-tagger@v2
