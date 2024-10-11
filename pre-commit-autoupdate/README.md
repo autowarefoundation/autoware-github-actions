@@ -9,7 +9,7 @@ It uses [peter-evans/create-pull-request](https://github.com/peter-evans/create-
 ```yaml
 jobs:
   sync-files:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Generate token
         id: generate-token

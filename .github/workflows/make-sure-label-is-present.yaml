@@ -12,7 +12,7 @@ on:
 
 jobs:
   make-sure-label-is-present:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       result: ${{ steps.make-sure-label-is-present.outputs.result }}
     steps:

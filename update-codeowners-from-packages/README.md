@@ -12,7 +12,7 @@ Note that you need `workflow` permission for the token if you copy workflow file
 ```yaml
 jobs:
   update-codeowners-from-packages:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Generate token
         id: generate-token

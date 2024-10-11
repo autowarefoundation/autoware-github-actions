@@ -9,7 +9,7 @@ Note that this workflow installs the limited number of plugins that are used in 
 ```yaml
 jobs:
   deploy-docs:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
