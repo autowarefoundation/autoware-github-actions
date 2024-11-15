@@ -116,7 +116,7 @@ runs:
           target_files="${{ inputs.target-files }}"
         else
           package_path=$(colcon list --paths-only --packages-select ${{ inputs.target-packages }})
-          target_files=$(find $package_path -name "*.cpp" -or -name "*.hpp")
+          target_files=$(find $package_path -type f \( -name '*.cpp' -o -name '*.hpp' \) -not -path '*/test/*' -not -path '*/examples/*')
         fi
 
         echo "target-files=$target_files" >> $GITHUB_OUTPUT
