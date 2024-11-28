@@ -11,7 +11,7 @@ inputs:
   clang-tidy-ignore-path:
     description: ""
     required: false
-    default: ".clang-tidy-ignore"
+    default: .clang-tidy-ignore
   target-packages:
     description: ""
     required: true
