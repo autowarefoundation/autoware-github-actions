@@ -8,6 +8,10 @@ inputs:
   clang-tidy-config-url:
     description: ""
     required: true
+  clang-tidy-ignore-path:
+    description: ""
+    required: false
+    default: .clang-tidy-ignore
   target-packages:
     description: ""
     required: true
@@ -36,12 +40,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Show targets
-      run: |
-        echo "target packages: ${{ inputs.target-packages }}"
-        echo "target files: ${{ inputs.target-files }}"
-      shell: bash
-
     - name: Install curl
       run: |
         sudo apt-get -yqq update
@@ -115,28 +113,43 @@ runs:
         if [ "${{ inputs.target-files }}" != "" ]; then
           target_files="${{ inputs.target-files }}"
         else
-          package_path=$(colcon list --paths-only --packages-select ${{ inputs.target-packages }})
-          target_files=$(find $package_path -type f \( -name '*.cpp' -o -name '*.hpp' \) -not -path '*/test/*' -not -path '*/examples/*')
+          mapfile -t package_paths < <(colcon list --paths-only --packages-select ${{ inputs.target-packages }})
+          ignore_patterns=()
+          ignore_patterns+=( -not -path "*/test/*" )
+          if [ -f ${{ inputs.clang-tidy-ignore-path }} ]; then
+            while IFS= read -r pattern; do
+              ignore_patterns+=( -not -path "$pattern" )
+            done < .clang-tidy-ignore
+          fi
+          target_files=$(find "${package_paths[@]}" -name '*.cpp' "${ignore_patterns[@]}" | tr '\n' ' ')
         fi
-
         echo "target-files=$target_files" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: Show target files
+      if: ${{ steps.get-target-files.outputs.target-files != '' }}
+      run: |
+        echo "Target files:"
+        for file in "${{ steps.get-target-files.outputs.target-files }}" ; do
+          echo $file
+        done
       shell: bash
 
     - name: Analyze
       if: ${{ steps.get-target-files.outputs.target-files != '' }}
       run: |
         mkdir /tmp/clang-tidy-result
-        clang-tidy -p build/ -export-fixes /tmp/clang-tidy-result/fixes.yaml ${{ steps.get-target-files.outputs.target-files }} > /tmp/clang-tidy-result/report.txt || true
+        run-clang-tidy -p build/ -export-fixes /tmp/clang-tidy-result/fixes.yaml -j $(nproc) ${{ steps.get-target-files.outputs.target-files }} > /tmp/clang-tidy-result/report.log || true
         echo "${{ github.event.number }}" > /tmp/clang-tidy-result/pr-id.txt
         echo "${{ github.event.pull_request.head.repo.full_name }}" > /tmp/clang-tidy-result/pr-head-repo.txt
         echo "${{ github.event.pull_request.head.ref }}" > /tmp/clang-tidy-result/pr-head-ref.txt
       shell: bash
 
-    - name: Check if the report.txt file exists
+    - name: Check if the report.log file exists
       id: check-report-txt-existence
       uses: autowarefoundation/autoware-github-actions/check-file-existence@v1
       with:
-        files: /tmp/clang-tidy-result/report.txt
+        files: /tmp/clang-tidy-result/report.log
 
     - name: Check if the fixes.yaml file exists
       id: check-fixes-yaml-existence
@@ -154,7 +167,7 @@ runs:
     - name: Mark the workflow as failed if clang-tidy find an error
       if: ${{ steps.check-report-txt-existence.outputs.exists == 'true' }}
       run: |
-        if [ -n "$(grep ": error:" /tmp/clang-tidy-result/report.txt)" ]; then
+        if [ -n "$(grep ": error:" /tmp/clang-tidy-result/report.log)" ]; then
           exit 1
         fi
       shell: bash
