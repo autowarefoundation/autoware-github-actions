@@ -8,6 +8,10 @@ inputs:
   clang-tidy-config-url:
     description: ""
     required: true
+  clang-tidy-ignore-path:
+    description: ""
+    required: false
+    default: ".clang-tidy-ignore"
   target-packages:
     description: ""
     required: true
@@ -112,7 +116,7 @@ runs:
           mapfile -t package_paths < <(colcon list --paths-only --packages-select ${{ inputs.target-packages }})
           ignore_patterns=()
           ignore_patterns+=( -not -path "*/test/*" )
-          if [ -f .clang-tidy-ignore ]; then
+          if [ -f ${{ inputs.clang-tidy-ignore-path }} ]; then
             while IFS= read -r pattern; do
               ignore_patterns+=( -not -path "$pattern" )
             done < .clang-tidy-ignore
