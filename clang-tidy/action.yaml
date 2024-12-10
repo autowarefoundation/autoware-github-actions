@@ -139,7 +139,9 @@ runs:
       if: ${{ steps.get-target-files.outputs.target-files != '' }}
       run: |
         mkdir /tmp/clang-tidy-result
-        run-clang-tidy -p build/ -export-fixes /tmp/clang-tidy-result/fixes.yaml -j $(nproc) ${{ steps.get-target-files.outputs.target-files }} > /tmp/clang-tidy-result/report.log || true
+        run-clang-tidy -p build/ -export-fixes /tmp/clang-tidy-result/fixes.yaml -j $(nproc) ${{ steps.get-target-files.outputs.target-files }} > /tmp/clang-tidy-result/report.log && true
+        exit_code=$?
+        echo "exit_code=$exit_code" >> $GITHUB_ENV
         echo "${{ github.event.number }}" > /tmp/clang-tidy-result/pr-id.txt
         echo "${{ github.event.pull_request.head.repo.full_name }}" > /tmp/clang-tidy-result/pr-head-repo.txt
         echo "${{ github.event.pull_request.head.ref }}" > /tmp/clang-tidy-result/pr-head-ref.txt
@@ -165,9 +167,6 @@ runs:
         path: /tmp/clang-tidy-result/
 
     - name: Mark the workflow as failed if clang-tidy find an error
-      if: ${{ steps.check-report-txt-existence.outputs.exists == 'true' }}
-      run: |
-        if [ -n "$(grep ": error:" /tmp/clang-tidy-result/report.log)" ]; then
-          exit 1
-        fi
+      if: ${{ env.exit_code != '0' }}
+      run: exit 1
       shell: bash
