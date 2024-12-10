@@ -148,7 +148,7 @@ runs:
       shell: bash
 
     - name: Check if the report.log file exists
-      id: check-report-txt-existence
+      id: check-report-log-existence
       uses: autowarefoundation/autoware-github-actions/check-file-existence@v1
       with:
         files: /tmp/clang-tidy-result/report.log
@@ -160,7 +160,7 @@ runs:
         files: /tmp/clang-tidy-result/fixes.yaml
 
     - name: Upload artifacts
-      if: ${{ steps.check-report-txt-existence.outputs.exists == 'true' && steps.check-fixes-yaml-existence.outputs.exists == 'true' }}
+      if: ${{ steps.check-report-log-existence.outputs.exists == 'true' && steps.check-fixes-yaml-existence.outputs.exists == 'true' }}
       uses: actions/upload-artifact@v4
       with:
         name: clang-tidy-result
