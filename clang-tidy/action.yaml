@@ -55,7 +55,7 @@ runs:
     - name: Install Clang-Tidy
       run: |
         sudo apt-get -yqq update
-        sudo apt-get -yqq install clang-tidy-15 libomp-15-dev
+        sudo apt-get -yqq install clang-tidy-14 libomp-14-dev clang-tidy-15
       shell: bash
 
     - name: Set git config
@@ -139,7 +139,7 @@ runs:
       if: ${{ steps.get-target-files.outputs.target-files != '' }}
       run: |
         mkdir /tmp/clang-tidy-result
-        run-clang-tidy-15 -p build/ -export-fixes /tmp/clang-tidy-result/fixes.yaml -j $(nproc) -use-color false ${{ steps.get-target-files.outputs.target-files }} > /tmp/clang-tidy-result/report.log || true
+        run-clang-tidy-15 -clang-tidy-binary /usr/bin/clang-tidy-14 -p build/ -export-fixes /tmp/clang-tidy-result/fixes.yaml -j $(nproc) -use-color false ${{ steps.get-target-files.outputs.target-files }} > /tmp/clang-tidy-result/report.log || true
         echo "${{ github.event.number }}" > /tmp/clang-tidy-result/pr-id.txt
         echo "${{ github.event.pull_request.head.repo.full_name }}" > /tmp/clang-tidy-result/pr-head-repo.txt
         echo "${{ github.event.pull_request.head.ref }}" > /tmp/clang-tidy-result/pr-head-ref.txt
