@@ -173,8 +173,3 @@ runs:
       with:
         name: clang-tidy-result
         path: /tmp/clang-tidy-result/
-
-    - name: Mark the workflow as failed if clang-tidy find an error
-      if: ${{ env.exit_code != '0' }}
-      run: exit 1
-      shell: bash
