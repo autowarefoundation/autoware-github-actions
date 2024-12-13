@@ -174,3 +174,8 @@ runs:
       with:
         name: clang-tidy-result
         path: /tmp/clang-tidy-result/
+
+    - name: Mark the workflow as failed if clang-tidy find an error
+      if: ${{ failure() }}
+      run: exit 1
+      shell: bash
