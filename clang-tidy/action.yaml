@@ -139,10 +139,10 @@ runs:
       if: ${{ steps.get-target-files.outputs.target-files != '' }}
       run: |
         mkdir /tmp/clang-tidy-result
-        run-clang-tidy-15 -clang-tidy-binary /usr/bin/clang-tidy-14 -p build/ -export-fixes /tmp/clang-tidy-result/fixes.yaml -j $(nproc) -use-color false ${{ steps.get-target-files.outputs.target-files }} > /tmp/clang-tidy-result/report.log
         echo "${{ github.event.number }}" > /tmp/clang-tidy-result/pr-id.txt
         echo "${{ github.event.pull_request.head.repo.full_name }}" > /tmp/clang-tidy-result/pr-head-repo.txt
         echo "${{ github.event.pull_request.head.ref }}" > /tmp/clang-tidy-result/pr-head-ref.txt
+        run-clang-tidy-15 -clang-tidy-binary /usr/bin/clang-tidy-14 -p build/ -export-fixes /tmp/clang-tidy-result/fixes.yaml -j $(nproc) -use-color false ${{ steps.get-target-files.outputs.target-files }} > /tmp/clang-tidy-result/report.log
       shell: bash
       continue-on-error: true
 
