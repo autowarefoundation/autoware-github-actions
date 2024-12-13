@@ -139,12 +139,12 @@ runs:
       if: ${{ steps.get-target-files.outputs.target-files != '' }}
       run: |
         mkdir /tmp/clang-tidy-result
+        run-clang-tidy-15 -clang-tidy-binary /usr/bin/clang-tidy-14 -p build/ -export-fixes /tmp/clang-tidy-result/fixes.yaml -j $(nproc) -use-color false ${{ steps.get-target-files.outputs.target-files }} > /tmp/clang-tidy-result/report.log && true
+        echo "exit_code=$?" >> $GITHUB_ENV
         echo "${{ github.event.number }}" > /tmp/clang-tidy-result/pr-id.txt
         echo "${{ github.event.pull_request.head.repo.full_name }}" > /tmp/clang-tidy-result/pr-head-repo.txt
         echo "${{ github.event.pull_request.head.ref }}" > /tmp/clang-tidy-result/pr-head-ref.txt
-        run-clang-tidy-15 -clang-tidy-binary /usr/bin/clang-tidy-14 -p build/ -export-fixes /tmp/clang-tidy-result/fixes.yaml -j $(nproc) -use-color false ${{ steps.get-target-files.outputs.target-files }} > /tmp/clang-tidy-result/report.log
       shell: bash
-      continue-on-error: true
 
     - name: Check if the report.log file exists
       id: check-report-log-existence
@@ -176,6 +176,6 @@ runs:
         path: /tmp/clang-tidy-result/
 
     - name: Mark the workflow as failed if clang-tidy find an error
-      if: ${{ failure() }}
+      if: ${{ env.exit_code != '0' }}
       run: exit 1
       shell: bash
