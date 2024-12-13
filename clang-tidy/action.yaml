@@ -152,12 +152,12 @@ runs:
         files: /tmp/clang-tidy-result/report.log
 
     - name: Setup Problem Matcher
-      if: ${{ steps.check-report-txt-existence.outputs.exists == 'true' }}
+      if: ${{ steps.check-report-log-existence.outputs.exists == 'true' }}
       run: echo "::add-matcher::$GITHUB_ACTION_PATH/problem-matcher.json"
       shell: bash
 
     - name: Show clang-tidy result
-      if: ${{ steps.check-report-txt-existence.outputs.exists == 'true' }}
+      if: ${{ steps.check-report-log-existence.outputs.exists == 'true' }}
       run: cat /tmp/clang-tidy-result/report.log
       shell: bash
 
