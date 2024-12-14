@@ -129,6 +129,6 @@ runs:
     - name: Generate build time treemap
       id: generate-build-time-treemap
       run: |
-        ros-build-time-visualizer . --output_path build_time_treemap.html
+        ros-build-time-visualizer . --output_path build_time_treemap.html --start_folder .
         echo "treemap-path=build_time_treemap.html" >> $GITHUB_OUTPUT
       shell: bash
