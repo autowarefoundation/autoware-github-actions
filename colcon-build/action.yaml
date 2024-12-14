@@ -58,11 +58,6 @@ runs:
         sudo apt-get -yqq install python3-pip
       shell: bash
 
-    - name: Install ros-build-time-visualizer package
-      run: |
-        pip install git+https://github.com/xmfcx/ros-build-time-visualizer.git@1.0.0
-      shell: bash
-
     - name: Set git config
       if: ${{ inputs.build-depends-repos != '' }}
       uses: autowarefoundation/autoware-github-actions/set-git-config@v1
@@ -120,6 +115,11 @@ runs:
           ./build
           ./install
         key: build-${{ runner.arch }}-${{ inputs.rosdistro }}-${{ inputs.cache-key-element }}-${{ inputs.cmake-build-type }}-${{ github.sha }}
+
+    - name: Install ros-build-time-visualizer package
+      run: |
+        pip install git+https://github.com/xmfcx/ros-build-time-visualizer.git@1.0.0
+      shell: bash
 
     - name: Generate build time treemap
       id: generate-build-time-treemap
