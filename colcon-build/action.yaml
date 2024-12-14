@@ -121,6 +121,11 @@ runs:
         pip install git+https://github.com/xmfcx/ros-build-time-visualizer.git@1.0.0
       shell: bash
 
+    - name: Where am I
+      run: |
+        ls -alF
+      shell: bash
+
     - name: Generate build time treemap
       id: generate-build-time-treemap
       run: |
