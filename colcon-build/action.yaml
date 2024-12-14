@@ -39,6 +39,11 @@ inputs:
     default: ""
     required: false
 
+outputs:
+  build_time_treemap_path:
+    description: "Path to the generated build time treemap file."
+    value: ${{ steps.generate-build-time-treemap.outputs.treemap-path }}
+
 runs:
   using: composite
   steps:
@@ -51,6 +56,11 @@ runs:
       run: |
         sudo apt-get -yqq update
         sudo apt-get -yqq install python3-pip
+      shell: bash
+
+    - name: Install ros-build-time-visualizer package
+      run: |
+        pip install git+https://github.com/xmfcx/ros-build-time-visualizer.git@1.0.0
       shell: bash
 
     - name: Set git config
@@ -110,3 +120,10 @@ runs:
           ./build
           ./install
         key: build-${{ runner.arch }}-${{ inputs.rosdistro }}-${{ inputs.cache-key-element }}-${{ inputs.cmake-build-type }}-${{ github.sha }}
+
+    - name: Generate build time treemap
+      id: generate-build-time-treemap
+      run: |
+        ros-build-time-visualizer . --output_path build_time_treemap.html
+        echo "treemap-path=build_time_treemap.html" >> $GITHUB_OUTPUT
+      shell: bash
