@@ -40,7 +40,7 @@ inputs:
     required: false
 
 outputs:
-  build_time_treemap_path:
+  build-time-treemap-path:
     description: "Path to the generated build time treemap file."
     value: ${{ steps.generate-build-time-treemap.outputs.treemap-path }}
 
