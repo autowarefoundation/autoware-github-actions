@@ -204,13 +204,13 @@ def get_latest_tag(tags: list[str], current_version: str, target_release: str) -
         if target_release == 'major':
             if parsed_tag.major > current_ver.major:
                 # Only consider tags with a higher major version
-                if latest_tag is None or parsed_tag < version.parse(latest_tag):
+                if latest_tag is None or parsed_tag > version.parse(latest_tag):
                     latest_tag = tag
 
         elif target_release == 'minor':
             if parsed_tag.major == current_ver.major and parsed_tag.minor > current_ver.minor:
                 # Only consider tags with the same major but higher minor version
-                if latest_tag is None or parsed_tag < version.parse(latest_tag):
+                if latest_tag is None or parsed_tag > version.parse(latest_tag):
                     latest_tag = tag
 
         elif target_release == 'patch':
@@ -218,13 +218,13 @@ def get_latest_tag(tags: list[str], current_version: str, target_release: str) -
                 parsed_tag.minor == current_ver.minor and
                 parsed_tag.micro > current_ver.micro):
                 # Only consider tags with the same major and minor but higher patch version
-                if latest_tag is None or parsed_tag < version.parse(latest_tag):
+                if latest_tag is None or parsed_tag > version.parse(latest_tag):
                     latest_tag = tag
 
         elif target_release == 'any':
             # Consider any version newer than the current version
             if parsed_tag > current_ver:
-                if latest_tag is None or parsed_tag < version.parse(latest_tag):
+                if latest_tag is None or parsed_tag > version.parse(latest_tag):
                     latest_tag = tag
 
     return latest_tag
