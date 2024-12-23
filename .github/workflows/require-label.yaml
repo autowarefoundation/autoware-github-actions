@@ -20,9 +20,8 @@ jobs:
         id: check-for-label
         if: contains(github.event.pull_request.labels.*.name, inputs.label)
         run: |
-          echo "::notice::Checking for label '${{ inputs.label }}'..."
           echo "result=true" >> $GITHUB_OUTPUT
-          echo "### Required label '${{ inputs.label }}' is present." >> $GITHUB_STEP_SUMMARY
+          echo "::notice::✅ The label is present: '${{ inputs.label }}'"
         shell: bash
 
       - name: Fail if label is not present
