@@ -27,7 +27,7 @@ jobs:
       - name: Fail if label is not present
         if: steps.check-for-label.outputs.result != 'true'
         run: |
-          echo "::error::Label '${{ inputs.label }}' is required but not present. Failing the workflow."
+          echo "::error::❌ The label is missing: '${{ inputs.label }}'"
           echo "result=false" >> $GITHUB_OUTPUT
           echo "## 🚨 Missing Required Label" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
