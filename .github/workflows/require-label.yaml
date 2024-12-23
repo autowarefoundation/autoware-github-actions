@@ -1,0 +1,35 @@
+name: require-label
+
+on:
+  workflow_call:
+    inputs:
+      label:
+        required: true
+        type: string
+    outputs:
+      result:
+        value: ${{ jobs.require-label.outputs.result }}
+
+jobs:
+  require-label:
+    runs-on: ubuntu-22.04
+    outputs:
+      result: ${{ steps.require-label.outputs.result }}
+    steps:
+      - name: Check if label is present
+        id: check-for-label
+        if: contains(github.event.pull_request.labels.*.name, inputs.label)
+        run: |
+          echo "::notice::Checking for label '${{ inputs.label }}'..."
+          echo "result=true" >> $GITHUB_OUTPUT
+          echo "### Required label '${{ inputs.label }}' is present." >> $GITHUB_STEP_SUMMARY
+        shell: bash
+
+      - name: Fail if label is not present
+        if: steps.check-for-label.outputs.result != 'true'
+        run: |
+          echo "::error::Label '${{ inputs.label }}' is required but not present. Failing the workflow."
+          echo "result=false" >> $GITHUB_OUTPUT
+          echo "### Required label '${{ inputs.label }}' is missing. Workflow failed." >> $GITHUB_STEP_SUMMARY
+          exit 1
+        shell: bash
