@@ -30,6 +30,8 @@ jobs:
         run: |
           echo "::error::Label '${{ inputs.label }}' is required but not present. Failing the workflow."
           echo "result=false" >> $GITHUB_OUTPUT
-          echo "### Required label '${{ inputs.label }}' is missing. Workflow failed." >> $GITHUB_STEP_SUMMARY
+          echo "### 🚨 Workflow failed due to missing label." >> $GITHUB_STEP_SUMMARY
+          echo "💡 Please add the following label to the PR to pass:" >> $GITHUB_STEP_SUMMARY
+          echo "▶️ ${{ inputs.label }}" >> $GITHUB_STEP_SUMMARY
           exit 1
         shell: bash
