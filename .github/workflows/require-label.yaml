@@ -12,7 +12,7 @@ on:
 
 jobs:
   require-label:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     outputs:
       result: ${{ steps.require-label.outputs.result }}
     steps:
