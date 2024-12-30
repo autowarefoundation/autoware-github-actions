@@ -9,12 +9,13 @@ on:
     outputs:
       result:
         value: ${{ jobs.require-label.outputs.result }}
+        description: Returns 'true' if the label is present, empty otherwise (cannot return 'false')
 
 jobs:
   require-label:
     runs-on: ubuntu-latest
     outputs:
-      result: ${{ steps.require-label.outputs.result }}
+      result: ${{ steps.check-for-label.outputs.result }}
     steps:
       - name: Check if label is present
         id: check-for-label
@@ -28,7 +29,6 @@ jobs:
         if: steps.check-for-label.outputs.result != 'true'
         run: |
           echo "::error::❌ The label is missing: '${{ inputs.label }}'"
-          echo "result=false" >> $GITHUB_OUTPUT
           echo "## 🚨 Missing Required Label" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "💡 Please add the following label to the pull request to proceed:" >> $GITHUB_STEP_SUMMARY
