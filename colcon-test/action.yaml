@@ -52,7 +52,7 @@ runs:
       shell: bash
 
     - name: Set git config
-      if: ${{ inputs.build-depends-repos != '' }}
+      if: ${{ inputs.build-depends-repos != '' || inputs.packages-above-repos != '' }}
       uses: autowarefoundation/autoware-github-actions/set-git-config@v1
       with:
         token: ${{ inputs.token }}
