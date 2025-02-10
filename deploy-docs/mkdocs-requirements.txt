@@ -11,7 +11,7 @@ mkdocs-static-i18n
 mkdocs-video
 mike
 pathspec
-plantuml-markdown
+plantuml-markdown==3.10.4
 pymdown-extensions
 python-markdown-math
 tabulate
