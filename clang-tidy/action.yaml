@@ -158,6 +158,20 @@ runs:
       with:
         files: /tmp/clang-tidy-result/fixes.yaml
 
+    - name: Copy fixes.yaml to access from Docker Container Action
+      if: ${{ steps.check-fixes-yaml-existence.outputs.exists == 'true' }}
+      run: |
+        cp /tmp/clang-tidy-result/fixes.yaml fixes.yaml
+      shell: bash
+
+    - name: Run clang-tidy-pr-comments action
+      if: ${{ steps.check-fixes-yaml-existence.outputs.exists == 'true' }}
+      uses: platisd/clang-tidy-pr-comments@1.4.0
+      with:
+        github_token: ${{ inputs.token }}
+        clang_tidy_fixes: fixes.yaml
+        repo_path_prefix: "/__w" # yamllint disable-line
+
     - name: Upload artifacts
       if: ${{ steps.check-report-log-existence.outputs.exists == 'true' && steps.check-fixes-yaml-existence.outputs.exists == 'true' }}
       uses: actions/upload-artifact@v4
