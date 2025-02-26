@@ -29,7 +29,7 @@ inputs:
   build-pre-command:
     description: Will be prepended to the colcon build command. e.g. "nice -n 19" or "taskset --cpu-list 0-2"
     required: false
-    default: nice -n 19
+    default: ""
   colcon-parallel-workers-flag:
     description: Will be appended to the colcon build command to limit number of packages built in parallel. e.g. "--parallel-workers 3"
     default: ""
