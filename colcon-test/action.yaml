@@ -11,6 +11,9 @@ inputs:
   build-depends-repos:
     description: ""
     required: false
+  packages-above-repos:
+    description: ""
+    required: false
   token:
     description: ""
     required: false
@@ -49,7 +52,7 @@ runs:
       shell: bash
 
     - name: Set git config
-      if: ${{ inputs.build-depends-repos != '' }}
+      if: ${{ inputs.build-depends-repos != '' || inputs.packages-above-repos != '' }}
       uses: autowarefoundation/autoware-github-actions/set-git-config@v1
       with:
         token: ${{ inputs.token }}
@@ -59,6 +62,13 @@ runs:
       run: |
         mkdir -p dependency_ws
         vcs import dependency_ws < ${{ inputs.build-depends-repos }}
+      shell: bash
+
+    - name: Clone above dependency packages
+      if: ${{ inputs.packages-above-repos != '' }}
+      run: |
+        mkdir -p dependency_ws
+        vcs import dependency_ws < ${{ inputs.packages-above-repos }}
       shell: bash
 
     - name: Run rosdep install

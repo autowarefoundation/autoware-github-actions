@@ -27,6 +27,7 @@ jobs:
           rosdistro: galactic
           target-packages: ${{ steps.get-modified-packages.outputs.modified-packages }}
           build-depends-repos: build_depends.repos
+          packages-above-repos: packages_above.repos
 
   test:
     needs: build
@@ -57,6 +58,7 @@ jobs:
           rosdistro: galactic
           target-packages: ${{ steps.get-modified-packages.outputs.modified-packages }}
           build-depends-repos: build_depends.repos
+          packages-above-repos: packages_above.repos
 
       - name: Upload coverage to Codecov
         if: ${{ steps.test.outputs.coverage-report-files != '' }}
@@ -70,12 +72,13 @@ jobs:
 
 ## Inputs
 
-| Name                | Required | Description                                         |
-| ------------------- | -------- | --------------------------------------------------- |
-| rosdistro           | true     | ROS distro.                                         |
-| target-packages     | true     | The target packages to test.                        |
-| build-depends-repos | false    | The `.repos` file that includes build dependencies. |
-| token               | false    | The token for build dependencies.                   |
+| Name                 | Required | Description                                               |
+| -------------------- | -------- | --------------------------------------------------------- |
+| rosdistro            | true     | ROS distro.                                               |
+| target-packages      | true     | The target packages to test.                              |
+| build-depends-repos  | false    | The `.repos` file that includes build dependencies.       |
+| packages-above-repos | false    | The `.repos` file that includes above build dependencies. |
+| token                | false    | The token for build dependencies.                         |
 
 ## Outputs
 
