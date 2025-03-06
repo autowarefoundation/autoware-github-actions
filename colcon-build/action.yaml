@@ -84,6 +84,7 @@ runs:
         else
             rosdep update
         fi
+        source /opt/autoware/setup.bash
         DEBIAN_FRONTEND=noninteractive rosdep install -yqq --from-paths ${package_paths} --ignore-src --rosdistro ${{ inputs.rosdistro }}
       shell: bash
 
@@ -96,6 +97,7 @@ runs:
     - name: Build
       run: |
         . /opt/ros/${{ inputs.rosdistro }}/setup.sh
+        . /opt/autoware/setup.sh
         # Cannot use unshare inside a Docker container, so we just disable
         # DNS lookups instead.
         cat /etc/nsswitch.conf
