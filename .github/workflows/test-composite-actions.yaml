@@ -146,7 +146,7 @@ jobs:
       matrix:
         container:
           - ros:humble
-          - ghcr.io/autowarefoundation/autoware:latest-universe-devel
+          - ghcr.io/autowarefoundation/autoware:universe-devel
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
