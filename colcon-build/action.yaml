@@ -66,12 +66,12 @@ runs:
         vcs import dependency_ws < ${{ inputs.build-depends-repos }}
       shell: bash
 
-　   - name: Source /opt/autoware//setup.bash if available
+    - name: Source /opt/autoware/setup.bash if available
       run: |
-        if [ -f "/opt/autoware/setup.sh" ]; then
-          . /opt/autoware/setup.sh
+        if [ -f "/opt/autoware/setup.bash" ]; then
+          source /opt/autoware/setup.bash
         else
-          echo "/opt/autoware/setup.sh not found"
+          echo "/opt/autoware/setup.bash not found"
         fi
       shell: bash
 
