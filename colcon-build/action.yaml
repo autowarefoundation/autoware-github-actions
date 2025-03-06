@@ -66,6 +66,15 @@ runs:
         vcs import dependency_ws < ${{ inputs.build-depends-repos }}
       shell: bash
 
+　   - name: Source /opt/autoware//setup.bash if available
+      run: |
+        if [ -f "/opt/autoware/setup.sh" ]; then
+          . /opt/autoware/setup.sh
+        else
+          echo "/opt/autoware/setup.sh not found"
+        fi
+      shell: bash
+
     - name: Run rosdep install
       run: |
         package_paths=$(colcon list -p --packages-above-and-dependencies ${{ inputs.target-packages }} --base-paths . dependency_ws)
