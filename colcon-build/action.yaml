@@ -66,15 +66,6 @@ runs:
         vcs import dependency_ws < ${{ inputs.build-depends-repos }}
       shell: bash
 
-    - name: Source /opt/autoware/setup.bash if available
-      run: |
-        if [ -f "/opt/autoware/setup.bash" ]; then
-          source /opt/autoware/setup.bash
-        else
-          echo "/opt/autoware/setup.bash not found"
-        fi
-      shell: bash
-
     - name: Run rosdep install
       run: |
         package_paths=$(colcon list -p --packages-above-and-dependencies ${{ inputs.target-packages }} --base-paths . dependency_ws)
@@ -84,7 +75,9 @@ runs:
         else
             rosdep update
         fi
-        source /opt/autoware/setup.bash
+        if [ -f "/opt/autoware/setup.sh" ]; then
+          . /opt/autoware/setup.sh
+        fi
         DEBIAN_FRONTEND=noninteractive rosdep install -yqq --from-paths ${package_paths} --ignore-src --rosdistro ${{ inputs.rosdistro }}
       shell: bash
 
@@ -97,7 +90,9 @@ runs:
     - name: Build
       run: |
         . /opt/ros/${{ inputs.rosdistro }}/setup.sh
-        . /opt/autoware/setup.sh
+        if [ -f "/opt/autoware/setup.sh" ]; then
+          . /opt/autoware/setup.sh
+        fi
         # Cannot use unshare inside a Docker container, so we just disable
         # DNS lookups instead.
         cat /etc/nsswitch.conf
