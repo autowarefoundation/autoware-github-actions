@@ -38,6 +38,10 @@ inputs:
     description: Will be exported as MAKEFLAGS environment variable. e.g. "-j 4"
     default: ""
     required: false
+  overlay-workspace:
+    description: Path to the overlay workspace containing setup.sh
+    default: /opt/autoware
+    required: false
 
 runs:
   using: composite
@@ -75,8 +79,8 @@ runs:
         else
             rosdep update
         fi
-        if [ -f "/opt/autoware/setup.sh" ]; then
-          . /opt/autoware/setup.sh
+        if [ -f "${{ inputs.overlay-workspace }}/setup.sh" ]; then
+          . ${{ inputs.overlay-workspace }}/setup.sh
         fi
         DEBIAN_FRONTEND=noninteractive rosdep install -yqq --from-paths ${package_paths} --ignore-src --rosdistro ${{ inputs.rosdistro }}
       shell: bash
@@ -90,8 +94,8 @@ runs:
     - name: Build
       run: |
         . /opt/ros/${{ inputs.rosdistro }}/setup.sh
-        if [ -f "/opt/autoware/setup.sh" ]; then
-          . /opt/autoware/setup.sh
+        if [ -f "${{ inputs.overlay-workspace }}/setup.sh" ]; then
+          . ${{ inputs.overlay-workspace }}/setup.sh
         fi
         # Cannot use unshare inside a Docker container, so we just disable
         # DNS lookups instead.
