@@ -40,7 +40,7 @@ inputs:
     required: false
   underlay-workspace:
     description: Path to the underlay workspace containing setup.sh
-    default: /opt/autoware
+    default: ""
     required: false
 
 runs:
