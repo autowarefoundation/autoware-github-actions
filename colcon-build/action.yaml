@@ -38,6 +38,10 @@ inputs:
     description: Will be exported as MAKEFLAGS environment variable. e.g. "-j 4"
     default: ""
     required: false
+  underlay-workspace:
+    description: Path to the underlay workspace containing setup.sh
+    default: ""
+    required: false
 
 runs:
   using: composite
@@ -75,6 +79,9 @@ runs:
         else
             rosdep update
         fi
+        if [ -f "${{ inputs.underlay-workspace }}/setup.sh" ]; then
+          . ${{ inputs.underlay-workspace }}/setup.sh
+        fi
         DEBIAN_FRONTEND=noninteractive rosdep install -yqq --from-paths ${package_paths} --ignore-src --rosdistro ${{ inputs.rosdistro }}
       shell: bash
 
@@ -87,6 +94,9 @@ runs:
     - name: Build
       run: |
         . /opt/ros/${{ inputs.rosdistro }}/setup.sh
+        if [ -f "${{ inputs.underlay-workspace }}/setup.sh" ]; then
+          . ${{ inputs.underlay-workspace }}/setup.sh
+        fi
         # Cannot use unshare inside a Docker container, so we just disable
         # DNS lookups instead.
         cat /etc/nsswitch.conf
