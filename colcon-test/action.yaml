@@ -82,19 +82,21 @@ runs:
         set -e
         . /opt/ros/${{ inputs.rosdistro }}/setup.sh
 
-        colcon lcov-result --zero-counters \
-          --verbose \
-          --packages-above ${{ inputs.target-packages }}
-
-        colcon lcov-result --initial \
-          --verbose \
-          --packages-above ${{ inputs.target-packages }}
-
         # Build skip packages argument if packages-skip is provided
         skip_packages_arg=""
         if [ -n "${{ inputs.packages-skip }}" ]; then
           skip_packages_arg="--packages-skip ${{ inputs.packages-skip }}"
         fi
+
+        colcon lcov-result --zero-counters \
+          --verbose \
+          --packages-above ${{ inputs.target-packages }} \
+          $skip_packages_arg
+
+        colcon lcov-result --initial \
+          --verbose \
+          --packages-above ${{ inputs.target-packages }} \
+          $skip_packages_arg
 
         colcon test --event-handlers console_cohesion+ \
           --mixin coverage-pytest \
@@ -106,11 +108,13 @@ runs:
         colcon lcov-result \
           --verbose \
           --filter "*/test/*" \
-          --packages-above ${{ inputs.target-packages }} || true
+          --packages-above ${{ inputs.target-packages }} \
+          $skip_packages_arg || true
 
         colcon coveragepy-result \
           --verbose \
-          --packages-above ${{ inputs.target-packages }} || true
+          --packages-above ${{ inputs.target-packages }} \
+          $skip_packages_arg || true
       shell: bash
 
     - name: Check if the lcov coverage file exists
