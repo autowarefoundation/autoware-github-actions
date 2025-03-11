@@ -9,7 +9,7 @@ inputs:
     description: ""
     required: true
   packages-skip:
-    description: "Packages to skip during testing"
+    description: Packages to skip during testing
     required: false
     default: ""
   build-depends-repos:
