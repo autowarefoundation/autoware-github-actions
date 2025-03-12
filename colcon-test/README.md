@@ -56,6 +56,7 @@ jobs:
         with:
           rosdistro: galactic
           target-packages: ${{ steps.get-modified-packages.outputs.modified-packages }}
+          packages-skip: package_to_skip1 package_to_skip2
           build-depends-repos: build_depends.repos
 
       - name: Upload coverage to Codecov
@@ -74,6 +75,7 @@ jobs:
 | ------------------- | -------- | --------------------------------------------------- |
 | rosdistro           | true     | ROS distro.                                         |
 | target-packages     | true     | The target packages to test.                        |
+| packages-skip       | false    | Packages to skip during testing.                    |
 | build-depends-repos | false    | The `.repos` file that includes build dependencies. |
 | token               | false    | The token for build dependencies.                   |
 
