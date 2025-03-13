@@ -72,6 +72,7 @@ jobs:
 ```
 
 ## Inputs
+
 | Name                 | Required | Description                                               |
 | -------------------- | -------- | --------------------------------------------------------- |
 | rosdistro            | true     | ROS distro.                                               |
