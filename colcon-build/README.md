@@ -26,6 +26,7 @@ jobs:
           rosdistro: galactic
           target-packages: ${{ steps.get-modified-packages.outputs.modified-packages }}
           build-depends-repos: build_depends.repos
+          packages-above-repos: packages_above.repos
 ```
 
 ## Inputs
@@ -35,6 +36,7 @@ jobs:
 | rosdistro                    | true     | ROS distro.                                                                                                             |
 | target-packages              | true     | The target packages to build.                                                                                           |
 | build-depends-repos          | false    | The `.repos` file that includes build dependencies.                                                                     |
+| packages-above-repos         | false    | The `.repos` file that includes above build dependencies.                                                               |
 | cmake-build-type             | false    | The value for `CMAKE_BUILD_TYPE`.                                                                                       |
 | token                        | false    | The token for build dependencies.                                                                                       |
 | include-eol-distros          | false    | If true, adds `--include-eol-distros` to `rosdep update`.                                                               |
