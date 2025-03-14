@@ -8,6 +8,10 @@ inputs:
   target-packages:
     description: ""
     required: true
+  packages-skip:
+    description: Packages to skip during testing
+    required: false
+    default: ""
   build-depends-repos:
     description: ""
     required: false
@@ -95,28 +99,39 @@ runs:
           . ${{ inputs.underlay-workspace }}/setup.sh
         fi
 
+        # Build skip packages argument if packages-skip is provided
+        skip_packages_arg=""
+        if [ -n "${{ inputs.packages-skip }}" ]; then
+          skip_packages_arg="--packages-skip ${{ inputs.packages-skip }}"
+        fi
+
         colcon lcov-result --zero-counters \
           --verbose \
-          --packages-above ${{ inputs.target-packages }}
+          --packages-above ${{ inputs.target-packages }} \
+          $skip_packages_arg
 
         colcon lcov-result --initial \
           --verbose \
-          --packages-above ${{ inputs.target-packages }}
+          --packages-above ${{ inputs.target-packages }} \
+          $skip_packages_arg
 
         colcon test --event-handlers console_cohesion+ \
           --mixin coverage-pytest \
           --packages-above ${{ inputs.target-packages }} \
+          $skip_packages_arg \
           --executor sequential \
           --return-code-on-test-failure
 
         colcon lcov-result \
           --verbose \
           --filter "*/test/*" \
-          --packages-above ${{ inputs.target-packages }} || true
+          --packages-above ${{ inputs.target-packages }} \
+          $skip_packages_arg || true
 
         colcon coveragepy-result \
           --verbose \
-          --packages-above ${{ inputs.target-packages }} || true
+          --packages-above ${{ inputs.target-packages }} \
+          $skip_packages_arg || true
       shell: bash
 
     - name: Check if the lcov coverage file exists
