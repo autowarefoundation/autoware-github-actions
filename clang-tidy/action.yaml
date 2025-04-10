@@ -36,6 +36,10 @@ inputs:
     description: Will be part of the cache key
     default: default
     required: false
+  underlay-workspace:
+    description: Path to the underlay workspace containing setup.sh
+    default: ""
+    required: false
 
 runs:
   using: composite
@@ -80,6 +84,9 @@ runs:
         else
             rosdep update
         fi
+        if [ -f "${{ inputs.underlay-workspace }}/setup.sh" ]; then
+          . ${{ inputs.underlay-workspace }}/setup.sh
+        fi
         DEBIAN_FRONTEND=noninteractive rosdep install -yqq --from-paths ${package_paths} --ignore-src --rosdistro ${{ inputs.rosdistro }}
       shell: bash
 
@@ -96,6 +103,9 @@ runs:
       if: ${{ steps.restore-build-files.outputs.cache-hit != 'true' }}
       run: |
         . /opt/ros/${{ inputs.rosdistro }}/setup.sh
+        if [ -f "${{ inputs.underlay-workspace }}/setup.sh" ]; then
+          . ${{ inputs.underlay-workspace }}/setup.sh
+        fi
         colcon build --event-handlers console_cohesion+ \
           --packages-up-to ${{ inputs.target-packages }} \
           --cmake-args -DCMAKE_BUILD_TYPE=${{ inputs.cmake-build-type }} -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
