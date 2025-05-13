@@ -8,6 +8,9 @@ inputs:
   base-branch:
     description: ""
     required: true
+  base-repo:
+    description: ""
+    required: false
   sync-pr-branch:
     description: ""
     required: true
@@ -43,6 +46,7 @@ runs:
     - name: Check out repository
       uses: actions/checkout@v4
       with:
+        repository: ${{ inputs.base-repo || github.repository }}
         ref: ${{ inputs.base-branch }}
         fetch-depth: 0
 
