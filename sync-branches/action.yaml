@@ -42,7 +42,7 @@ inputs:
 
 outputs:
   pull-request-url:
-    description: "URL of the created pull request"
+    description: URL of the created pull request
     value: ${{ steps.create-pr.outputs.pull-request-url }}
 
 runs:
