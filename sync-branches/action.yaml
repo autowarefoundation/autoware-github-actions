@@ -8,6 +8,9 @@ inputs:
   base-branch:
     description: ""
     required: true
+  base-repo:
+    description: ""
+    required: false
   sync-pr-branch:
     description: ""
     required: true
@@ -37,14 +40,21 @@ inputs:
     required: false
     default: ""
 
+outputs:
+  pull-request-url:
+    description: URL of the created pull request
+    value: ${{ steps.create-pr.outputs.pull-request-url }}
+
 runs:
   using: composite
   steps:
     - name: Check out repository
       uses: actions/checkout@v4
       with:
+        repository: ${{ inputs.base-repo || github.repository }}
         ref: ${{ inputs.base-branch }}
         fetch-depth: 0
+        token: ${{ inputs.token }}
 
     - name: Set git config
       uses: autowarefoundation/autoware-github-actions/set-git-config@v1
