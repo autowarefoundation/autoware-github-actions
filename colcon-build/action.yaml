@@ -84,15 +84,59 @@ runs:
         vcs import dependency_ws < ${{ inputs.packages-above-repos }}
       shell: bash
 
+    - run: sudo apt-get -yqq update
+      shell: bash
+
+    - name: Ensure rosdep directory exists
+      run: mkdir -p ~/.ros/rosdep
+      shell: bash
+
+    - name: Restore rosdep cache
+      id: rosdep-restore
+      uses: actions/cache/restore@v4
+      with:
+        path: ~/.ros/rosdep
+        key: rosdep-${{ runner.arch }}-${{ inputs.rosdistro }}
+
+    - name: Check rosdep cache age
+      id: check-cache
+      run: |
+        timestamp_file=~/.ros/rosdep/CACHE_TIMESTAMP
+        ttl=$(( 3 * 3600 ))  # 3 hours
+        if [ -f "$timestamp_file" ]; then
+          age=$(( $(date +%s) - $(cat "$timestamp_file") ))
+          echo "Cache age is $age seconds"
+          [ "$age" -gt "$ttl" ] && echo "stale=true" >> $GITHUB_OUTPUT || echo "stale=false" >> $GITHUB_OUTPUT
+        else
+          echo "No timestamp file found. Treating cache as stale."
+          echo "stale=true" >> $GITHUB_OUTPUT
+        fi
+      shell: bash
+
+    - name: Run rosdep update (if stale)
+      if: steps.check-cache.outputs.stale == 'true'
+      id: rosdep-update
+      run: |
+        echo "Running rosdep update..."
+        if [ "${{ inputs.include-eol-distros }}" = "true" ]; then
+          rosdep update --include-eol-distros
+        else
+          rosdep update
+        fi
+        date +%s > ~/.ros/rosdep/CACHE_TIMESTAMP
+      shell: bash
+      continue-on-error: true
+
+    - name: Save rosdep cache
+      if: steps.check-cache.outputs.stale == 'true' && steps.rosdep-update.outcome == 'success'
+      uses: actions/cache/save@v4
+      with:
+        path: ~/.ros/rosdep
+        key: rosdep-${{ runner.arch }}-${{ inputs.rosdistro }}
+
     - name: Run rosdep install
       run: |
         package_paths=$(colcon list -p --packages-above-and-dependencies ${{ inputs.target-packages }} --base-paths . dependency_ws)
-        sudo apt-get -yqq update
-        if [ "${{ inputs.include-eol-distros }}" = "true" ]; then
-            rosdep update --include-eol-distros
-        else
-            rosdep update
-        fi
         if [ -f "${{ inputs.underlay-workspace }}/setup.sh" ]; then
           . ${{ inputs.underlay-workspace }}/setup.sh
         fi
