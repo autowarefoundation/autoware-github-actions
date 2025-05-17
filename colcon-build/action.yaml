@@ -116,9 +116,10 @@ runs:
     - name: Set up colcon-mixin (from local)
       if: ${{ inputs.use-local-mixin == 'true' }}
       run: |
+        echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
         INDEX="$GITHUB_WORKSPACE/colcon-mixin-repository/index.yaml"
-        colcon mixin add default file://"$INDEX" --overwrite
-        # This reads the mixin files from the local clone—no HTTP
+        colcon mixin add default file://"$INDEX"
+        # This reads the mixin files from the local clone, no HTTP
         colcon mixin update default
       shell: bash
 
