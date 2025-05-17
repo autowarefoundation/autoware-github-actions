@@ -65,7 +65,13 @@ runs:
       run: |
         echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
         INDEX="$GITHUB_WORKSPACE/colcon-mixin-repository/index.yaml"
+        
+        # Remove existing mixin repo if it exists
+        colcon mixin remove default || echo "default mixin not previously added"
+        
+        # Add local mixin repo
         colcon mixin add default file://"$INDEX"
+        
         # This reads the mixin files from the local clone, no HTTP
         colcon mixin update default
       shell: bash
