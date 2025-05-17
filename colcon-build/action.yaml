@@ -45,6 +45,10 @@ inputs:
     description: Path to the underlay workspace containing setup.sh
     default: ""
     required: false
+  use-local-mixin:
+    description: Will use the local mixin repository to avoid rate limits
+    default: false
+    required: false
 
 runs:
   using: composite
@@ -96,8 +100,25 @@ runs:
       shell: bash
 
     - name: Set up colcon-mixin
+      if: ${{ inputs.use-local-mixin == 'false' }}
       run: |
         colcon mixin add default https://raw.githubusercontent.com/colcon/colcon-mixin-repository/master/index.yaml || true
+        colcon mixin update default
+      shell: bash
+
+    - name: Checkout mixin repo locally
+      if: ${{ inputs.use-local-mixin == 'true' }}
+      uses: actions/checkout@v4
+      with:
+        repository: colcon/colcon-mixin-repository
+        path: colcon-mixin-repository
+
+    - name: Set up colcon-mixin (from local)
+      if: ${{ inputs.use-local-mixin == 'true' }}
+      run: |
+        INDEX="$GITHUB_WORKSPACE/colcon-mixin-repository/index.yaml"
+        colcon mixin add default file://"$INDEX" --overwrite
+        # This reads the mixin files from the local clone—no HTTP
         colcon mixin update default
       shell: bash
 
