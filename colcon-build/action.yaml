@@ -96,7 +96,7 @@ runs:
       uses: actions/cache/restore@v4
       with:
         path: ~/.ros/rosdep
-        key: rosdep-${{ runner.os }}-${{ inputs.rosdistro }}
+        key: rosdep-${{ runner.arch }}-${{ inputs.rosdistro }}
 
     - name: Check rosdep cache age
       id: check-cache
@@ -132,7 +132,7 @@ runs:
       uses: actions/cache/save@v4
       with:
         path: ~/.ros/rosdep
-        key: rosdep-${{ runner.os }}-${{ inputs.rosdistro }}
+        key: rosdep-${{ runner.arch }}-${{ inputs.rosdistro }}
 
     - name: Run rosdep install
       run: |
