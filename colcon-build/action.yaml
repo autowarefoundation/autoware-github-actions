@@ -47,7 +47,7 @@ inputs:
     required: false
   use-local-mixin:
     description: Will use the local mixin repository to avoid rate limits
-    default: false
+    default: true
     required: false
 
 runs:
