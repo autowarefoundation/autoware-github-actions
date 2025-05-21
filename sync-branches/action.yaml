@@ -39,6 +39,10 @@ inputs:
     description: ""
     required: false
     default: ""
+  pr-body-header:
+    description: Text to prepend before the changelog in PR body
+    required: false
+    default: ""
 
 outputs:
   pull-request-url:
@@ -75,16 +79,24 @@ runs:
       with:
         git-cliff-args: origin/${{ inputs.base-branch }}..HEAD
 
-    - name: Replace PR number to URL
-      id: replace-pr-number-to-url
+    - name: Prepare PR body
+      id: prepare-pr-body
       run: |
-        # Output multiline strings: https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#example-of-a-multiline-string
+        # Replace PR numbers with URLs
         changelog=$(echo "$CHANGELOG" | sed -r "s|\(#([0-9]+)\)|("${REPO_URL%.git}"/pull/\1)|g")
+
+        # Output multiline strings: https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#example-of-a-multiline-string
         EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
-        echo "changelog<<$EOF" >> $GITHUB_OUTPUT
+        echo "body<<$EOF" >> $GITHUB_OUTPUT
+        if [ -n "$PR_BODY_HEADER" ]; then
+          echo "$PR_BODY_HEADER" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+        fi
         echo "$changelog" >> $GITHUB_OUTPUT
         echo "$EOF" >> $GITHUB_OUTPUT
       env:
+        PR_BODY_HEADER: ${{ inputs.pr-body-header }}
         CHANGELOG: ${{ steps.generate-changelog.outputs.changelog }}
         REPO_URL: ${{ inputs.sync-target-repository }}
       shell: bash
@@ -97,7 +109,7 @@ runs:
         base: ${{ inputs.base-branch }}
         branch: ${{ inputs.sync-pr-branch }}
         title: ${{ inputs.pr-title }}
-        body: ${{ steps.replace-pr-number-to-url.outputs.changelog }}
+        body: ${{ steps.prepare-pr-body.outputs.body }}
         labels: ${{ inputs.pr-labels }}
         assignees: ${{ inputs.pr-assignees }}
         reviewers: ${{ inputs.pr-reviewers }}
