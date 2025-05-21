@@ -30,6 +30,7 @@ jobs:
           sync-target-branch: main
           sync-branch: sync-upstream
           pr-title: "chore: sync upstream"
+          pr-body-header: "This PR syncs changes from the upstream repository."
           auto-merge-method: merge
 ```
 
@@ -48,6 +49,7 @@ jobs:
 | pr-assignees           | false    | The same as above.                                      |
 | pr-reviewers           | false    | The same as above.                                      |
 | auto-merge-method      | false    | Refer to `peter-evans/enable-pull-request-automerge`.   |
+| pr-body-header         | false    | Text to prepend before the changelog in PR body.        |
 
 ## Outputs
 
