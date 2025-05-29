@@ -47,6 +47,7 @@ runs:
 
     - name: Add source remote if from fork
       id: add_remote
+      shell: bash
       run: |
         if [ "${{ inputs.repository_owner }}" != "${{ github.repository_owner }}" ]; then
           echo "Using fork: ${{ inputs.repository_owner }}"
