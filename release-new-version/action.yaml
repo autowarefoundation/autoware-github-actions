@@ -87,7 +87,7 @@ runs:
         git commit -m 'chore: update all "CHANGELOG.rst"s'
 
         # Check if new packages are added
-        catkin_prepare_release --no-push --bump ${{ inputs.bump_version }}
+        catkin_prepare_release -y --no-push --bump ${{ inputs.bump_version }}
 
         # Get the version string from one of the package.xml
         NEW_VERSION=
