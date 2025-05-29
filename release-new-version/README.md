@@ -43,13 +43,13 @@ jobs:
 
 ## Inputs
 
-| Name              | Required | Default               | Description                                                |
-| ----------------- | -------- | --------------------- | ---------------------------------------------------------- |
-| github_token      | true     |                       | The GitHub token for authentication                        |
-| source_branch     | true     | main                  | The branch to merge from                                   |
-| target_branch     | true     | humble                | The branch to merge into (release branch)                  |
-| bump_version      | true     | patch                 | The type of version bump (patch, minor, major)             |
-| repository_owner  | false    | autowarefoundation    | The owner of the source repository (e.g., fork user/org)   |
+| Name             | Required | Default            | Description                                              |
+| ---------------- | -------- | ------------------ | -------------------------------------------------------- |
+| github_token     | true     |                    | The GitHub token for authentication                      |
+| source_branch    | true     | main               | The branch to merge from                                 |
+| target_branch    | true     | humble             | The branch to merge into (release branch)                |
+| bump_version     | true     | patch              | The type of version bump (patch, minor, major)           |
+| repository_owner | false    | autowarefoundation | The owner of the source repository (e.g., fork user/org) |
 
 ## Outputs
 
