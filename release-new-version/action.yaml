@@ -58,11 +58,13 @@ runs:
 
     - name: Generate PR branch name
       id: generate_branch_name
+      shell: bash
       run: |
         BRANCH_NAME="bump/${{ inputs.source_branch }}-to-${{ inputs.target_branch }}-with-${{ inputs.bump_version }}-${{ github.run_id }}"
         echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
 
     - name: Based on the source branch, create a new working branch for PR
+      shell: bash
       run: |
         if [ "${{ inputs.repository_owner }}" != "${{ github.repository_owner }}" ]; then
           git checkout -b ${{ steps.generate_branch_name.outputs.branch_name }} source-fork/${{ inputs.source_branch }}
@@ -73,6 +75,7 @@ runs:
     # Generate changelog and do release
     - name: Generate changelog and do release
       id: generate_release
+      shell: bash
       run: |
         sudo apt-get update && sudo apt-get install -y python3-pip
         pip3 install catkin_tools
@@ -115,6 +118,7 @@ runs:
 
     - name: Create Pull Request using gh
       id: create_pr
+      shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
       run: |
@@ -133,5 +137,6 @@ runs:
     # Delete the remote branch if the PR creation failed
     - name: Delete the remote branch if the PR creation failed
       if: steps.create_pr.outputs.pr_created == false
+      shell: bash
       run: |
         git push origin --delete ${{ steps.generate_branch_name.outputs.branch_name }}
