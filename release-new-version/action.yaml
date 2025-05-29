@@ -107,8 +107,6 @@ runs:
         echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
         # Commit and push changes
-        git add .
-        git commit -m "chore: bump version ($NEW_VERSION)"
         git push origin ${{ steps.generate_branch_name.outputs.branch_name }}
 
     - name: Create Pull Request using gh
