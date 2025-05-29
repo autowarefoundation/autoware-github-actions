@@ -84,7 +84,7 @@ runs:
 
         # Add all files to git
         git add *
-        git commit -m "chore: update all `CHANGELOG.rst`s"
+        git commit -m 'chore: update all "CHANGELOG.rst"s'
 
         # Check if new packages are added
         catkin_prepare_release --no-push --bump ${{ inputs.bump_version }}
