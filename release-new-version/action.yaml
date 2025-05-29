@@ -99,15 +99,9 @@ runs:
             break
           else
             echo "❌ $file has invalid format version $NEW_VERSION (expected x.y.z)"
-            ERROR=1
+            exit 1
           fi
         done < <(find . -name package.xml)
-
-        # Early return if no valid version is found
-        if [ $ERROR -eq 1 ]; then
-          echo "ERROR: Not all packages have the correct format version!"
-          exit 1
-        fi
 
         # Output the new version
         echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
