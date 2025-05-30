@@ -40,10 +40,10 @@ jobs:
 
 ## Inputs
 
-| Name         | Required | Description                        |
-| ------------ | -------- | ---------------------------------- |
-| github_token | true     | The GitHub token for authentication|
-| commit_sha   | true     | The commit SHA to release          |
+| Name         | Required | Description                         |
+| ------------ | -------- | ----------------------------------- |
+| github_token | true     | The GitHub token for authentication |
+| commit_sha   | true     | The commit SHA to release           |
 
 ## Outputs
 
