@@ -1,0 +1,94 @@
+name: Release new tag when merged
+
+inputs:
+  github_token:
+    description: "The GitHub token"
+    required: true
+  commit_sha:
+    description: "The commit SHA to release"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout target branch (main repo)
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ inputs.commit_sha }}
+
+    - name: Set git config
+      uses: autowarefoundation/autoware-github-actions/set-git-config@v1
+      with:
+        token: ${{ inputs.github_token }}
+
+    # Find the latest version with x.y.z format and check if the latest tag already exists
+    # If not, create a new tag
+    - name: Generate changelog and do release
+      shell: bash
+      run: |
+        # Get the version string from one of the package.xml
+        NEW_VERSION=
+        while IFS= read -r file; do
+          NEW_VERSION=$(grep '<version>' "$file" | head -1 | sed 's/.*<version>\(.*\)<\/version>.*/\1/')
+          # Check if the version has a valid format: x.y.z
+          if [[ "$NEW_VERSION" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            echo "✅ New version is: $NEW_VERSION"
+            break
+          else
+            echo "❌ $file has invalid format version $NEW_VERSION (expected x.y.z)"
+            exit 1
+          fi
+        done < <(find . -name package.xml)
+
+        # Output the new version
+        echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+    - name: Generate changelog and do release
+      id: generate_release
+      shell: bash
+      run: |
+        # 1. Find current version from package.xml
+        NEW_VERSION=
+        while IFS= read -r file; do
+          CANDIDATE=$(grep '<version>' "$file" | head -1 | sed 's/.*<version>\(.*\)<\/version>.*/\1/')
+          if [[ "$CANDIDATE" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            # Insert the version if it is the first valid version
+            if [[ -z "$NEW_VERSION" ]]; then
+              NEW_VERSION="$CANDIDATE"
+            elif [[ "$CANDIDATE" != "$NEW_VERSION" ]]; then
+              echo "❌ $file has inconsistent version $CANDIDATE (one of others is $NEW_VERSION)"
+              exit 1
+            fi
+          else
+            echo "❌ $file has invalid format version $CANDIDATE (expected x.y.z)"
+            exit 1
+          fi
+        done < <(find . -name package.xml)
+
+        echo "✅ Found consistent version $NEW_VERSION in all package.xml files"
+
+        # 2. List remote tags that match x.y.z
+        git fetch --tags
+        TAGS=$(git tag -l | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V)
+        LATEST_TAG=$(echo "$TAGS" | tail -n1)
+
+        echo "Existing tags:"
+        echo "$TAGS"
+        echo "Latest tag: $LATEST_TAG"
+
+        # 3. Compare versions: Function returns 0 if $1 > $2
+        version_gt() {
+          # returns 0 if $1 > $2
+          [ "$(printf '%s\n' "$1" "$2" | sort -V | head -n1)" != "$1" ]
+        }
+
+        # 4. Create a new tag if there is no previous tag or the new version is newer than the latest tag
+        if [[ -z "$LATEST_TAG" || version_gt "$NEW_VERSION" "$LATEST_TAG" ]]; then
+          echo "No previous tags found, or new version $NEW_VERSION is newer than latest tag $LATEST_TAG. Will create tag."
+          git tag "$NEW_VERSION"
+          git push origin "$NEW_VERSION"
+          echo "🎉 Created and pushed tag $NEW_VERSION"
+        else
+          echo "Tag $NEW_VERSION already exists. No action taken."
+          exit 0
+        fi
