@@ -1,4 +1,4 @@
-name: Release new tag when merged
+name: release new tag when merged
 
 inputs:
   github_token:
@@ -21,12 +21,10 @@ runs:
       with:
         token: ${{ inputs.github_token }}
 
-    # Find the latest version with x.y.z format and check if the latest tag already exists
-    # If not, create a new tag
+    # Find the new version with x.y.z format
     - name: Generate changelog and do release
       shell: bash
       run: |
-        # Get the version string from one of the package.xml
         NEW_VERSION=
         while IFS= read -r file; do
           NEW_VERSION=$(grep '<version>' "$file" | head -1 | sed 's/.*<version>\(.*\)<\/version>.*/\1/')

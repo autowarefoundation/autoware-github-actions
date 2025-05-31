@@ -1,4 +1,4 @@
-name: Bump package.xml version and Release
+name: bump package.xml version
 
 inputs:
   github_token:
@@ -25,11 +25,6 @@ inputs:
     description: The owner of the source repository (e.g., fork user/org)
     required: false
     default: autowarefoundation
-  # Optional: Add repository_name if forks may use different names
-  # repository_name:
-  #   description: 'The source repository name (defaults to current repo)'
-  #   required: false
-  #   default: ${{ github.event.repository.name }}
 
 runs:
   using: composite
@@ -46,7 +41,6 @@ runs:
         token: ${{ inputs.github_token }}
 
     - name: Add source remote if from fork
-      id: add_remote
       shell: bash
       run: |
         if [ "${{ inputs.repository_owner }}" != "${{ github.repository_owner }}" ]; then

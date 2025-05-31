@@ -1,4 +1,4 @@
-# release-new-version
+# release-new-version-when-merged
 
 ## Description
 
@@ -35,7 +35,7 @@ jobs:
         uses: autowarefoundation/autoware-github-actions/release-new-tag-when-merged@v1
         with:
           github_token: ${{ steps.generate-token.outputs.token }}
-          commit_sha: ${{ github.sha }}
+          commit_sha: ${{ github.event.pull_request.merge_commit_sha }}
 ```
 
 ## Inputs
