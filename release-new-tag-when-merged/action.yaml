@@ -2,14 +2,14 @@ name: Release new tag when merged
 
 inputs:
   github_token:
-    description: "The GitHub token"
+    description: The GitHub token
     required: true
   commit_sha:
-    description: "The commit SHA to release"
+    description: The commit SHA to release
     required: true
 
 runs:
-  using: "composite"
+  using: composite
   steps:
     - name: Checkout target branch (main repo)
       uses: actions/checkout@v4

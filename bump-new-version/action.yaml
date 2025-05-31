@@ -2,29 +2,29 @@ name: Bump package.xml version and Release
 
 inputs:
   github_token:
-    description: "The GitHub token"
+    description: The GitHub token
     required: true
   source_branch:
-    description: "The branch to merge from"
+    description: The branch to merge from
     required: true
-    default: "main"
+    default: main
   target_branch:
-    description: "The branch to merge into (release branch)"
+    description: The branch to merge into (release branch)
     required: true
-    default: "humble"
+    default: humble
   bump_version:
-    description: "The type of version bump (patch, minor, major)"
+    description: The type of version bump (patch, minor, major)
     required: true
-    default: "patch"
+    default: patch
     type: choice
     options:
       - patch
       - minor
       - major
   repository_owner:
-    description: "The owner of the source repository (e.g., fork user/org)"
+    description: The owner of the source repository (e.g., fork user/org)
     required: false
-    default: "autowarefoundation"
+    default: autowarefoundation
   # Optional: Add repository_name if forks may use different names
   # repository_name:
   #   description: 'The source repository name (defaults to current repo)'
@@ -32,7 +32,7 @@ inputs:
   #   default: ${{ github.event.repository.name }}
 
 runs:
-  using: "composite"
+  using: composite
   steps:
     - name: Checkout target branch (main repo)
       uses: actions/checkout@v4
