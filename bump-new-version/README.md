@@ -1,4 +1,4 @@
-# release-new-version
+# bump-new-version
 
 ## Description
 
