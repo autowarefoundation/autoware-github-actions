@@ -41,8 +41,7 @@ runs:
         # Output the new version
         echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
-    - name: Generate changelog and do release
-      id: generate_release
+    - name: Release a new tag
       shell: bash
       run: |
         # Find current version from package.xml
