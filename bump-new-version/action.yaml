@@ -68,27 +68,6 @@ runs:
           git checkout -b ${{ steps.generate_branch_name.outputs.branch_name }} origin/${{ inputs.source_branch }}
         fi
 
-    # Generate changelog
-    - name: Generate changelog and do release
-      shell: bash
-      run: |
-        sudo apt-get update && sudo apt-get install -y python3-pip
-        pip3 install catkin_tools
-
-        # The reason why we use '|| true' is that the changelog generation fails when there is no change.
-        # As we have no way to avoid by command options, and 'no change' itself is not a problem, so we ignore the error.
-        catkin_generate_changelog --all || true
-
-        # Check if there is any change
-        if [ -z "$(git status --porcelain)" ]; then
-          echo "No change to commit. Exiting..."
-          exit 0
-        fi
-
-        # Add all files to git
-        git add *
-        git commit -m 'chore: update all "CHANGELOG.rst"s'
-
     # Pre-check version mismatch between all the package.xml files:
     # - If there is a mismatch, commit the changes
     # - If there is no mismatch, do nothing
@@ -145,6 +124,27 @@ runs:
         # Add all files to git
         git add *
         git commit -m 'fix: to be consistent version in all package.xml(s)'
+
+    # Generate changelog
+    - name: Generate changelog and do release
+      shell: bash
+      run: |
+        sudo apt-get update && sudo apt-get install -y python3-pip
+        pip3 install catkin_tools
+
+        # The reason why we use '|| true' is that the changelog generation fails when there is no change.
+        # As we have no way to avoid by command options, and 'no change' itself is not a problem, so we ignore the error.
+        catkin_generate_changelog --all || true
+
+        # Check if there is any change
+        if [ -z "$(git status --porcelain)" ]; then
+          echo "No change to commit. Exiting..."
+          exit 0
+        fi
+
+        # Add all files to git
+        git add *
+        git commit -m 'chore: update all "CHANGELOG.rst"s'
 
     # Bump version and push the branch
     - name: Bump version and push the branch
