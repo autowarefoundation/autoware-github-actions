@@ -98,7 +98,7 @@ runs:
         # List remote tags that match x.y.z
         git fetch --tags
         TAGS=$(git tag -l)
-      
+
         # Find the latest tag
         if [ -z "$TAGS" ]; then
           echo "No tag found. Let's use 0.0.0 as the latest tag."
