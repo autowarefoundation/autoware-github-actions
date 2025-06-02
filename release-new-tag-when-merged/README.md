@@ -21,6 +21,13 @@ These secrets are already set if inside of the autoware repository.
 
 ```yaml
 jobs:
+  tag-on-merge:
+    if: |
+      github.event.pull_request.merged == true &&
+      contains(
+        join(github.event.pull_request.labels.*.name, ','),
+        'release:bump-version'
+      )
   release-tag:
     runs-on: ubuntu-22.04
     steps:
