@@ -132,6 +132,10 @@ runs:
         sudo apt-get update && sudo apt-get install -y python3-pip
         pip3 install catkin_tools
 
+        # For already released packages:
+        catkin_generate_changelog
+
+        # For new packages:
         # The reason why we use '|| true' is that the changelog generation fails when there is no change.
         # As we have no way to avoid by command options, and 'no change' itself is not a problem, so we ignore the error.
         catkin_generate_changelog --all || true
