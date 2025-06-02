@@ -1,4 +1,5 @@
 name: release new tag when merged
+description: Release a new tag when a PR which is created by a workflow `bump-new-version` is merged
 
 inputs:
   github_token:
@@ -21,26 +22,6 @@ runs:
       with:
         token: ${{ inputs.github_token }}
 
-    # Find the new version with x.y.z format
-    - name: Generate changelog and do release
-      shell: bash
-      run: |
-        NEW_VERSION=
-        while IFS= read -r file; do
-          NEW_VERSION=$(grep '<version>' "$file" | head -1 | sed 's/.*<version>\(.*\)<\/version>.*/\1/')
-          # Check if the version has a valid format: x.y.z
-          if [[ "$NEW_VERSION" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
-            echo "✅ New version is: $NEW_VERSION"
-            break
-          else
-            echo "❌ $file has invalid format version $NEW_VERSION (expected x.y.z)"
-            exit 1
-          fi
-        done < <(find . -name package.xml)
-
-        # Output the new version
-        echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
-
     - name: Release a new tag
       shell: bash
       run: |
@@ -62,36 +43,13 @@ runs:
           fi
         done < <(find . -name package.xml)
 
-        echo "✅ Found consistent version $NEW_VERSION in all package.xml files"
-
-        # List remote tags that match x.y.z
-        git fetch --tags
-        TAGS=$(git tag -l)
-
-        # If no tags are found, push the new version
-        if [ -z "$TAGS" ]; then
-          echo "No tags found. Let's push the new version"
-        else
-          # If matches are found, continue processing
-          TAGS=$(echo "$TAGS" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V)
-          echo "Existing tags:"
-          echo "$TAGS"
-          LATEST_TAG=$(echo "$TAGS" | tail -n1)
-
-          # Compare versions: Function returns 0 if $1 > $2
-          version_gt() {
-            # returns 0 if $1 > $2
-            [ "$(printf '%s\n' "$1" "$2" | sort -V | head -n1)" != "$1" ]
-          }
-
-          # Create a new tag if there is no previous tag or the new version is newer than the latest tag
-          if version_gt "$NEW_VERSION" "$LATEST_TAG"; then
-            echo "New version $NEW_VERSION is newer than latest tag $LATEST_TAG. Will create tag."
-          else
-            echo "Tag $NEW_VERSION is not newer than latest tag $LATEST_TAG. No action taken."
-            exit 0
-          fi
+        # Check if found a valid version
+        if [[ -z "$NEW_VERSION" ]]; then
+          echo "❌ No valid version found in package.xml files"
+          exit 1
         fi
+
+        echo "✅ Found valid version $NEW_VERSION in all package.xml files"
 
         # Create and push the new tag
         git tag "$NEW_VERSION"
