@@ -38,7 +38,7 @@ jobs:
           source_branch: main
           target_branch: humble
           bump_version: patch
-          repository_owner: autowarefoundation
+          source_repository: autowarefoundation
 ```
 
 ## Inputs

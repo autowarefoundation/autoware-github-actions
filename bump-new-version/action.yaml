@@ -22,7 +22,7 @@ inputs:
       - patch
       - minor
       - major
-  repository_owner:
+  source_repository:
     description: The owner of the source repository (e.g., fork user/org)
     required: false
     default: autowarefoundation
@@ -44,9 +44,9 @@ runs:
     - name: Add source remote if from fork
       shell: bash
       run: |
-        if [ "${{ inputs.repository_owner }}" != "${{ github.repository_owner }}" ]; then
-          echo "Using fork: ${{ inputs.repository_owner }}"
-          git remote add source-fork https://github.com/${{ inputs.repository_owner }}/${{ github.event.repository.name }}.git
+        if [ "${{ inputs.source_repository }}" != "${{ github.repository_owner }}" ]; then
+          echo "Using fork: ${{ inputs.source_repository }}"
+          git remote add source-fork https://github.com/${{ inputs.source_repository }}/${{ github.event.repository.name }}.git
           git fetch source-fork ${{ inputs.source_branch }}
         else
           git fetch origin ${{ inputs.source_branch }}
@@ -62,7 +62,7 @@ runs:
     - name: Based on the source branch, create a new working branch for PR
       shell: bash
       run: |
-        if [ "${{ inputs.repository_owner }}" != "${{ github.repository_owner }}" ]; then
+        if [ "${{ inputs.source_repository }}" != "${{ github.repository_owner }}" ]; then
           git checkout -b ${{ steps.generate_branch_name.outputs.branch_name }} source-fork/${{ inputs.source_branch }}
         else
           git checkout -b ${{ steps.generate_branch_name.outputs.branch_name }} origin/${{ inputs.source_branch }}
