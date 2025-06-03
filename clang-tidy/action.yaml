@@ -44,7 +44,7 @@ inputs:
 runs:
   using: composite
   steps:
-    # TODO(youtalk): Remove this once ros:humble is updated
+    # TODO(youtalk): Remove this once ros images are updated
     - name: Workaround for ROS signing key issue
       run: |
         rm -f /etc/apt/sources.list.d/ros2-latest.list
