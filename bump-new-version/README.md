@@ -38,18 +38,18 @@ jobs:
           source_branch: main
           target_branch: humble
           bump_version: patch
-          source_repository: autowarefoundation
+          source_repository_owner: autowarefoundation
 ```
 
 ## Inputs
 
-| Name              | Required | Default            | Description                                              |
-| ----------------- | -------- | ------------------ | -------------------------------------------------------- |
-| github_token      | true     |                    | The GitHub token for authentication                      |
-| source_branch     | true     | main               | The branch to merge from                                 |
-| target_branch     | true     | humble             | The branch to merge into (release branch)                |
-| bump_version      | true     | patch              | The type of version bump (patch, minor, major)           |
-| source_repository | false    | autowarefoundation | The owner of the source repository (e.g., fork user/org) |
+| Name                    | Required | Default            | Description                                              |
+| ----------------------- | -------- | ------------------ | -------------------------------------------------------- |
+| github_token            | true     |                    | The GitHub token for authentication                      |
+| source_branch           | true     | main               | The branch to merge from                                 |
+| target_branch           | true     | humble             | The branch to merge into (release branch)                |
+| bump_version            | true     | patch              | The type of version bump (patch, minor, major)           |
+| source_repository_owner | false    | autowarefoundation | The owner of the source repository (e.g., fork user/org) |
 
 ## Outputs
 
