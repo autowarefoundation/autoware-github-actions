@@ -1,0 +1,225 @@
+name: bump package.xml version
+description: Bump version in all package.xml files
+
+inputs:
+  github_token:
+    description: The GitHub token
+    required: true
+  source_branch:
+    description: The branch to merge from
+    required: true
+    default: main
+  target_branch:
+    description: The branch to merge into (release branch)
+    required: true
+    default: humble
+  bump_version:
+    description: The type of version bump (patch, minor, major)
+    required: true
+    default: patch
+    type: choice
+    options:
+      - patch
+      - minor
+      - major
+  repository_owner:
+    description: The owner of the source repository (e.g., fork user/org)
+    required: false
+    default: autowarefoundation
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout target branch (main repo)
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ inputs.target_branch }}
+        fetch-depth: 0
+
+    - name: Set git config
+      uses: autowarefoundation/autoware-github-actions/set-git-config@v1
+      with:
+        token: ${{ inputs.github_token }}
+
+    - name: Add source remote if from fork
+      shell: bash
+      run: |
+        if [ "${{ inputs.repository_owner }}" != "${{ github.repository_owner }}" ]; then
+          echo "Using fork: ${{ inputs.repository_owner }}"
+          git remote add source-fork https://github.com/${{ inputs.repository_owner }}/${{ github.event.repository.name }}.git
+          git fetch source-fork ${{ inputs.source_branch }}
+        else
+          git fetch origin ${{ inputs.source_branch }}
+        fi
+
+    - name: Generate PR branch name
+      id: generate_branch_name
+      shell: bash
+      run: |
+        BRANCH_NAME="bump/${{ inputs.source_branch }}-to-${{ inputs.target_branch }}-with-${{ inputs.bump_version }}-${{ github.run_id }}"
+        echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
+    - name: Based on the source branch, create a new working branch for PR
+      shell: bash
+      run: |
+        if [ "${{ inputs.repository_owner }}" != "${{ github.repository_owner }}" ]; then
+          git checkout -b ${{ steps.generate_branch_name.outputs.branch_name }} source-fork/${{ inputs.source_branch }}
+        else
+          git checkout -b ${{ steps.generate_branch_name.outputs.branch_name }} origin/${{ inputs.source_branch }}
+        fi
+
+    # Pre-check version mismatch between all the package.xml files:
+    # - If there is a mismatch, commit the changes
+    # - If there is no mismatch, do nothing
+    - name: Pre-check version mismatch
+      shell: bash
+      run: |
+        # List remote tags that match x.y.z
+        git fetch --tags
+        TAGS=$(git tag -l)
+
+        # Find the latest tag
+        if [ -z "$TAGS" ]; then
+          echo "No tag found. Let's use 0.0.0 as the latest tag."
+          LATEST_TAG="0.0.0"
+        else
+          # Find the latest tag
+          TAGS=$(echo "$TAGS" | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V)
+
+          # Check if there is/are tag(s) that matches the version
+          if [ -z "$TAGS" ]; then
+            echo "No pattern matched tag found. Let's use 0.0.0 as the latest tag."
+            LATEST_TAG="0.0.0"
+          else
+            echo "Existing tags:"
+            echo "$TAGS"
+
+            # Pick the newest tag
+            LATEST_TAG=$(echo "$TAGS" | tail -n1)
+          fi
+        fi
+
+        echo "Checking if the version has a valid format (x.y.z) and same as the latest tag"
+
+        while IFS= read -r file; do
+          CANDIDATE=$(grep '<version>' "$file" | head -1 | sed 's/.*<version>\(.*\)<\/version>.*/\1/')
+          if [[ "$CANDIDATE" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            # If there is a mismatch, commit the changes
+            if [[ "$CANDIDATE" != "$LATEST_TAG" ]]; then
+              echo "$file has inconsistent version $CANDIDATE (expected $LATEST_TAG). Fixing to $LATEST_TAG..."
+              sed -i "s/<version>.*<\/version>/<version>$LATEST_TAG<\/version>/" "$file"
+            fi
+          else
+            echo "$file has invalid format version $CANDIDATE (expected x.y.z). Fixing to $LATEST_TAG..."
+            sed -i "s/<version>.*<\/version>/<version>$LATEST_TAG<\/version>/" "$file"
+          fi
+        done < <(find . -name package.xml)
+
+        # Check if there is any change
+        if [ -z "$(git status --porcelain)" ]; then
+          echo "No change to commit. Exiting..."
+          exit 0
+        fi
+
+        # Add all files to git
+        git add *
+        git commit -m 'fix: to be consistent version in all package.xml(s)'
+
+    # Generate changelog
+    - name: Generate changelog and do release
+      shell: bash
+      run: |
+        sudo apt-get update && sudo apt-get install -y python3-pip
+        pip3 install catkin_tools
+
+        # For new packages:
+        # The reason why we use '|| true' is that the changelog generation fails when there is no change.
+        # As we have no way to avoid by command options, and 'no change' itself is not a problem, so we ignore the error.
+        catkin_generate_changelog --all || true
+
+        # For already released packages:
+        catkin_generate_changelog
+
+        # Check if there is any change
+        if [ -z "$(git status --porcelain)" ]; then
+          echo "No change to commit. Exiting..."
+          exit 0
+        fi
+
+        # Add all files to git
+        git add *
+        git commit -m 'chore: update all "CHANGELOG.rst"s'
+
+    # Bump version and push the branch
+    - name: Bump version and push the branch
+      id: bump_version_and_push_branch
+      shell: bash
+      run: |
+        # Check if new packages are added
+        catkin_prepare_release -y --no-push --bump ${{ inputs.bump_version }}
+
+        # Commit and push changes
+        git push origin ${{ steps.generate_branch_name.outputs.branch_name }}
+
+        # Get updated version by catkin_prepare_release from one of the package.xml
+        UPDATED_VERSION=
+        while IFS= read -r file; do
+          UPDATED_VERSION=$(grep '<version>' "$file" | head -1 | sed 's/.*<version>\(.*\)<\/version>.*/\1/')
+          # Check if the version has a valid format: x.y.z
+          if [[ "$UPDATED_VERSION" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            echo "✅ Updated version is: $UPDATED_VERSION"
+            break
+          else
+            echo "❌ $file has invalid format version $UPDATED_VERSION (expected x.y.z)"
+            exit 1
+          fi
+        done < <(find . -name package.xml)
+
+        # Output the updated version
+        echo "updated_version=$UPDATED_VERSION" >> $GITHUB_OUTPUT
+
+    - name: Ensure label exists
+      id: ensure_label_exists
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+      run: |
+        LABEL_NAME="release:bump-version"
+        LABEL_COLOR="f29513"    # orange
+        LABEL_DESCRIPTION="Label to trigger release workflow"
+        if ! gh label list | grep -wq "$LABEL_NAME"; then
+          echo "Label '$LABEL_NAME' does not exist, creating it..."
+          gh label create "$LABEL_NAME" --color "$LABEL_COLOR" --description "$LABEL_DESCRIPTION"
+        else
+          echo "Label '$LABEL_NAME' already exists."
+        fi
+
+        # Output the label name
+        echo "label_name=$LABEL_NAME" >> $GITHUB_OUTPUT
+
+    - name: Create Pull Request using gh
+      id: create_pr
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+      run: |
+        # Create a PR: the label is used in the release workflow
+        gh pr create \
+          --base ${{ inputs.target_branch }} \
+          --head ${{ steps.generate_branch_name.outputs.branch_name }} \
+          --title "chore: bump version (${{ steps.bump_version_and_push_branch.outputs.updated_version }}) and update changelog" \
+          --body "Bumped version (${{ steps.bump_version_and_push_branch.outputs.updated_version }}) in package.xml" \
+          --label ${{ steps.ensure_label_exists.outputs.label_name }}
+
+        if [ $? -ne 0 ]; then
+          echo "pr_created=true" >> $GITHUB_OUTPUT
+        else
+          echo "pr_created=false" >> $GITHUB_OUTPUT
+        fi
+
+    # (Idempotent) Delete the remote branch if the PR creation failed
+    - name: Delete the remote branch if the PR creation failed
+      if: steps.create_pr.outputs.pr_created == false
+      shell: bash
+      run: |
+        git push origin --delete ${{ steps.generate_branch_name.outputs.branch_name }}

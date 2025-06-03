@@ -1,0 +1,57 @@
+name: release new tag when merged
+description: Release a new tag when a PR which is created by a workflow `bump-new-version` is merged
+
+inputs:
+  github_token:
+    description: The GitHub token
+    required: true
+  commit_sha:
+    description: The commit SHA to release
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout target branch (main repo)
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ inputs.commit_sha }}
+
+    - name: Set git config
+      uses: autowarefoundation/autoware-github-actions/set-git-config@v1
+      with:
+        token: ${{ inputs.github_token }}
+
+    - name: Release a new tag
+      shell: bash
+      run: |
+        # Find current version from package.xml
+        NEW_VERSION=
+        while IFS= read -r file; do
+          CANDIDATE=$(grep '<version>' "$file" | head -1 | sed 's/.*<version>\(.*\)<\/version>.*/\1/')
+          if [[ "$CANDIDATE" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            # Insert the version if it is the first valid version
+            if [[ -z "$NEW_VERSION" ]]; then
+              NEW_VERSION="$CANDIDATE"
+            elif [[ "$CANDIDATE" != "$NEW_VERSION" ]]; then
+              echo "❌ $file has inconsistent version $CANDIDATE (one of others is $NEW_VERSION)"
+              exit 1
+            fi
+          else
+            echo "❌ $file has invalid format version $CANDIDATE (expected x.y.z)"
+            exit 1
+          fi
+        done < <(find . -name package.xml)
+
+        # Check if found a valid version
+        if [[ -z "$NEW_VERSION" ]]; then
+          echo "❌ No valid version found in package.xml files"
+          exit 1
+        fi
+
+        echo "✅ Found valid version $NEW_VERSION in all package.xml files"
+
+        # Create and push the new tag
+        git tag "$NEW_VERSION"
+        git push origin "$NEW_VERSION"
+        echo "🎉 Created and pushed tag $NEW_VERSION"
