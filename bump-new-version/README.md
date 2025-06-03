@@ -32,7 +32,7 @@ jobs:
           private-key: ${{ secrets.PRIVATE_KEY }}
 
       - name: Run
-        uses: sasakisasaki/autoware-github-actions/release-new-version@testing/release-new-version
+        uses: autowarefoundation/autoware-github-actions/release-new-version@v1
         with:
           github_token: ${{ steps.generate-token.outputs.token }}
           source_branch: main
