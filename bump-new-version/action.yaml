@@ -204,22 +204,26 @@ runs:
         GITHUB_TOKEN: ${{ inputs.github_token }}
       run: |
         # Create a PR: the label is used in the release workflow
-        gh pr create \
+        if ! gh pr create \
           --base ${{ inputs.target_branch }} \
           --head ${{ steps.generate_branch_name.outputs.branch_name }} \
           --title "chore: bump version (${{ steps.bump_version_and_push_branch.outputs.updated_version }}) and update changelog" \
           --body "Bumped version (${{ steps.bump_version_and_push_branch.outputs.updated_version }}) in package.xml" \
-          --label ${{ steps.ensure_label_exists.outputs.label_name }}
-
-        if [ $? -ne 0 ]; then
-          echo "pr_created=true" >> $GITHUB_OUTPUT
-        else
+          --label ${{ steps.ensure_label_exists.outputs.label_name }}; then
+          echo "❌ Failed to create a PR. Exiting..."
           echo "pr_created=false" >> $GITHUB_OUTPUT
+          exit 1
+        else
+          echo "✅ Successfully created a PR."
         fi
+
+        # Output the PR creation result
+        echo "pr_created=true" >> $GITHUB_OUTPUT
 
     # (Idempotent) Delete the remote branch if the PR creation failed
     - name: Delete the remote branch if the PR creation failed
       if: steps.create_pr.outputs.pr_created == false
       shell: bash
       run: |
+        echo "Deleting the remote branch ${{ steps.generate_branch_name.outputs.branch_name }} ..."
         git push origin --delete ${{ steps.generate_branch_name.outputs.branch_name }}
