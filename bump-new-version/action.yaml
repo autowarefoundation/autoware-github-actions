@@ -227,3 +227,26 @@ runs:
       run: |
         echo "Deleting the remote branch ${{ steps.generate_branch_name.outputs.branch_name }} ..."
         git push origin --delete ${{ steps.generate_branch_name.outputs.branch_name }}
+
+    # Handle conflicts
+    - name: Handle conflicts if the target branch has been updated
+      if: steps.create_pr.outputs.pr_created == true
+      shell: bash
+      run: |
+        if ! git merge ${{ inputs.target_branch }}; then
+          # Clean up the merge
+          git merge --abort
+
+          # Resolve conflicts by accepting target branch's (theirs) changes
+          if ! git merge ${{ inputs.target_branch }} -s recursive -X theirs --no-edit -m 'chore: resolve conflicts'; then
+            echo "❌ Failed to resolve conflicts. Exiting..."
+            exit 1
+          else
+            echo "✅ Successfully resolved conflicts."
+          fi
+
+          # Then push the changes
+          git push origin ${{ steps.generate_branch_name.outputs.branch_name }}
+        else
+          echo "No conflicts exist. Do nothing."
+        fi
