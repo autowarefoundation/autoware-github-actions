@@ -237,8 +237,8 @@ runs:
           # Clean up the merge
           git merge --abort
 
-          # Resolve conflicts by accepting target branch's (theirs) changes
-          if ! git merge ${{ inputs.target_branch }} -s recursive -X theirs --no-edit -m 'chore: resolve conflicts'; then
+          # Resolve conflicts by accepting source branch's (ours) changes
+          if ! git merge ${{ inputs.target_branch }} -s recursive -X ours --no-edit -m 'chore: resolve conflicts'; then
             echo "❌ Failed to resolve conflicts. Exiting..."
             exit 1
           else
