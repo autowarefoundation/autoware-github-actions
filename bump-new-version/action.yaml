@@ -222,7 +222,7 @@ runs:
 
     # (Idempotent) Delete the remote branch if the PR creation failed
     - name: Delete the remote branch if the PR creation failed
-      if: ${{ steps.create_pr.outputs.pr_created }} == false
+      if: ${{ steps.create_pr.outputs.pr_created == 'false' }}
       shell: bash
       run: |
         echo "Deleting the remote branch ${{ steps.generate_branch_name.outputs.branch_name }} ..."
@@ -230,7 +230,7 @@ runs:
 
     # Handle conflicts
     - name: Handle conflicts if the target branch has been updated
-      if: ${{ steps.create_pr.outputs.pr_created }} == true
+      if: ${{ steps.create_pr.outputs.pr_created == 'true' }}
       shell: bash
       run: |
         if ! git merge ${{ inputs.target_branch }}; then
