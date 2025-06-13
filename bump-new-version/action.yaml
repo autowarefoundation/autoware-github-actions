@@ -204,22 +204,46 @@ runs:
         GITHUB_TOKEN: ${{ inputs.github_token }}
       run: |
         # Create a PR: the label is used in the release workflow
-        gh pr create \
+        if ! gh pr create \
           --base ${{ inputs.target_branch }} \
           --head ${{ steps.generate_branch_name.outputs.branch_name }} \
           --title "chore: bump version (${{ steps.bump_version_and_push_branch.outputs.updated_version }}) and update changelog" \
           --body "Bumped version (${{ steps.bump_version_and_push_branch.outputs.updated_version }}) in package.xml" \
-          --label ${{ steps.ensure_label_exists.outputs.label_name }}
-
-        if [ $? -ne 0 ]; then
-          echo "pr_created=true" >> $GITHUB_OUTPUT
-        else
+          --label ${{ steps.ensure_label_exists.outputs.label_name }}; then
+          echo "❌ Failed to create a PR. Exiting..."
           echo "pr_created=false" >> $GITHUB_OUTPUT
+        else
+          echo "✅ Successfully created a PR."
+          echo "pr_created=true" >> $GITHUB_OUTPUT
         fi
 
     # (Idempotent) Delete the remote branch if the PR creation failed
     - name: Delete the remote branch if the PR creation failed
-      if: steps.create_pr.outputs.pr_created == false
+      if: ${{ steps.create_pr.outputs.pr_created == 'false' }}
       shell: bash
       run: |
+        echo "Deleting the remote branch ${{ steps.generate_branch_name.outputs.branch_name }} ..."
         git push origin --delete ${{ steps.generate_branch_name.outputs.branch_name }}
+
+    # Handle conflicts
+    - name: Handle conflicts if the target branch has been updated
+      if: ${{ steps.create_pr.outputs.pr_created == 'true' }}
+      shell: bash
+      run: |
+        if ! git merge ${{ inputs.target_branch }}; then
+          # Clean up the merge
+          git merge --abort
+
+          # Resolve conflicts by accepting source branch's (ours) changes
+          if ! git merge ${{ inputs.target_branch }} -s recursive -X ours -m 'chore: resolve conflicts'; then
+            echo "❌ Failed to resolve conflicts. Exiting..."
+            exit 1
+          else
+            echo "✅ Successfully resolved conflicts."
+          fi
+
+          # Then push the changes
+          git push origin ${{ steps.generate_branch_name.outputs.branch_name }}
+        else
+          echo "No conflicts exist. Do nothing."
+        fi
