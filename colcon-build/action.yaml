@@ -49,6 +49,10 @@ inputs:
     description: Will use the local mixin repository to avoid rate limits
     default: true
     required: false
+  base-paths:
+    description: List of base paths to consider for the build
+    default: .
+    required: false
 
 runs:
   using: composite
@@ -190,7 +194,8 @@ runs:
           --event-handlers console_cohesion+ \
           --packages-above-and-dependencies ${{ inputs.target-packages }} \
           --cmake-args -DCMAKE_BUILD_TYPE=${{ inputs.cmake-build-type }} \
-          --mixin coverage-gcc coverage-pytest compile-commands
+          --mixin coverage-gcc coverage-pytest compile-commands \
+          --base-paths ${{ inputs.base-paths }}
         mv /etc/nsswitch.conf.bak /etc/nsswitch.conf
         cat /etc/nsswitch.conf
       shell: bash
