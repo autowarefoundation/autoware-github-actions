@@ -5,7 +5,7 @@ mkdocs==1.4.3
 mkdocs-awesome-pages-plugin==2.9.1
 mkdocs-exclude
 mkdocs-macros-plugin
-mkdocs-material
+mkdocs-material==9.6.19
 mkdocs-same-dir
 mkdocs-static-i18n
 mkdocs-video
