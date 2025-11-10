@@ -29,7 +29,9 @@ def main():
                 colorama.Style.RESET_ALL,
                 end=' '
             )
-            result = subprocess.run(['check-jsonschema', '--schemafile', schema_file, config_file], capture_output=True)
+
+            base_path = os.path.dirname(schema_file)
+            result = subprocess.run(['check-jsonschema', '--base-uri', base_path, '--schemafile', schema_file, config_file], capture_output=True)
             if result.returncode != 0:
                 print(colorama.Fore.RED + '❌ Failed')
                 for line in result.stdout.decode('utf-8').split('\n'):
