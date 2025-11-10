@@ -5,6 +5,11 @@ import colorama
 
 colorama.init(autoreset=True, strip=False)
 
+def ensure_trailing_slash(path):
+    if path.endswith('/'):
+        return path
+    return path + '/'
+
 def main():
     validation_failed = False
 
@@ -30,8 +35,10 @@ def main():
                 end=' '
             )
 
-            base_path = os.path.dirname(os.path.realpath(schema_file))
-            result = subprocess.run(['check-jsonschema', '--base-uri', base_path, '--schemafile', schema_file, config_file], capture_output=True)
+            schema_absolute_path = os.path.realpath(schema_file)
+            # Trailing slash is required for check-jsonschema to resolve relative paths correctly.
+            schema_base_path = ensure_trailing_slash(os.path.dirname(schema_absolute_path))
+            result = subprocess.run(['check-jsonschema', '--base-uri', schema_base_path, '--schemafile', schema_absolute_path, config_file], capture_output=True)
             if result.returncode != 0:
                 print(colorama.Fore.RED + '❌ Failed')
                 for line in result.stdout.decode('utf-8').split('\n'):
