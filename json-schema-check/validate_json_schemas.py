@@ -30,7 +30,7 @@ def main():
                 end=' '
             )
 
-            base_path = os.path.dirname(schema_file)
+            base_path = os.path.dirname(os.path.realpath(schema_file))
             result = subprocess.run(['check-jsonschema', '--base-uri', base_path, '--schemafile', schema_file, config_file], capture_output=True)
             if result.returncode != 0:
                 print(colorama.Fore.RED + '❌ Failed')
