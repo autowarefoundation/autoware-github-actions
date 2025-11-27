@@ -42,7 +42,7 @@ inputs:
     required: false
   artifact-name:
     description: Name of the artifact to upload
-    default: "clang-tidy-result"
+    default: clang-tidy-result
     required: false
 
 runs:
