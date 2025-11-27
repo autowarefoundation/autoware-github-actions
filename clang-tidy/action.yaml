@@ -40,6 +40,10 @@ inputs:
     description: Path to the underlay workspace containing setup.sh
     default: ""
     required: false
+  artifact-name:
+    description: Name of the artifact to upload
+    default: "clang-tidy-result"
+    required: false
 
 runs:
   using: composite
@@ -172,7 +176,7 @@ runs:
       if: ${{ steps.check-report-log-existence.outputs.exists == 'true' && steps.check-fixes-yaml-existence.outputs.exists == 'true' }}
       uses: actions/upload-artifact@v4
       with:
-        name: clang-tidy-result
+        name: ${{ inputs.artifact-name }}
         path: /tmp/clang-tidy-result/
 
     - name: Mark the workflow as failed if clang-tidy find an error
