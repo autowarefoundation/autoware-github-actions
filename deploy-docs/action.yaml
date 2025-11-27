@@ -27,12 +27,6 @@ runs:
         pip3 install -r ${{ inputs.mkdocs-requirements-txt }}
       shell: bash
 
-    # TODO: Remove after v1.2.0 or v2.0.0 is released
-    - name: (tmp) Install latest mike
-      run: |
-        pip3 install -U git+https://github.com/jimporter/mike
-      shell: bash
-
     - name: Set git config
       uses: autowarefoundation/autoware-github-actions/set-git-config@v1
       with:
