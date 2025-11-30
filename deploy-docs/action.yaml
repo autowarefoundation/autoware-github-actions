@@ -41,6 +41,9 @@ runs:
         elif [ "${{ github.event_name }}" = "pull_request_target" ]; then
           PR_NUMBER="${{ github.event.pull_request.number }}"
           VERSION_NAME="pr-$PR_NUMBER"
+        elif [[ "$GITHUB_REF" == refs/tags/* ]]; then
+          PR_NUMBER=""
+          VERSION_NAME="${GITHUB_REF#refs/tags/}"
         else
           PR_NUMBER=""
           VERSION_NAME="${GITHUB_REF#refs/heads/}"
