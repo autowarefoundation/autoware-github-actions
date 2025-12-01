@@ -35,6 +35,8 @@ runs:
     - name: Set docs version name
       id: set-docs-version-name
       run: |
+        DEFAULT_BRANCH="${{ github.event.repository.default_branch }}"
+
         if [ "${{ github.event_name }}" = "pull_request" ]; then
           PR_NUMBER="${{ github.event.pull_request.number }}"
           VERSION_NAME="pr-$PR_NUMBER"
@@ -46,7 +48,14 @@ runs:
           VERSION_NAME="${GITHUB_REF#refs/tags/}"
         else
           PR_NUMBER=""
-          VERSION_NAME="${GITHUB_REF#refs/heads/}"
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+
+          # Add branch- prefix for non-default branches
+          if [ "$BRANCH_NAME" = "$DEFAULT_BRANCH" ]; then
+            VERSION_NAME="$BRANCH_NAME"
+          else
+            VERSION_NAME="branch-$BRANCH_NAME"
+          fi
         fi
 
         echo "pr-number=$PR_NUMBER" >> $GITHUB_OUTPUT
