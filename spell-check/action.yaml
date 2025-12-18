@@ -14,7 +14,6 @@ inputs:
     required: false
     default: |
       https://github.com/autowarefoundation/autoware-spell-check-dict
-      https://github.com/autowarefoundation/cspell-dicts
   token:
     description: ""
     required: false
