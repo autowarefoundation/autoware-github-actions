@@ -1,7 +1,15 @@
+# This file is automatically synced from:
+# https://github.com/autowarefoundation/sync-file-templates
+# To make changes, update the source repository and follow the guidelines in its README.
+
 name: spell-check-differential
 
 on:
   pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   spell-check-differential:
@@ -14,3 +22,6 @@ jobs:
         uses: autowarefoundation/autoware-github-actions/spell-check@v1
         with:
           cspell-json-url: https://raw.githubusercontent.com/autowarefoundation/autoware-spell-check-dict/main/.cspell.json
+          dict-packages: |
+            https://github.com/autowarefoundation/autoware-spell-check-dict
+            https://github.com/tier4/cspell-dicts
