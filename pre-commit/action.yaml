@@ -38,7 +38,7 @@ runs:
 
     - name: Push pre-commit fixes
       if: always() # Push changes even when pre-commit fails
-      uses: stefanzweifel/git-auto-commit-action@v5
+      uses: stefanzweifel/git-auto-commit-action@v7
       with:
         commit_message: "style(pre-commit): autofix"
         add_options: -u
