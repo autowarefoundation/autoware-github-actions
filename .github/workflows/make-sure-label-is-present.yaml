@@ -6,13 +6,18 @@ on:
       label:
         required: true
         type: string
+      run-condition:
+        default: true
+        required: false
+        type: boolean
     outputs:
       result:
         value: ${{ jobs.make-sure-label-is-present.outputs.result }}
 
 jobs:
   make-sure-label-is-present:
-    runs-on: ubuntu-22.04
+    if: ${{ inputs.run-condition }}
+    runs-on: ubuntu-latest
     outputs:
       result: ${{ steps.make-sure-label-is-present.outputs.result }}
     steps:
