@@ -17,7 +17,7 @@ jobs:
           - humble
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Run register-autonomoustuff-repository
         uses: ./register-autonomoustuff-repository
@@ -43,7 +43,7 @@ jobs:
           - humble
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Run clang-tidy
         uses: ./clang-tidy
@@ -56,7 +56,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Create temporary files
         run: |
@@ -124,7 +124,7 @@ jobs:
           - humble
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Run colcon-build
         uses: ./colcon-build
@@ -149,7 +149,7 @@ jobs:
           - ghcr.io/autowarefoundation/autoware:universe-devel
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
