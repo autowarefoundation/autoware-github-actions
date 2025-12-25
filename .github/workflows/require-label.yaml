@@ -6,6 +6,10 @@ on:
       label:
         required: true
         type: string
+      run-condition:
+        default: true
+        required: false
+        type: boolean
     outputs:
       result:
         value: ${{ jobs.require-label.outputs.result }}
@@ -13,6 +17,7 @@ on:
 
 jobs:
   require-label:
+    if: ${{ inputs.run-condition }}
     runs-on: ubuntu-latest
     outputs:
       result: ${{ steps.check-for-label.outputs.result }}
