@@ -97,7 +97,7 @@ runs:
 
     - name: Restore rosdep cache
       id: rosdep-restore
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         path: ~/.ros/rosdep
         key: rosdep-${{ runner.arch }}-${{ inputs.rosdistro }}
@@ -133,7 +133,7 @@ runs:
 
     - name: Save rosdep cache
       if: steps.check-cache.outputs.stale == 'true' && steps.rosdep-update.outcome == 'success'
-      uses: actions/cache/save@v4
+      uses: actions/cache/save@v5
       with:
         path: ~/.ros/rosdep
         key: rosdep-${{ runner.arch }}-${{ inputs.rosdistro }}
@@ -201,7 +201,7 @@ runs:
       shell: bash
 
     - name: Cache build artifacts
-      uses: actions/cache/save@v4
+      uses: actions/cache/save@v5
       with:
         path: |
           ./build
