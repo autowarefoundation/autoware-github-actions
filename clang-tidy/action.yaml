@@ -96,7 +96,7 @@ runs:
 
     - name: Restore build files from cache
       id: restore-build-files
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         path: |
           ./build
