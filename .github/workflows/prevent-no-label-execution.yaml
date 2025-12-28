@@ -12,7 +12,7 @@ on:
 
 jobs:
   prevent-no-label-execution:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     outputs:
       run: ${{ steps.prevent-no-label-execution.outputs.run }}
     steps:
