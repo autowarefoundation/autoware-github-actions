@@ -8,7 +8,7 @@ Note that you need to build target packages before running this action.
 ```yaml
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     container: ros:galactic
     steps:
       - name: Check out repository
@@ -31,7 +31,7 @@ jobs:
 
   test:
     needs: build
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     container: ros:galactic
     strategy:
       matrix:

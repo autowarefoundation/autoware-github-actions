@@ -12,7 +12,7 @@ Note that you need `workflow` permission for the token if you copy workflow file
 ```yaml
 jobs:
   sync-branches:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Generate token
         id: generate-token

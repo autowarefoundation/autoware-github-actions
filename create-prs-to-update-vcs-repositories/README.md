@@ -22,7 +22,7 @@ These secrets are already set if inside of the autoware repository.
 ```yaml
 jobs:
   sync-files:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Generate token
         id: generate-token

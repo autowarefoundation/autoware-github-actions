@@ -41,7 +41,7 @@ For this action to work properly, the following settings are required in the tar
 ```yaml
 jobs:
   sync-files:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Generate token
         id: generate-token

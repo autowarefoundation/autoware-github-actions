@@ -29,7 +29,7 @@ jobs:
         'release:bump-version'
       )
   release-tag:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Generate token
         id: generate-token

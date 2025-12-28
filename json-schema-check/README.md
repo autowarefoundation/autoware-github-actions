@@ -9,7 +9,7 @@ This action checks if the ROS 2 parameter files (`config/*.param.yaml`) of packa
 ```yaml
 jobs:
   json-schema-check:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
