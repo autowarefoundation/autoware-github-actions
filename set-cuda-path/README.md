@@ -7,7 +7,7 @@ This action set the CUDA path into GITHUB_ENV amd GITHUB_PATH.
 ```yaml
 jobs:
   set-cuda-path:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v3

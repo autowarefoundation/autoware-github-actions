@@ -8,7 +8,7 @@ Refer to [here](https://github.com/autowarefoundation/autoware.universe/issues/1
 ```yaml
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     container: ros:galactic
     steps:
       - name: Check out repository

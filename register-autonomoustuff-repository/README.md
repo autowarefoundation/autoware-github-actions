@@ -9,7 +9,7 @@ This action sets up the prerequisites for [pacmod3_msgs](https://github.com/astu
 ```yaml
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     container: ros:galactic
     steps:
       - name: Check out repository
