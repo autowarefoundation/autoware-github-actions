@@ -48,7 +48,7 @@ jobs:
 | pr-labels              | false    | The same as above.                                      |
 | pr-assignees           | false    | The same as above.                                      |
 | pr-reviewers           | false    | The same as above.                                      |
-| auto-merge-method      | false    | Refer to `peter-evans/enable-pull-request-automerge`.   |
+| auto-merge-method      | false    | Either "merge", "rebase", or "squash".                  |
 | pr-body-header         | false    | Text to prepend before the changelog in PR body.        |
 
 ## Outputs
