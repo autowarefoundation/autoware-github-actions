@@ -78,14 +78,14 @@ runs:
       if: ${{ inputs.build-depends-repos != '' }}
       run: |
         mkdir -p dependency_ws
-        vcs import dependency_ws < ${{ inputs.build-depends-repos }}
+        vcs import --recursive dependency_ws < ${{ inputs.build-depends-repos }}
       shell: bash
 
     - name: Clone above dependency packages
       if: ${{ inputs.packages-above-repos != '' }}
       run: |
         mkdir -p dependency_ws
-        vcs import dependency_ws < ${{ inputs.packages-above-repos }}
+        vcs import --recursive dependency_ws < ${{ inputs.packages-above-repos }}
       shell: bash
 
     - run: sudo apt-get -yqq update
