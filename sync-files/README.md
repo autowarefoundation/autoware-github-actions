@@ -115,8 +115,8 @@ Example:
 | ----------------- | -------- | ----------------------------------------------------- |
 | token             | true     | The token for pull requests.                          |
 | config            | false    | The path to `sync-files.yaml`.                        |
-| pr-base           | false    | Refer to `peter-evans/create-pull-request`.           |
-| pr-branch         | false    | The same as above.                                    |
+| pr-base           | false    | The base branch where the files are synced.           |
+| pr-branch         | false    | Refer to `peter-evans/create-pull-request`.           |
 | pr-title          | false    | The same as above.                                    |
 | pr-commit-message | false    | The same as above.                                    |
 | pr-labels         | false    | The same as above.                                    |
