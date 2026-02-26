@@ -10,9 +10,9 @@ inputs:
     required: false
     default: .github/sync-files.yaml
   sd-version:
-    description: The version of chmln/sd. Only v1.0.0 and higher are supported.
+    description: The version of chmln/sd (without leading 'v'). Only 1.0.0 and higher are supported.
     required: false
-    default: v1.0.0
+    default: 1.0.0
   pr-base:
     description: ""
     required: false
