@@ -115,6 +115,7 @@ Example:
 | ----------------- | -------- | ----------------------------------------------------- |
 | token             | true     | The token for pull requests.                          |
 | config            | false    | The path to `sync-files.yaml`.                        |
+| sd-version        | false    | The `chmln/sd` version to use. Defaults to `v1.0.0`.  |
 | pr-base           | false    | The base branch where the files are synced.           |
 | pr-branch         | false    | Refer to `peter-evans/create-pull-request`.           |
 | pr-title          | false    | The same as above.                                    |
