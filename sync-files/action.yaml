@@ -10,7 +10,7 @@ inputs:
     required: false
     default: .github/sync-files.yaml
   sd-version:
-    description: The version of chmln/sd.
+    description: The version of chmln/sd. Only v1.0.0 and higher are supported.
     required: false
     default: v1.0.0
   pr-base:
@@ -70,7 +70,7 @@ runs:
         yq-version: v4.25.1
 
     - name: Set up sd
-      uses: kenji-miyake/setup-sd@v${{ startsWith(inputs.sd-version, 'v0') && 'v1' || 'v2' }}
+      uses: kenji-miyake/setup-sd@v2
       with:
         version: ${{ inputs.sd-version }}
 
