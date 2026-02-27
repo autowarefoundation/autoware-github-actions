@@ -111,18 +111,19 @@ Example:
 
 ## Inputs
 
-| Name              | Required | Description                                           |
-| ----------------- | -------- | ----------------------------------------------------- |
-| token             | true     | The token for pull requests.                          |
-| config            | false    | The path to `sync-files.yaml`.                        |
-| pr-base           | false    | The base branch where the files are synced.           |
-| pr-branch         | false    | Refer to `peter-evans/create-pull-request`.           |
-| pr-title          | false    | The same as above.                                    |
-| pr-commit-message | false    | The same as above.                                    |
-| pr-labels         | false    | The same as above.                                    |
-| pr-assignees      | false    | The same as above.                                    |
-| pr-reviewers      | false    | The same as above.                                    |
-| auto-merge-method | false    | Refer to `peter-evans/enable-pull-request-automerge`. |
+| Name              | Required | Description                                                                |
+| ----------------- | -------- | -------------------------------------------------------------------------- |
+| token             | true     | The token for pull requests.                                               |
+| config            | false    | The path to `sync-files.yaml`.                                             |
+| sd-version        | false    | The `chmln/sd` version to use, without leading `'v'`. Defaults to `1.0.0`. |
+| pr-base           | false    | The base branch where the files are synced.                                |
+| pr-branch         | false    | Refer to `peter-evans/create-pull-request`.                                |
+| pr-title          | false    | The same as above.                                                         |
+| pr-commit-message | false    | The same as above.                                                         |
+| pr-labels         | false    | The same as above.                                                         |
+| pr-assignees      | false    | The same as above.                                                         |
+| pr-reviewers      | false    | The same as above.                                                         |
+| auto-merge-method | false    | Refer to `peter-evans/enable-pull-request-automerge`.                      |
 
 ## Outputs
 
