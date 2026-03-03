@@ -153,7 +153,7 @@ runs:
       if: ${{ steps.get-target-files.outputs.target-files != '' }}
       run: |
         mkdir /tmp/clang-tidy-result
-        run-clang-tidy -p build/ -export-fixes /tmp/clang-tidy-result/fixes.yaml -j $(nproc) ${{ steps.get-target-files.outputs.target-files }} > /tmp/clang-tidy-result/report.log && true
+        run-clang-tidy -p build/ -extra-arg-before=-Wno-unknown-warning-option -export-fixes /tmp/clang-tidy-result/fixes.yaml -j $(nproc) ${{ steps.get-target-files.outputs.target-files }} > /tmp/clang-tidy-result/report.log && true
         echo "exit_code=$?" >> $GITHUB_ENV
         echo "${{ github.event.number }}" > /tmp/clang-tidy-result/pr-id.txt
         echo "${{ github.event.pull_request.head.repo.full_name }}" > /tmp/clang-tidy-result/pr-head-repo.txt
