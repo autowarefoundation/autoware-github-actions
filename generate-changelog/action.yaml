@@ -87,7 +87,7 @@ runs:
 
     - name: Upload changelog JSON
       id: upload-changelog-json
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: changelog-json
         path: ./context.json
