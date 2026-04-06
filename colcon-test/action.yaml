@@ -174,15 +174,13 @@ runs:
           . ${{ inputs.underlay-workspace }}/setup.sh
         fi
 
-        # lcov 2.x (Ubuntu 24.04 / jazzy) treats mismatch, empty, source,
-        # and gcov issues as hard errors that abort geninfo processing.
-        # These are non-fatal for coverage reporting, so tell lcov to ignore them.
-        # lcov 1.x (Ubuntu 22.04 / humble) is unaffected as it has no strict checks.
-        # See: https://github.com/linux-test-project/lcov/blob/v2.4/man/lcov.1 (--ignore-errors)
-        #      https://github.com/linux-test-project/lcov/blob/v2.4/man/lcovrc.5 (ignore_errors)
-        lcov_major=$(lcov --version 2>/dev/null | grep -oP 'version \K[0-9]+' || echo "0")
-        if [ "$lcov_major" -ge 2 ]; then
-          echo "ignore_errors = mismatch,empty,source,gcov" >> ~/.lcovrc
+        # lcov 2.x treats mismatch/empty/source as hard errors.
+        # Override colcon lcov-result's bundled config to ignore them.
+        lcov_config_arg=""
+        if lcov --version 2>/dev/null | grep -qP 'version [2-9]'; then
+          cp "$(dpkg -L python3-colcon-lcov-result | grep lcovrc)" /tmp/lcovrc
+          printf '\nignore_errors = mismatch,empty,source\nno_external = 1\n' >> /tmp/lcovrc
+          lcov_config_arg="--lcov-config-file /tmp/lcovrc"
         fi
 
         # Build skip packages argument if packages-skip is provided
@@ -193,11 +191,13 @@ runs:
 
         colcon lcov-result --zero-counters \
           --verbose \
+          $lcov_config_arg \
           --packages-above ${{ inputs.target-packages }} \
           $skip_packages_arg
 
         colcon lcov-result --initial \
           --verbose \
+          $lcov_config_arg \
           --packages-above ${{ inputs.target-packages }} \
           $skip_packages_arg
 
@@ -211,6 +211,7 @@ runs:
         colcon lcov-result \
           --verbose \
           --filter "*/test/*" \
+          $lcov_config_arg \
           --packages-above ${{ inputs.target-packages }} \
           $skip_packages_arg || true
 
