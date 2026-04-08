@@ -170,13 +170,12 @@ runs:
 
     - name: Analyze
       if: ${{ steps.get-target-files.outputs.target-files != '' }}
-      env:
-        CTCACHE_DIR: ${{ inputs.use-clang-tidy-cache == 'true' && '~/.cache/ctcache' || '' }}
-        CTCACHE_SAVE_OUTPUT: ${{ inputs.use-clang-tidy-cache == 'true' && '1' || '' }}
       run: |
         mkdir /tmp/clang-tidy-result
         cache_flag=""
         if [ "${{ inputs.use-clang-tidy-cache }}" = "true" ]; then
+          export CTCACHE_DIR="$HOME/.cache/ctcache"
+          export CTCACHE_SAVE_OUTPUT=1
           cache_flag="-clang-tidy-binary clang-tidy-cached"
         fi
         run-clang-tidy $cache_flag -p build/ -export-fixes /tmp/clang-tidy-result/fixes.yaml -j $(nproc) ${{ steps.get-target-files.outputs.target-files }} > /tmp/clang-tidy-result/report.log && true
