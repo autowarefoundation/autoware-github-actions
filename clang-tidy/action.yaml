@@ -176,10 +176,22 @@ runs:
         if [ "${{ inputs.use-clang-tidy-cache }}" = "true" ]; then
           export CTCACHE_DIR="${GITHUB_WORKSPACE}/.ctcache"
           export CTCACHE_SAVE_OUTPUT=1
+          mkdir -p "$CTCACHE_DIR"
           cache_flag="-clang-tidy-binary clang-tidy-cached"
+          echo "::group::ctcache config"
+          echo "CTCACHE_DIR=$CTCACHE_DIR"
+          echo "Cache entries before: $(find "$CTCACHE_DIR" -type f 2>/dev/null | wc -l)"
+          echo "Cache size before: $(du -sh "$CTCACHE_DIR" 2>/dev/null | cut -f1)"
+          echo "::endgroup::"
         fi
         run-clang-tidy $cache_flag -p build/ -export-fixes /tmp/clang-tidy-result/fixes.yaml -j $(nproc) ${{ steps.get-target-files.outputs.target-files }} > /tmp/clang-tidy-result/report.log && true
         echo "exit_code=$?" >> $GITHUB_ENV
+        if [ "${{ inputs.use-clang-tidy-cache }}" = "true" ]; then
+          echo "::group::ctcache stats"
+          echo "Cache entries after: $(find "$CTCACHE_DIR" -type f 2>/dev/null | wc -l)"
+          echo "Cache size after: $(du -sh "$CTCACHE_DIR" 2>/dev/null | cut -f1)"
+          echo "::endgroup::"
+        fi
         echo "${{ github.event.number }}" > /tmp/clang-tidy-result/pr-id.txt
         echo "${{ github.event.pull_request.head.repo.full_name }}" > /tmp/clang-tidy-result/pr-head-repo.txt
         echo "${{ github.event.pull_request.head.ref }}" > /tmp/clang-tidy-result/pr-head-ref.txt
