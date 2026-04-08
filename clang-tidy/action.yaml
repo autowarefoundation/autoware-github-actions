@@ -135,7 +135,7 @@ runs:
       if: ${{ inputs.use-clang-tidy-cache == 'true' }}
       uses: actions/cache/restore@v5
       with:
-        path: ~/.cache/ctcache
+        path: ${{ github.workspace }}/.ctcache
         key: clang-tidy-cache-${{ runner.arch }}-${{ inputs.rosdistro }}-${{ steps.clang-tidy-version.outputs.hash }}-${{ hashFiles('.clang-tidy') }}-${{ github.sha }}
         restore-keys: |
           clang-tidy-cache-${{ runner.arch }}-${{ inputs.rosdistro }}-${{ steps.clang-tidy-version.outputs.hash }}-${{ hashFiles('.clang-tidy') }}-
@@ -174,7 +174,7 @@ runs:
         mkdir /tmp/clang-tidy-result
         cache_flag=""
         if [ "${{ inputs.use-clang-tidy-cache }}" = "true" ]; then
-          export CTCACHE_DIR="$HOME/.cache/ctcache"
+          export CTCACHE_DIR="${GITHUB_WORKSPACE}/.ctcache"
           export CTCACHE_SAVE_OUTPUT=1
           cache_flag="-clang-tidy-binary clang-tidy-cached"
         fi
@@ -189,7 +189,7 @@ runs:
       if: ${{ inputs.use-clang-tidy-cache == 'true' }}
       uses: actions/cache/save@v5
       with:
-        path: ~/.cache/ctcache
+        path: ${{ github.workspace }}/.ctcache
         key: clang-tidy-cache-${{ runner.arch }}-${{ inputs.rosdistro }}-${{ steps.clang-tidy-version.outputs.hash }}-${{ hashFiles('.clang-tidy') }}-${{ github.sha }}
 
     - name: Check if the report.log file exists
