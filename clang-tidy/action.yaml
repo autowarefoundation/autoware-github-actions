@@ -44,26 +44,29 @@ inputs:
     description: Name of the artifact to upload
     default: clang-tidy-result
     required: false
+  use-clang-tidy-cache:
+    description: Enable ctcache to cache clang-tidy results for faster subsequent runs
+    default: "false"
+    required: false
 
 runs:
   using: composite
   steps:
-    - name: Install curl
+    - name: Install dependencies
       run: |
         sudo apt-get -yqq update
-        sudo apt-get -yqq install curl
+        sudo apt-get -yqq install curl python3-pip clang-tidy libomp-dev
       shell: bash
 
-    - name: Install pip for rosdep
+    - name: Install ctcache
+      if: ${{ inputs.use-clang-tidy-cache == 'true' }}
       run: |
-        sudo apt-get -yqq update
-        sudo apt-get -yqq install python3-pip
-      shell: bash
-
-    - name: Install Clang-Tidy
-      run: |
-        sudo apt-get -yqq update
-        sudo apt-get -yqq install clang-tidy libomp-dev
+        sudo apt-get -yqq install pipx
+        pipx install git+https://github.com/matus-chochlik/ctcache.git
+        pipx ensurepath
+        export PATH="$HOME/.local/bin:$PATH"
+        printf '#!/bin/bash\nexport PATH="$HOME/.local/bin:$PATH"\nclang-tidy-cache $(which clang-tidy) "$@"\n' > /usr/local/bin/clang-tidy-cached
+        chmod +x /usr/local/bin/clang-tidy-cached
       shell: bash
 
     - name: Set git config
@@ -121,6 +124,22 @@ runs:
           -H "Authorization: token ${{ inputs.token }}"
       shell: bash
 
+    - name: Get clang-tidy version
+      if: ${{ inputs.use-clang-tidy-cache == 'true' }}
+      id: clang-tidy-version
+      run: |
+        echo "hash=$(clang-tidy --version | sha256sum | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: Restore clang-tidy cache
+      if: ${{ inputs.use-clang-tidy-cache == 'true' }}
+      uses: actions/cache/restore@v5
+      with:
+        path: ${{ github.workspace }}/.ctcache
+        key: clang-tidy-cache-${{ runner.arch }}-${{ inputs.rosdistro }}-${{ steps.clang-tidy-version.outputs.hash }}-${{ hashFiles('.clang-tidy') }}-${{ github.sha }}
+        restore-keys: |
+          clang-tidy-cache-${{ runner.arch }}-${{ inputs.rosdistro }}-${{ steps.clang-tidy-version.outputs.hash }}-${{ hashFiles('.clang-tidy') }}-
+
     - name: Get target files
       id: get-target-files
       run: |
@@ -153,12 +172,37 @@ runs:
       if: ${{ steps.get-target-files.outputs.target-files != '' }}
       run: |
         mkdir /tmp/clang-tidy-result
-        run-clang-tidy -p build/ -export-fixes /tmp/clang-tidy-result/fixes.yaml -j $(nproc) ${{ steps.get-target-files.outputs.target-files }} > /tmp/clang-tidy-result/report.log && true
+        cache_flag=""
+        if [ "${{ inputs.use-clang-tidy-cache }}" = "true" ]; then
+          export CTCACHE_DIR="${GITHUB_WORKSPACE}/.ctcache"
+          export CTCACHE_SAVE_OUTPUT=1
+          mkdir -p "$CTCACHE_DIR"
+          cache_flag="-clang-tidy-binary clang-tidy-cached"
+          echo "::group::ctcache config"
+          echo "CTCACHE_DIR=$CTCACHE_DIR"
+          echo "Cache entries before: $(find "$CTCACHE_DIR" -type f 2>/dev/null | wc -l)"
+          echo "Cache size before: $(du -sh "$CTCACHE_DIR" 2>/dev/null | cut -f1)"
+          echo "::endgroup::"
+        fi
+        run-clang-tidy $cache_flag -p build/ -export-fixes /tmp/clang-tidy-result/fixes.yaml -j $(nproc) ${{ steps.get-target-files.outputs.target-files }} > /tmp/clang-tidy-result/report.log && true
         echo "exit_code=$?" >> $GITHUB_ENV
+        if [ "${{ inputs.use-clang-tidy-cache }}" = "true" ]; then
+          echo "::group::ctcache stats"
+          echo "Cache entries after: $(find "$CTCACHE_DIR" -type f 2>/dev/null | wc -l)"
+          echo "Cache size after: $(du -sh "$CTCACHE_DIR" 2>/dev/null | cut -f1)"
+          echo "::endgroup::"
+        fi
         echo "${{ github.event.number }}" > /tmp/clang-tidy-result/pr-id.txt
         echo "${{ github.event.pull_request.head.repo.full_name }}" > /tmp/clang-tidy-result/pr-head-repo.txt
         echo "${{ github.event.pull_request.head.ref }}" > /tmp/clang-tidy-result/pr-head-ref.txt
       shell: bash
+
+    - name: Save clang-tidy cache
+      if: ${{ inputs.use-clang-tidy-cache == 'true' }}
+      uses: actions/cache/save@v5
+      with:
+        path: ${{ github.workspace }}/.ctcache
+        key: clang-tidy-cache-${{ runner.arch }}-${{ inputs.rosdistro }}-${{ steps.clang-tidy-version.outputs.hash }}-${{ hashFiles('.clang-tidy') }}-${{ github.sha }}
 
     - name: Check if the report.log file exists
       id: check-report-log-existence
