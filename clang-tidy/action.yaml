@@ -143,18 +143,36 @@ runs:
     - name: Get target files
       id: get-target-files
       run: |
+        # Build ignore patterns (shared by both paths)
+        ignore_patterns=()
+        ignore_patterns+=( "*/test/*" )
+        if [ -f ${{ inputs.clang-tidy-ignore-path }} ]; then
+          while IFS= read -r pattern; do
+            ignore_patterns+=( "$pattern" )
+          done < ${{ inputs.clang-tidy-ignore-path }}
+        fi
+
         if [ "${{ inputs.target-files }}" != "" ]; then
-          target_files="${{ inputs.target-files }}"
+          # Filter the provided target files against ignore patterns
+          filtered_files=""
+          for file in ${{ inputs.target-files }}; do
+            skip=false
+            for pattern in "${ignore_patterns[@]}"; do
+              # shellcheck disable=SC2254
+              case "$file" in $pattern) skip=true; break ;; esac
+            done
+            if [ "$skip" = false ]; then
+              filtered_files="$filtered_files $file"
+            fi
+          done
+          target_files="${filtered_files# }"
         else
           mapfile -t package_paths < <(colcon list --paths-only --packages-select ${{ inputs.target-packages }})
-          ignore_patterns=()
-          ignore_patterns+=( -not -path "*/test/*" )
-          if [ -f ${{ inputs.clang-tidy-ignore-path }} ]; then
-            while IFS= read -r pattern; do
-              ignore_patterns+=( -not -path "$pattern" )
-            done < .clang-tidy-ignore
-          fi
-          target_files=$(find "${package_paths[@]}" -name '*.cpp' "${ignore_patterns[@]}" | tr '\n' ' ')
+          find_ignore_args=()
+          for pattern in "${ignore_patterns[@]}"; do
+            find_ignore_args+=( -not -path "$pattern" )
+          done
+          target_files=$(find "${package_paths[@]}" -name '*.cpp' "${find_ignore_args[@]}" | tr '\n' ' ')
         fi
         echo "target-files=$target_files" >> $GITHUB_OUTPUT
       shell: bash
