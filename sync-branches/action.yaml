@@ -70,9 +70,12 @@ runs:
         git remote add sync-target "${{ inputs.sync-target-repository }}"
         git fetch -pPtf --all
         if git rev-parse --verify "refs/remotes/sync-target/${{ inputs.sync-target-branch }}" >/dev/null 2>&1; then
+          echo "Resolved '${{ inputs.sync-target-branch }}' as remote branch sync-target/${{ inputs.sync-target-branch }}"
           git reset --hard "sync-target/${{ inputs.sync-target-branch }}"
         else
-          git reset --hard "${{ inputs.sync-target-branch }}"
+          resolved=$(git rev-parse --verify "${{ inputs.sync-target-branch }}^{commit}")
+          echo "Resolved '${{ inputs.sync-target-branch }}' as commit/tag ${resolved}"
+          git reset --hard "${resolved}"
         fi
         git remote rm sync-target
       shell: bash
