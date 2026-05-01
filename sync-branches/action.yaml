@@ -18,7 +18,7 @@ inputs:
     description: ""
     required: true
   sync-target-branch:
-    description: "Branch name or commit SHA on the sync-target repository to mirror."
+    description: Branch name or commit SHA on the sync-target repository to mirror.
     required: true
   pr-title:
     description: ""
