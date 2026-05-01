@@ -143,20 +143,40 @@ runs:
     - name: Get target files
       id: get-target-files
       run: |
-        if [ "${{ inputs.target-files }}" != "" ]; then
-          target_files="${{ inputs.target-files }}"
-        else
-          mapfile -t package_paths < <(colcon list --paths-only --packages-select ${{ inputs.target-packages }})
-          ignore_patterns=()
-          ignore_patterns+=( -not -path "*/test/*" )
-          if [ -f ${{ inputs.clang-tidy-ignore-path }} ]; then
-            while IFS= read -r pattern; do
-              ignore_patterns+=( -not -path "$pattern" )
-            done < .clang-tidy-ignore
-          fi
-          target_files=$(find "${package_paths[@]}" -name '*.cpp' "${ignore_patterns[@]}" | tr '\n' ' ')
+        all_files=()
+
+        # Collect files from inputs.target-files
+        if [ -n "${{ inputs.target-files }}" ]; then
+          read -ra all_files <<< "${{ inputs.target-files }}"
         fi
-        echo "target-files=$target_files" >> $GITHUB_OUTPUT
+
+        # Collect .cpp/.hpp files from target packages.
+        # Add headers only for non-header-only packages (packages with at least one .cpp file)
+        # because colcon won't create compile_commands.json for header-only packages
+        #and clang-tidy will fail to analyze headers without compile_commands.json
+        if [ -n "${{ inputs.target-packages }}" ]; then
+          mapfile -t package_paths < <(colcon list --paths-only --packages-select ${{ inputs.target-packages }})
+          for pkg_path in "${package_paths[@]}"; do
+            if find "$pkg_path/" -name '*.cpp' -not -path "*/test/*" -print -quit 2>/dev/null | grep -q .; then
+              mapfile -t -O ${#all_files[@]} all_files < <(find "$pkg_path/" \( -name '*.cpp' -o -name '*.hpp' \) -not -path "*/test/*" 2>/dev/null)
+            fi
+          done
+        fi
+
+        # Filter out files matching patterns in the ignore file
+        if [ -f "${{ inputs.clang-tidy-ignore-path }}" ]; then
+          mapfile -t ignored_patterns < "${{ inputs.clang-tidy-ignore-path }}"
+          filtered=()
+          for file in "${all_files[@]}"; do
+            for pattern in "${ignored_patterns[@]}"; do
+              [[ "$file" == $pattern ]] && continue 2
+            done
+            filtered+=("$file")
+          done
+          all_files=("${filtered[@]}")
+        fi
+
+        echo "target-files=${all_files[*]}" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Show target files
