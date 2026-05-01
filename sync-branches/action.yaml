@@ -18,7 +18,7 @@ inputs:
     description: ""
     required: true
   sync-target-branch:
-    description: ""
+    description: "Branch name or commit SHA on the sync-target repository to mirror."
     required: true
   pr-title:
     description: ""
@@ -69,7 +69,11 @@ runs:
       run: |
         git remote add sync-target "${{ inputs.sync-target-repository }}"
         git fetch -pPtf --all
-        git reset --hard "sync-target/${{ inputs.sync-target-branch }}"
+        if git rev-parse --verify "refs/remotes/sync-target/${{ inputs.sync-target-branch }}" >/dev/null 2>&1; then
+          git reset --hard "sync-target/${{ inputs.sync-target-branch }}"
+        else
+          git reset --hard "${{ inputs.sync-target-branch }}"
+        fi
         git remote rm sync-target
       shell: bash
 
