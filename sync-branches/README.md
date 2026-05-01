@@ -43,7 +43,7 @@ jobs:
 | base-repo              | false    | The base repository. Default is the current repository. |
 | sync-pr-branch         | true     | The branch of the sync PR .                             |
 | sync-target-repository | true     | The sync target repository.                             |
-| sync-target-branch     | true     | The sync target branch.                                 |
+| sync-target-branch     | true     | The sync target branch name or commit SHA.              |
 | pr-title               | true     | Refer to `peter-evans/create-pull-request`.             |
 | pr-labels              | false    | The same as above.                                      |
 | pr-assignees           | false    | The same as above.                                      |
