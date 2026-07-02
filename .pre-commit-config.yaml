@@ -44,4 +44,9 @@ repos:
       - id: shfmt
         args: [-w, -s, -i=4]
 
+  - repo: https://github.com/autowarefoundation/autoware-spell-check-dict
+    rev: e9d756af3ac14bacd5c9cea188d47b39d3160f53
+    hooks:
+      - id: format-cspell-json
+
 exclude: .svg
