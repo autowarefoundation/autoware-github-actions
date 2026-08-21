@@ -99,7 +99,7 @@ runs:
 
     - name: Restore build files from cache
       id: restore-build-files
-      uses: actions/cache/restore@v5
+      uses: actions/cache/restore@v6
       with:
         path: |
           ./build
@@ -133,7 +133,7 @@ runs:
 
     - name: Restore clang-tidy cache
       if: ${{ inputs.use-clang-tidy-cache == 'true' }}
-      uses: actions/cache/restore@v5
+      uses: actions/cache/restore@v6
       with:
         path: ${{ github.workspace }}/.ctcache
         key: clang-tidy-cache-${{ runner.arch }}-${{ inputs.rosdistro }}-${{ steps.clang-tidy-version.outputs.hash }}-${{ hashFiles('.clang-tidy') }}-${{ github.sha }}
@@ -217,7 +217,7 @@ runs:
 
     - name: Save clang-tidy cache
       if: ${{ inputs.use-clang-tidy-cache == 'true' }}
-      uses: actions/cache/save@v5
+      uses: actions/cache/save@v6
       with:
         path: ${{ github.workspace }}/.ctcache
         key: clang-tidy-cache-${{ runner.arch }}-${{ inputs.rosdistro }}-${{ steps.clang-tidy-version.outputs.hash }}-${{ hashFiles('.clang-tidy') }}-${{ github.sha }}
