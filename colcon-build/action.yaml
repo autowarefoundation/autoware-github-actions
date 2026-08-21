@@ -156,7 +156,7 @@ runs:
 
     - name: Checkout mixin repo locally
       if: ${{ inputs.use-local-mixin == 'true' }}
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         repository: colcon/colcon-mixin-repository
         path: colcon-mixin-repository
