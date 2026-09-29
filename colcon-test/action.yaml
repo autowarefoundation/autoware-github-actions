@@ -174,14 +174,17 @@ runs:
           . ${{ inputs.underlay-workspace }}/setup.sh
         fi
 
-        # lcov 2.x treats mismatch/empty/source as hard errors.
-        # Override colcon lcov-result's bundled config to ignore them.
-        lcov_config_arg=""
+        # Disable branch coverage to prevent compiler-generated C++ exception branches from skewing Codecov metrics.
+        # lcov 2.x also treats mismatch/empty/source as hard errors.
+        # Override colcon lcov-result's bundled config to apply these settings.
+        cp "$(dpkg -L python3-colcon-lcov-result | grep lcovrc)" /tmp/lcovrc
+        sed -i 's/lcov_branch_coverage\s*=\s*1/lcov_branch_coverage = 0/g' /tmp/lcovrc
+        sed -i 's/genhtml_branch_coverage\s*=\s*1/genhtml_branch_coverage = 0/g' /tmp/lcovrc
+        printf '\nlcov_branch_coverage = 0\ngenhtml_branch_coverage = 0\n' >> /tmp/lcovrc
         if lcov --version 2>/dev/null | grep -qP 'version [2-9]'; then
-          cp "$(dpkg -L python3-colcon-lcov-result | grep lcovrc)" /tmp/lcovrc
-          printf '\nignore_errors = mismatch,empty,source\nno_external = 1\n' >> /tmp/lcovrc
-          lcov_config_arg="--lcov-config-file /tmp/lcovrc"
+          printf 'ignore_errors = mismatch,empty,source\nno_external = 1\n' >> /tmp/lcovrc
         fi
+        lcov_config_arg="--lcov-config-file /tmp/lcovrc"
 
         # Build skip packages argument if packages-skip is provided
         skip_packages_arg=""
