@@ -210,7 +210,15 @@ runs:
 
         colcon lcov-result \
           --verbose \
-          --filter "*/test/*" \
+          --filter \
+            "*/test/*" \
+            "*/examples/*" \
+            "*/debug.*" \
+            "*/build/*" \
+            "*/install/*" \
+            "*/log/*" \
+            "/usr/*" \
+            "/opt/*" \
           $lcov_config_arg \
           --packages-above ${{ inputs.target-packages }} \
           $skip_packages_arg || true
