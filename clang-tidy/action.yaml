@@ -48,6 +48,10 @@ inputs:
     description: Enable ctcache to cache clang-tidy results for faster subsequent runs
     default: "false"
     required: false
+  clang-tidy-cache-prune:
+    description: Remove stale cache entries not accessed during this run (enable only for full-repo runs e.g. main branch)
+    default: "false"
+    required: false
 
 runs:
   using: composite
@@ -202,13 +206,24 @@ runs:
           echo "Cache size before: $(du -sh "$CTCACHE_DIR" 2>/dev/null | cut -f1)"
           echo "::endgroup::"
         fi
+        touch /tmp/.ctcache-marker
         run-clang-tidy $cache_flag -p build/ -export-fixes /tmp/clang-tidy-result/fixes.yaml -j $(nproc) ${{ steps.get-target-files.outputs.target-files }} > /tmp/clang-tidy-result/report.log && true
         echo "exit_code=$?" >> $GITHUB_ENV
         if [ "${{ inputs.use-clang-tidy-cache }}" = "true" ]; then
-          echo "::group::ctcache stats"
-          echo "Cache entries after: $(find "$CTCACHE_DIR" -type f 2>/dev/null | wc -l)"
-          echo "Cache size after: $(du -sh "$CTCACHE_DIR" 2>/dev/null | cut -f1)"
+          echo "::group::ctcache stats after analysis"
+          echo "Cache entries: $(find "$CTCACHE_DIR" -type f 2>/dev/null | wc -l)"
+          echo "Cache size: $(du -sh "$CTCACHE_DIR" 2>/dev/null | cut -f1)"
           echo "::endgroup::"
+          if [ "${{ inputs.clang-tidy-cache-prune }}" = "true" ]; then
+            echo "::group::ctcache prune"
+            stale_count=$(find "$CTCACHE_DIR" -type f -not -newer /tmp/.ctcache-marker 2>/dev/null | wc -l)
+            echo "Pruning $stale_count stale cache entries not accessed during this run"
+            find "$CTCACHE_DIR" -type f -not -newer /tmp/.ctcache-marker -delete 2>/dev/null
+            find "$CTCACHE_DIR" -type d -empty -delete 2>/dev/null
+            echo "Cache entries after prune: $(find "$CTCACHE_DIR" -type f 2>/dev/null | wc -l)"
+            echo "Cache size after prune: $(du -sh "$CTCACHE_DIR" 2>/dev/null | cut -f1)"
+            echo "::endgroup::"
+          fi
         fi
         echo "${{ github.event.number }}" > /tmp/clang-tidy-result/pr-id.txt
         echo "${{ github.event.pull_request.head.repo.full_name }}" > /tmp/clang-tidy-result/pr-head-repo.txt
