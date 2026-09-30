@@ -52,6 +52,71 @@ jobs:
           target-packages: empty_target_cmake
           clang-tidy-config-url: https://raw.githubusercontent.com/autowarefoundation/autoware/main/.clang-tidy
 
+  test-clang-tidy-source-directory:
+    runs-on: ubuntu-latest
+    container: ros:${{ matrix.rosdistro }}
+    strategy:
+      fail-fast: false
+      matrix:
+        rosdistro: [humble, jazzy]
+        layout: [root, nested]
+    env:
+      SOURCE_DIRECTORY: ${{ matrix.layout == 'root' && '.' || 'src/fixture_repo' }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Prepare source directory fixture
+        id: fixture
+        run: |
+          bash tests/prepare-clang-tidy-source-directory.sh
+          echo "config-url=file://${RUNNER_TEMP}/source-directory-clang-tidy.yaml" >> "$GITHUB_OUTPUT"
+
+      - name: Run clang-tidy without source-directory
+        if: matrix.layout == 'root'
+        uses: ./clang-tidy
+        with:
+          rosdistro: ${{ matrix.rosdistro }}
+          target-packages: clang_tidy_source_fixture
+          clang-tidy-config-url: ${{ steps.fixture.outputs.config-url }}
+          cache-key-element: source-directory-${{ matrix.layout }}
+          artifact-name: clang-tidy-source-${{ matrix.rosdistro }}-${{ matrix.layout }}
+
+      - name: Run clang-tidy with source-directory
+        if: matrix.layout == 'nested'
+        uses: ./clang-tidy
+        with:
+          rosdistro: ${{ matrix.rosdistro }}
+          source-directory: ${{ env.SOURCE_DIRECTORY }}
+          target-packages: clang_tidy_source_fixture
+          clang-tidy-config-url: ${{ steps.fixture.outputs.config-url }}
+          cache-key-element: source-directory-${{ matrix.layout }}
+          artifact-name: clang-tidy-source-${{ matrix.rosdistro }}-${{ matrix.layout }}
+
+      - name: Check source and workspace separation
+        shell: bash
+        run: |
+          cmp "${RUNNER_TEMP}/source-directory-clang-tidy.yaml" "${SOURCE_DIRECTORY}/.clang-tidy"
+          test ! -L "${SOURCE_DIRECTORY}/.clang-tidy"
+          test -f build/compile_commands.json
+          grep -F '/checks/checked.cpp' /tmp/clang-tidy-result/report.log
+          if grep -E '/checks/(ignored|wildcard_ignored|test/ignored_test)\.cpp' /tmp/clang-tidy-result/report.log; then
+            echo 'An ignored source file was analyzed'
+            exit 1
+          fi
+          if [ "$SOURCE_DIRECTORY" != '.' ]; then
+            test ! -e "${SOURCE_DIRECTORY}/build"
+            test ! -e "${SOURCE_DIRECTORY}/log"
+          fi
+          # Prove the selected config also rejects a regression.
+          source_file="${SOURCE_DIRECTORY}/fixture_package/checks/checked.cpp"
+          printf 'int *checked = 0;\n' > "$source_file"
+          if clang-tidy -p "$GITHUB_WORKSPACE/build" "$source_file" > "$RUNNER_TEMP/negative.log" 2>&1; then
+            echo 'clang-tidy accepted a deliberate modernize-use-nullptr violation'
+            exit 1
+          fi
+          grep -F 'modernize-use-nullptr' "$RUNNER_TEMP/negative.log"
+
   test-check-file-existence:
     runs-on: ubuntu-latest
     steps:
