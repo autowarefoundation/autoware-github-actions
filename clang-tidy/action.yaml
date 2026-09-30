@@ -1,5 +1,5 @@
 name: clang-tidy
-description: ""
+description: Analyze a ROS workspace using clang-tidy.
 
 inputs:
   rosdistro:
@@ -12,6 +12,10 @@ inputs:
     description: ""
     required: false
     default: .clang-tidy-ignore
+  source-directory:
+    description: Directory containing the source checkout, relative to the workspace. Config and target-file paths are relative to this directory; builds stay at the workspace root.
+    required: false
+    default: .
   target-packages:
     description: ""
     required: true
@@ -119,6 +123,7 @@ runs:
       shell: bash
 
     - name: Retrieve .clang-tidy
+      working-directory: ${{ inputs.source-directory }}
       run: |
         curl -fsSL -o .clang-tidy ${{ inputs.clang-tidy-config-url }} \
           -H "Authorization: token ${{ inputs.token }}"
@@ -136,12 +141,13 @@ runs:
       uses: actions/cache/restore@v6
       with:
         path: ${{ github.workspace }}/.ctcache
-        key: clang-tidy-cache-${{ runner.arch }}-${{ inputs.rosdistro }}-${{ steps.clang-tidy-version.outputs.hash }}-${{ hashFiles('.clang-tidy') }}-${{ github.sha }}
+        key: clang-tidy-cache-${{ runner.arch }}-${{ inputs.rosdistro }}-${{ steps.clang-tidy-version.outputs.hash }}-${{ hashFiles(format('{0}/.clang-tidy', inputs.source-directory)) }}-${{ github.sha }}
         restore-keys: |
-          clang-tidy-cache-${{ runner.arch }}-${{ inputs.rosdistro }}-${{ steps.clang-tidy-version.outputs.hash }}-${{ hashFiles('.clang-tidy') }}-
+          clang-tidy-cache-${{ runner.arch }}-${{ inputs.rosdistro }}-${{ steps.clang-tidy-version.outputs.hash }}-${{ hashFiles(format('{0}/.clang-tidy', inputs.source-directory)) }}-
 
     - name: Get target files
       id: get-target-files
+      working-directory: ${{ inputs.source-directory }}
       run: |
         # Build ignore patterns (shared by both paths)
         ignore_patterns=()
@@ -167,7 +173,7 @@ runs:
           done
           target_files="${filtered_files# }"
         else
-          mapfile -t package_paths < <(colcon list --paths-only --packages-select ${{ inputs.target-packages }})
+          mapfile -t package_paths < <(colcon --log-base "${GITHUB_WORKSPACE}/log" list --paths-only --packages-select ${{ inputs.target-packages }})
           find_ignore_args=()
           for pattern in "${ignore_patterns[@]}"; do
             find_ignore_args+=( -not -path "$pattern" )
@@ -188,6 +194,7 @@ runs:
 
     - name: Analyze
       if: ${{ steps.get-target-files.outputs.target-files != '' }}
+      working-directory: ${{ inputs.source-directory }}
       run: |
         mkdir /tmp/clang-tidy-result
         cache_flag=""
@@ -202,7 +209,7 @@ runs:
           echo "Cache size before: $(du -sh "$CTCACHE_DIR" 2>/dev/null | cut -f1)"
           echo "::endgroup::"
         fi
-        run-clang-tidy $cache_flag -p build/ -export-fixes /tmp/clang-tidy-result/fixes.yaml -j $(nproc) ${{ steps.get-target-files.outputs.target-files }} > /tmp/clang-tidy-result/report.log && true
+        run-clang-tidy $cache_flag -p "${GITHUB_WORKSPACE}/build" -export-fixes /tmp/clang-tidy-result/fixes.yaml -j $(nproc) ${{ steps.get-target-files.outputs.target-files }} > /tmp/clang-tidy-result/report.log && true
         echo "exit_code=$?" >> $GITHUB_ENV
         if [ "${{ inputs.use-clang-tidy-cache }}" = "true" ]; then
           echo "::group::ctcache stats"
@@ -220,7 +227,7 @@ runs:
       uses: actions/cache/save@v6
       with:
         path: ${{ github.workspace }}/.ctcache
-        key: clang-tidy-cache-${{ runner.arch }}-${{ inputs.rosdistro }}-${{ steps.clang-tidy-version.outputs.hash }}-${{ hashFiles('.clang-tidy') }}-${{ github.sha }}
+        key: clang-tidy-cache-${{ runner.arch }}-${{ inputs.rosdistro }}-${{ steps.clang-tidy-version.outputs.hash }}-${{ hashFiles(format('{0}/.clang-tidy', inputs.source-directory)) }}-${{ github.sha }}
 
     - name: Check if the report.log file exists
       id: check-report-log-existence
