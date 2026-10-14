@@ -24,10 +24,17 @@ jobs:
     steps:
       - name: Check if label is present
         id: check-for-label
-        if: contains(github.event.pull_request.labels.*.name, inputs.label)
+        # Read the current labels, because the event payload is not updated on a re-run or for an event sent before the label was added.
+        env:
+          GH_TOKEN: ${{ github.token }}
+          LABEL: ${{ inputs.label }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          echo "result=true" >> $GITHUB_OUTPUT
-          echo "::notice::✅ The label is present: '${{ inputs.label }}'"
+          labels=$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json labels --jq '.labels[].name')
+          if grep -Fxq -- "$LABEL" <<< "$labels"; then
+            echo "result=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::✅ The label is present: '${{ inputs.label }}'"
+          fi
         shell: bash
 
       - name: Fail if label is not present
