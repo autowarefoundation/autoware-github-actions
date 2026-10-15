@@ -87,16 +87,16 @@ jobs:
 
 ## Inputs
 
-| Name                  | Required | Description                                                                        |
-| --------------------- | -------- | ---------------------------------------------------------------------------------- |
-| cloudflare-api-token  | true     | A Cloudflare API token with the `Cloudflare Pages` `Edit` permission.              |
-| cloudflare-account-id | true     | The ID of the Cloudflare account.                                                  |
-| cloudflare-project    | true     | The name of the Cloudflare Pages project.                                          |
-| artifact-name         | false    | The name of the artifact of `build-docs-preview`. The default is `docs-preview`.   |
+| Name                  | Required | Description                                                                                   |
+| --------------------- | -------- | --------------------------------------------------------------------------------------------- |
+| cloudflare-api-token  | true     | A Cloudflare API token with the `Cloudflare Pages` `Edit` permission.                         |
+| cloudflare-account-id | true     | The ID of the Cloudflare account.                                                             |
+| cloudflare-project    | true     | The name of the Cloudflare Pages project.                                                     |
+| artifact-name         | false    | The name of the artifact of `build-docs-preview`. The default is `docs-preview`.              |
 | github-token          | false    | A token with `actions: read` and `pull-requests: write`. The default is the token of the job. |
 
 ## Outputs
 
-| Name        | Description                                                              |
-| ----------- | ------------------------------------------------------------------------ |
+| Name        | Description                                                                 |
+| ----------- | --------------------------------------------------------------------------- |
 | preview-url | The URL of the preview of the pull request, empty if nothing was published. |
