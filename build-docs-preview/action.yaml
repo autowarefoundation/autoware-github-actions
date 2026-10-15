@@ -1,0 +1,39 @@
+name: build-docs-preview
+description: Build the MkDocs site of a pull request and upload it as an artifact, without any write access.
+
+inputs:
+  mkdocs-requirements-txt:
+    description: The requirements.txt file for MkDocs.
+    required: false
+    default: ${GITHUB_ACTION_PATH}/../deploy-docs/mkdocs-requirements.txt
+  artifact-name:
+    description: The name of the artifact that holds the built site.
+    required: false
+    default: docs-preview
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v7
+      with:
+        python-version: "3.10"
+
+    - name: Install MkDocs
+      run: |
+        pip3 install -U wheel
+        pip3 install -r ${{ inputs.mkdocs-requirements-txt }}
+      shell: bash
+
+    - name: Build docs
+      run: |
+        mkdocs build --site-dir "$RUNNER_TEMP/docs-preview"
+      shell: bash
+
+    - name: Upload site
+      uses: actions/upload-artifact@v7
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: ${{ runner.temp }}/docs-preview
+        if-no-files-found: error
+        retention-days: 7

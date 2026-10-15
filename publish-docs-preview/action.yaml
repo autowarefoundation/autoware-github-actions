@@ -1,0 +1,164 @@
+name: publish-docs-preview
+description: Publish the site that build-docs-preview built to Cloudflare Pages, and link it in the pull request.
+
+inputs:
+  cloudflare-api-token:
+    description: A Cloudflare API token with the Cloudflare Pages Edit permission.
+    required: true
+  cloudflare-account-id:
+    description: The ID of the Cloudflare account that holds the project.
+    required: true
+  cloudflare-project:
+    description: The name of the Cloudflare Pages project.
+    required: true
+  artifact-name:
+    description: The name of the artifact that build-docs-preview uploaded.
+    required: false
+    default: docs-preview
+  github-token:
+    description: A token with actions read and pull-requests write.
+    required: false
+    default: ${{ github.token }}
+
+outputs:
+  preview-url:
+    description: The URL of the preview of the pull request, empty if nothing was published.
+    value: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
+
+runs:
+  using: composite
+  steps:
+    # The pull request comes from the GitHub API, never from the artifact.
+    # A build of an older commit is skipped, because a newer build publishes the newer commit.
+    - name: Find the pull request
+      id: find-pr
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        EVENT_NAME: ${{ github.event_name }}
+        RUN_EVENT: ${{ github.event.workflow_run.event }}
+        RUN_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+        HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        HEAD_REPO: ${{ github.event.workflow_run.head_repository.full_name }}
+        HEAD_OWNER: ${{ github.event.workflow_run.head_repository.owner.login }}
+        HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+        CLOUDFLARE_PROJECT: ${{ inputs.cloudflare-project }}
+      run: |
+        if [ "$EVENT_NAME" != "workflow_run" ] || [ "$RUN_EVENT" != "pull_request" ] || [ "$RUN_CONCLUSION" != "success" ]; then
+          echo "::error::Use this action on a workflow_run event of a successful pull_request build."
+          exit 1
+        fi
+
+        if ! [[ $CLOUDFLARE_PROJECT =~ ^[a-z0-9][a-z0-9-]*$ ]]; then
+          echo "::error::The Cloudflare project name must use only lowercase letters, digits, and hyphens."
+          exit 1
+        fi
+
+        pr_number=$(gh api -X GET "repos/$GITHUB_REPOSITORY/pulls" -f state=open -f head="$HEAD_OWNER:$HEAD_BRANCH" \
+          --jq '[.[] | select(.head.sha == env.HEAD_SHA and .head.repo.full_name == env.HEAD_REPO) | .number] | if length == 1 then .[0] else empty end')
+
+        if [ -z "$pr_number" ]; then
+          echo "::notice::No open pull request has $HEAD_SHA as its head commit, so nothing is published."
+          exit 0
+        fi
+
+        echo "pr-number=$pr_number" >> "$GITHUB_OUTPUT"
+        echo "head-sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
+      shell: bash
+
+    - name: Download site
+      if: ${{ steps.find-pr.outputs.pr-number != '' }}
+      uses: actions/download-artifact@v8
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: ${{ runner.temp }}/docs-preview
+        run-id: ${{ github.event.workflow_run.id }}
+        github-token: ${{ inputs.github-token }}
+
+    - name: Check site
+      if: ${{ steps.find-pr.outputs.pr-number != '' }}
+      run: |
+        "$GITHUB_ACTION_PATH/check-site.sh" "$RUNNER_TEMP/docs-preview"
+      shell: bash
+
+    # Cloudflare Pages refuses a deployment with a file over 25 MiB.
+    # The preview leaves such files out, and the comment lists them.
+    - name: Remove files that are too large
+      if: ${{ steps.find-pr.outputs.pr-number != '' }}
+      run: |
+        cd "$RUNNER_TEMP/docs-preview" || exit 1
+        find . -type f -size +26214400c -printf '%P\n' | sort > "$RUNNER_TEMP/docs-preview-left-out.txt"
+        while IFS= read -r path; do
+          echo "::warning::$path is larger than 25 MiB, so the preview leaves it out."
+          rm -- "$path"
+        done < "$RUNNER_TEMP/docs-preview-left-out.txt"
+      shell: bash
+
+    # Wrangler also deploys a functions directory and reads a wrangler.toml file from its working
+    # directory. This job checks out no code, so the workspace must be empty.
+    - name: Check that the workspace is empty
+      if: ${{ steps.find-pr.outputs.pr-number != '' }}
+      run: |
+        if [ -n "$(ls -A "$GITHUB_WORKSPACE")" ]; then
+          echo "::error::Do not check out code in the job that publishes the preview."
+          exit 1
+        fi
+      shell: bash
+
+    - name: Deploy to Cloudflare Pages
+      id: deploy
+      if: ${{ steps.find-pr.outputs.pr-number != '' }}
+      uses: cloudflare/wrangler-action@v4
+      with:
+        apiToken: ${{ inputs.cloudflare-api-token }}
+        accountId: ${{ inputs.cloudflare-account-id }}
+        command: pages deploy ${{ runner.temp }}/docs-preview --project-name=${{ inputs.cloudflare-project }} --branch=pr-${{ steps.find-pr.outputs.pr-number }} --commit-hash=${{ steps.find-pr.outputs.head-sha }} --commit-dirty=true
+
+    - name: Create comment body
+      id: create-comment-body
+      if: ${{ steps.find-pr.outputs.pr-number != '' }}
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        PR_NUMBER: ${{ steps.find-pr.outputs.pr-number }}
+        HEAD_SHA: ${{ steps.find-pr.outputs.head-sha }}
+        ALIAS_URL: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
+        DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
+      run: |
+        base_url="${ALIAS_URL:-$DEPLOYMENT_URL}"
+        base_url="${base_url%/}/"
+
+        # The preview is already published, so a failure here only leaves the list of changed pages out.
+        if ! changed_files=$(gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files?per_page=100" --jq '.[].filename'); then
+          echo "::warning::Could not list the changed files, so the comment links the preview only."
+          changed_files=""
+        fi
+        comment_body=$(printf '%s\n' "$changed_files" | "$GITHUB_ACTION_PATH/create-comment.sh" "$base_url" "$HEAD_SHA" "$DEPLOYMENT_URL" "$RUNNER_TEMP/docs-preview-left-out.txt")
+
+        # Output multiline strings: https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
+        EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+        {
+          echo "comment-body<<$EOF"
+          echo "$comment_body"
+          echo "$EOF"
+        } >> "$GITHUB_OUTPUT"
+      shell: bash
+
+    - name: Find PR comment
+      id: find-comment
+      if: ${{ steps.find-pr.outputs.pr-number != '' }}
+      uses: peter-evans/find-comment@v4
+      with:
+        token: ${{ inputs.github-token }}
+        issue-number: ${{ steps.find-pr.outputs.pr-number }}
+        comment-author: github-actions[bot]
+        body-includes: Documentation URL
+
+    - name: Update PR comment
+      if: ${{ steps.find-pr.outputs.pr-number != '' }}
+      uses: peter-evans/create-or-update-comment@v5
+      with:
+        token: ${{ inputs.github-token }}
+        comment-id: ${{ steps.find-comment.outputs.comment-id }}
+        issue-number: ${{ steps.find-pr.outputs.pr-number }}
+        body: |
+          ${{ steps.create-comment-body.outputs.comment-body }}
+        edit-mode: replace

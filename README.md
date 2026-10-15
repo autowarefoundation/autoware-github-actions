@@ -80,6 +80,7 @@ jobs:
 
 See the `README.md` in each directory.
 
+- [build-docs-preview](./build-docs-preview/README.md)
 - [clang-tidy](./clang-tidy/README.md)
 - [colcon-build](./colcon-build/README.md)
 - [colcon-test](./colcon-test/README.md)
@@ -90,6 +91,7 @@ See the `README.md` in each directory.
 - [get-self-packages](./get-self-packages/README.md)
 - [json-schema-check](./json-schema-check/README.md)
 - [pre-commit](./pre-commit/README.md)
+- [publish-docs-preview](./publish-docs-preview/README.md)
 - [register-autonomoustuff-repository](./register-autonomoustuff-repository/README.md)
 - [remove-exec-depend](./remove-exec-depend/README.md)
 - [set-git-config](./set-git-config/README.md)
