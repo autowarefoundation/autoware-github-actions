@@ -24,10 +24,22 @@ jobs:
     steps:
       - name: Check if label is present
         id: check-for-label
-        if: contains(github.event.pull_request.labels.*.name, inputs.label)
+        # Ask the API, because the event payload keeps the labels from the time of the event, also on a re-run.
+        env:
+          GH_TOKEN: ${{ github.token }}
+          LABEL: ${{ inputs.label }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          echo "result=true" >> $GITHUB_OUTPUT
-          echo "::notice::✅ The label is present: '${{ inputs.label }}'"
+          if [ -z "$PR_NUMBER" ]; then
+            echo "::error::require-label needs a pull_request or pull_request_target event."
+            exit 1
+          fi
+          present=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/labels?per_page=100" \
+            --jq 'any(.[]; (.name | ascii_downcase) == (env.LABEL | ascii_downcase))')
+          if [ "$present" = "true" ]; then
+            echo "result=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::✅ The label is present: '$LABEL'"
+          fi
         shell: bash
 
       - name: Fail if label is not present
