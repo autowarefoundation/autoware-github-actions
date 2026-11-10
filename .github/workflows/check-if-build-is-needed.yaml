@@ -4,14 +4,16 @@ name: check-if-build-is-needed
 # Use it before require-label, so that a PR with nothing to build, for example a CODEOWNERS sync PR, does not need the label.
 # It runs on a plain runner, without the large CI images.
 # Like any job on pull_request, it runs code of the PR (colcon reads setup.py files), so the approval is the gate.
+# It accepts only the pull_request event, because pull_request_target would run that code in the context of the base repository.
 
 on:
   workflow_call:
     inputs:
       build-inputs:
         description: >-
-          Git pathspecs, one per line, of other files that change what the build runs,
-          for example the build workflows and their local actions. A change of one of them makes the result 'true'.
+          Git path patterns, one per line, of other files that change what the build runs:
+          the workflow that calls this one, the workflows that it uses, and their local actions.
+          A change of one of them makes the result 'true'. Blank lines and lines that start with '#' are skipped.
         default: ""
         required: false
         type: string
@@ -28,10 +30,10 @@ jobs:
     outputs:
       result: ${{ steps.check.outputs.result }}
     steps:
-      - name: Fail if the event is not a pull request
-        if: ${{ github.event.pull_request.number == '' }}
+      - name: Fail if the event is not pull_request
+        if: ${{ github.event_name != 'pull_request' }}
         run: |
-          echo "::error::check-if-build-is-needed needs a pull_request or pull_request_target event."
+          echo "::error::check-if-build-is-needed needs the pull_request event."
           exit 1
         shell: bash
 
@@ -89,7 +91,7 @@ jobs:
           while IFS= read -r line; do
             line="${line#"${line%%[![:space:]]*}"}"
             line="${line%"${line##*[![:space:]]}"}"
-            if [ -n "${line}" ]; then
+            if [ -n "${line}" ] && [ "${line:0:1}" != "#" ]; then
               build_inputs+=("${line}")
             fi
           done <<< "${BUILD_INPUTS}"
