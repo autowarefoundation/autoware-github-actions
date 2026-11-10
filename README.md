@@ -35,7 +35,7 @@ jobs:
 This workflow checks if a PR modifies a package or a build input.  
 Use it with [require-label](.github/workflows/require-label.yaml), so that a PR with nothing to build, for example a CODEOWNERS sync PR, does not need the label.  
 `package.xml` and the `COLCON_IGNORE`, `AMENT_IGNORE`, and `CATKIN_IGNORE` files are always build inputs. Give the other build inputs in `build-inputs`: the workflow file that calls this workflow, the workflows that it uses, and their local actions. Otherwise, a PR that changes only these files does not run the build without the label.  
-Each line of `build-inputs` is a Git path pattern (pathspec), not a GitHub Actions glob: `.github/actions` matches all files below that directory, and `*` also matches `/`. A line that matches no file gives a warning.  
+Each line of `build-inputs` is a Git path pattern, not a GitHub Actions glob: `.github/actions` matches all files below that directory, and `*` also matches `/`. A line that matches no file gives a warning.  
 It accepts only the `pull_request` event.
 
 Make `require-label / require-label` the required check of the branch. Do not require a job that is skipped at job level when `require-label` does not run:
