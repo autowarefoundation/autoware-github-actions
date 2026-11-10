@@ -30,6 +30,34 @@ jobs:
           private_key: ${{ secrets.PRIVATE_KEY }}
 ```
 
+### [check-if-build-is-needed](.github/workflows/check-if-build-is-needed.yaml)
+
+This workflow checks if a PR modifies a package or a build input.  
+Use it with [require-label](.github/workflows/require-label.yaml), so that a PR with nothing to build, for example a CODEOWNERS sync PR, does not need the label.  
+`package.xml` and the `COLCON_IGNORE`, `AMENT_IGNORE`, and `CATKIN_IGNORE` files are always build inputs. Give the other build inputs, for example the build workflows, in `build-inputs`.
+
+#### Usage
+
+```yaml
+jobs:
+  check-if-build-is-needed:
+    uses: autowarefoundation/autoware-github-actions/.github/workflows/check-if-build-is-needed.yaml@v1
+    with:
+      build-inputs: |
+        .github/workflows/build-and-test-differential.yaml
+        .github/actions
+
+  require-label:
+    # Do not add always() or !cancelled() here.
+    # If check-if-build-is-needed fails, require-label must not run, so that the required check stays missing.
+    needs: check-if-build-is-needed
+    uses: autowarefoundation/autoware-github-actions/.github/workflows/require-label.yaml@v1
+    with:
+      label: run:build-and-test-differential
+      # With the label, it runs anyway, so the label still starts the build, for example to test a CI change.
+      run-condition: ${{ needs.check-if-build-is-needed.outputs.result == 'true' || contains(github.event.pull_request.labels.*.name, 'run:build-and-test-differential') }}
+```
+
 ### [prevent-no-label-execution](.github/workflows/prevent-no-label-execution.yaml)
 
 This workflow checks if the PR has a specific label.  
