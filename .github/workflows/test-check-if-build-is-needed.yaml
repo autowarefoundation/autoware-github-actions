@@ -1,0 +1,40 @@
+name: test-check-if-build-is-needed
+
+on:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-check-step:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Run the test cases on the script of the check step
+        run: |
+          yq '.jobs["check-if-build-is-needed"].steps[] | select(.id == "check") | .run' \
+            .github/workflows/check-if-build-is-needed.yaml > "${RUNNER_TEMP}/check.sh"
+          bash tests/test-check-if-build-is-needed.sh "${RUNNER_TEMP}/check.sh"
+        shell: bash
+
+  # The test cases cover the check step. This call makes sure that the whole workflow runs and gives 'true' or 'false'.
+  check-if-build-is-needed:
+    uses: ./.github/workflows/check-if-build-is-needed.yaml
+
+  test-workflow-result:
+    needs: check-if-build-is-needed
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check that the result is 'true' or 'false'
+        env:
+          RESULT: ${{ needs.check-if-build-is-needed.outputs.result }}
+        run: |
+          echo "result: '${RESULT}'"
+          [ "${RESULT}" = "true" ] || [ "${RESULT}" = "false" ]
+        shell: bash
