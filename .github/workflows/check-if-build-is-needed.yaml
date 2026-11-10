@@ -14,6 +14,7 @@ on:
           Git path patterns, one per line, of other files that change what the build runs:
           the workflow that calls this one, the workflows that it uses, and their local actions.
           A change of one of them makes the result 'true'. Blank lines and lines that start with '#' are skipped.
+          A line that starts with ':' (pathspec magic) is an error. A line that matches no file gives a warning.
         default: ""
         required: false
         type: string
@@ -91,9 +92,19 @@ jobs:
           while IFS= read -r line; do
             line="${line#"${line%%[![:space:]]*}"}"
             line="${line%"${line##*[![:space:]]}"}"
-            if [ -n "${line}" ] && [ "${line:0:1}" != "#" ]; then
-              build_inputs+=("${line}")
+            if [ -z "${line}" ] || [ "${line:0:1}" = "#" ]; then
+              continue
             fi
+            # Pathspec magic, for example ':!*package.xml', can remove the patterns above from the check.
+            if [ "${line:0:1}" = ":" ]; then
+              echo "::error::build-inputs: a line must not start with ':': '${line}'"
+              exit 1
+            fi
+            # A pattern with a typo matches nothing, and then the result is 'false' without a sign of the mistake.
+            if [ -z "$(git ls-files -- "${line}")" ]; then
+              echo "::warning::build-inputs: '${line}' matches no file."
+            fi
+            build_inputs+=("${line}")
           done <<< "${BUILD_INPUTS}"
           echo "Build inputs: ${build_inputs[*]}"
           rc=0

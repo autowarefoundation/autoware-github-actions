@@ -1,0 +1,41 @@
+name: test-check-if-build-is-needed
+
+on:
+  pull_request:
+
+jobs:
+  without-build-inputs:
+    uses: ./.github/workflows/check-if-build-is-needed.yaml
+
+  with-all-files-as-build-inputs:
+    uses: ./.github/workflows/check-if-build-is-needed.yaml
+    with:
+      build-inputs: |
+        # Every file is a build input, so the result is always 'true'.
+        .
+
+  test-check-if-build-is-needed:
+    needs: [without-build-inputs, with-all-files-as-build-inputs]
+    runs-on: ubuntu-24.04
+    permissions:
+      pull-requests: read
+    steps:
+      - name: Compare the results with the file list of the PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          RESULT_WITHOUT: ${{ needs.without-build-inputs.outputs.result }}
+          RESULT_WITH_ALL: ${{ needs.with-all-files-as-build-inputs.outputs.result }}
+        run: |
+          # The only packages of this repository are in tests/dummy_packages.
+          pattern='^tests/dummy_packages/|(^|/)(package\.xml|COLCON_IGNORE|AMENT_IGNORE|CATKIN_IGNORE)$'
+          files=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/files" --paginate --jq '.[] | .filename, (.previous_filename // empty)')
+          if grep -qE "${pattern}" <<< "${files}"; then
+            expected=true
+          else
+            expected=false
+          fi
+          echo "without build-inputs: '${RESULT_WITHOUT}', expected '${expected}'"
+          echo "with all files as build-inputs: '${RESULT_WITH_ALL}', expected 'true'"
+          [ "${RESULT_WITHOUT}" = "${expected}" ] && [ "${RESULT_WITH_ALL}" = "true" ]
+        shell: bash
