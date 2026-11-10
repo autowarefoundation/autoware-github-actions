@@ -61,7 +61,7 @@ jobs:
     uses: autowarefoundation/autoware-github-actions/.github/workflows/require-label.yaml@v1
     with:
       label: run:build-and-test-differential
-      # Compare with 'false': if a caller adds always(), a check that did not finish gives an empty result,
+      # Compare with 'false': with always() or !cancelled(), a check that did not finish gives an empty result,
       # and the PR must still need the label.
       # With the label, it runs anyway, so the label still starts the build, for example to test a CI change.
       run-condition: ${{ needs.check-if-build-is-needed.outputs.result != 'false' || contains(github.event.pull_request.labels.*.name, 'run:build-and-test-differential') }}
