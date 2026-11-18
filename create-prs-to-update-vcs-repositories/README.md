@@ -63,7 +63,7 @@ None.
 
 ## What kind of tags are handled?
 
-- Monitors all vcs-imported repositories in the `autoware.repos` (if default) which have a version with regular expression pattern `r'\b(?<![^\s])\d+\.\d+\.\d+(?![-\w.+])\b'`.
+- Monitors all vcs-imported repositories in the `autoware.repos` (if default) which have a version with regular expression pattern `r'\b(?<![^\s])v?\d+\.\d+\.\d+(?![-\w.+])\b'`.
   - This pattern match/mismatches for the following examples:
 
 ```plaintext
@@ -71,7 +71,7 @@ None.
         "0.1.0",                # match
         "1.0.0",                # match
         "2.1.1",                # match
-        "v0.0.1",               # mismatch
+        "v0.0.1",               # match
         "ros2-v0.0.4",          # mismatch
         "xxx-1.0.0-yyy",        # mismatch
         "v1.2.3-beta",          # mismatch
@@ -95,13 +95,13 @@ None.
     0.0.1  =>  0.0.2    # If `--target patch` or `--target any` is specified
     1.1.1  =>  1.2.1    # If `--target minor` or `--target any` is specified
     2.4.3  =>  3.0.0    # If `--target major` or `--target any` is specified
+    v0.4.2 =>  v0.6.0   # If `--target minor` or `--target any` is specified
 ```
 
 - Invalid ones (PR is not created):
 
 ```plaintext
     main       =>  0.0.1
-    v0.0.1     =>  0.0.2
     xxx-0.0.1  =>  0.0.9
     0.0.1-rc1  =>  0.0.2
 ```
