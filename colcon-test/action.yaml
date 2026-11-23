@@ -233,7 +233,8 @@ runs:
 
         # Codecov cannot read the .coverage database, so convert it to the coverage.py XML report.
         if [ -f coveragepy/.coverage ]; then
-          COVERAGE_FILE=coveragepy/.coverage python3 -m coverage xml -i -o coveragepy/coverage.xml || true
+          COVERAGE_FILE=coveragepy/.coverage python3 -m coverage xml -i -o coveragepy/coverage.xml ||
+            echo "::warning::Failed to convert coveragepy/.coverage to coveragepy/coverage.xml"
         fi
       shell: bash
 

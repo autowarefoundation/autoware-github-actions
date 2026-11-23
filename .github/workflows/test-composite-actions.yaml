@@ -198,10 +198,16 @@ jobs:
           target-packages: empty_target_cmake empty_target_python
 
       - name: Run colcon-test
+        id: colcon-test
         uses: ./colcon-test
         with:
           rosdistro: ${{ matrix.rosdistro }}
           target-packages: empty_target_cmake empty_target_python
+
+      - name: Check the coverage report files
+        run: |
+          [[ "${{ steps.colcon-test.outputs.coverage-report-files }}" == *"coveragepy/coverage.xml"* ]]
+        shell: bash
 
   test-get-self-packages-and-get-modified-packages:
     runs-on: ubuntu-latest
