@@ -205,7 +205,7 @@ runs:
           $skip_packages_arg
 
         # ament_cmake_pytest measures only the source directory, but the tests import the copy in install/.
-        PYTEST_ADDOPTS="--cov=$PWD/install" colcon test --event-handlers console_cohesion+ \
+        PYTEST_ADDOPTS="${PYTEST_ADDOPTS:+$PYTEST_ADDOPTS }--cov=$PWD/install" colcon test --event-handlers console_cohesion+ \
           --mixin coverage-pytest \
           --packages-above ${{ inputs.target-packages }} \
           $skip_packages_arg \
@@ -239,12 +239,12 @@ runs:
             package=$(echo "$init_file" | cut -d/ -f2)
             module=$(basename "$(dirname "$init_file")")
             [ -n "${package_paths[$package]:-}" ] || continue
-            source_init=$(find "${package_paths[$package]}" -path "*/$module/__init__.py" -print -quit)
+            source_init=$(find "${package_paths[$package]}" -path "*/$module/__init__.py" -print -quit 2>/dev/null) || true
             [ -n "$source_init" ] || continue
             printf '%s.%s =\n    %s/\n    */install/%s/lib/python3*/site-packages/%s/\n' \
               "$package" "$module" "$PWD/$(dirname "$source_init")" "$package" "$module"
           done
-          printf '[report]\nomit =\n    */install/*\n'
+          printf '[report]\nignore_errors = True\nomit =\n    */install/*\n'
         } > /tmp/coveragerc
         export COVERAGE_RCFILE=/tmp/coveragerc
 
