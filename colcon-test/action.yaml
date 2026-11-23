@@ -204,7 +204,8 @@ runs:
           --packages-above ${{ inputs.target-packages }} \
           $skip_packages_arg
 
-        colcon test --event-handlers console_cohesion+ \
+        # ament_cmake_pytest measures only the source directory, but the tests import the copy in install/.
+        PYTEST_ADDOPTS="--cov=$PWD/install" colcon test --event-handlers console_cohesion+ \
           --mixin coverage-pytest \
           --packages-above ${{ inputs.target-packages }} \
           $skip_packages_arg \
@@ -225,6 +226,27 @@ runs:
           $lcov_config_arg \
           --packages-above ${{ inputs.target-packages }} \
           $skip_packages_arg || true
+
+        # Map the installed Python modules to their source directories, and leave the rest of install/ out of the reports.
+        declare -A package_paths
+        while read -r name path _; do
+          package_paths[$name]=$path
+        done < <(colcon list)
+        {
+          echo "[paths]"
+          for init_file in install/*/lib/python3*/site-packages/*/__init__.py; do
+            [ -f "$init_file" ] || continue
+            package=$(echo "$init_file" | cut -d/ -f2)
+            module=$(basename "$(dirname "$init_file")")
+            [ -n "${package_paths[$package]:-}" ] || continue
+            source_init=$(find "${package_paths[$package]}" -path "*/$module/__init__.py" -print -quit)
+            [ -n "$source_init" ] || continue
+            printf '%s.%s =\n    %s/\n    */install/%s/lib/python3*/site-packages/%s/\n' \
+              "$package" "$module" "$PWD/$(dirname "$source_init")" "$package" "$module"
+          done
+          printf '[report]\nomit =\n    */install/*\n'
+        } > /tmp/coveragerc
+        export COVERAGE_RCFILE=/tmp/coveragerc
 
         colcon coveragepy-result \
           --verbose \
