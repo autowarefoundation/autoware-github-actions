@@ -230,6 +230,12 @@ runs:
           --verbose \
           --packages-above ${{ inputs.target-packages }} \
           $skip_packages_arg || true
+
+        # Codecov cannot read the .coverage database, so convert it to the coverage.py XML report.
+        if [ -f coveragepy/.coverage ]; then
+          COVERAGE_FILE=coveragepy/.coverage python3 -m coverage xml -i -o coveragepy/coverage.xml ||
+            echo "::warning::Failed to convert coveragepy/.coverage to coveragepy/coverage.xml"
+        fi
       shell: bash
 
     - name: Check if the lcov coverage file exists
@@ -242,7 +248,7 @@ runs:
       id: coveragepy-coverage-file-existence
       uses: autowarefoundation/autoware-github-actions/check-file-existence@v1
       with:
-        files: coveragepy/.coverage
+        files: coveragepy/coverage.xml
 
     - name: Generate output
       id: test
@@ -253,7 +259,7 @@ runs:
         fi
 
         if [[ "${{ steps.coveragepy-coverage-file-existence.outputs.exists}}" == "true" ]]; then
-          coverage_files+=("coveragepy/.coverage")
+          coverage_files+=("coveragepy/coverage.xml")
         fi
 
         # Join coverage file names
