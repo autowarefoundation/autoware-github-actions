@@ -254,8 +254,14 @@ runs:
       id: test
       run: |
         coverage_files=()
+        # The filter can remove every file, for example all the generated code of message packages.
+        # Codecov marks an upload without source files as an error, so do not report such a file.
         if [[ "${{ steps.lcov-coverage-file-existence.outputs.exists }}" == "true" ]]; then
-          coverage_files+=("lcov/total_coverage.info")
+          if grep -q '^SF:' lcov/total_coverage.info; then
+            coverage_files+=("lcov/total_coverage.info")
+          else
+            echo "lcov/total_coverage.info has no source files after filtering, so it is not reported."
+          fi
         fi
 
         if [[ "${{ steps.coveragepy-coverage-file-existence.outputs.exists}}" == "true" ]]; then
