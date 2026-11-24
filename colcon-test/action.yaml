@@ -204,7 +204,8 @@ runs:
           --packages-above ${{ inputs.target-packages }} \
           $skip_packages_arg
 
-        colcon test --event-handlers console_cohesion+ \
+        # ament_cmake_pytest measures only the source directory, but its tests import the copy in install/. Codecov maps the install/ paths back to the source files. colcon sets its own PYTEST_ADDOPTS for ament_python packages.
+        PYTEST_ADDOPTS="${PYTEST_ADDOPTS:+$PYTEST_ADDOPTS }--cov=$PWD/install" colcon test --event-handlers console_cohesion+ \
           --mixin coverage-pytest \
           --packages-above ${{ inputs.target-packages }} \
           $skip_packages_arg \
