@@ -12,7 +12,7 @@ from github import Github    # cspell: ignore Github
 
 
 # Define the semantic version pattern here
-SUPPORTED_SEMANTIC_VERSION_PATTERN = r'\b(?<![^\s])\d+\.\d+\.\d+(?![-\w.+])\b'
+SUPPORTED_SEMANTIC_VERSION_PATTERN = r'\b(?<![^\s])v?\d+\.\d+\.\d+(?![-\w.+])\b'
 
 # Define the valid release types here
 VALID_RELEASES = ['major', 'minor', 'patch', 'any']
