@@ -1,0 +1,124 @@
+name: check-if-build-is-needed
+
+# Tells if a PR needs the build: it modifies a package or a build input.
+# Use it before require-label, so that a PR with nothing to build, for example a CODEOWNERS sync PR, does not need the label.
+# It runs on a plain runner, without the large CI images.
+# Like any job on pull_request, it runs code of the PR (colcon reads setup.py files), so the approval is the gate.
+# It accepts only the pull_request event, because pull_request_target would run that code in the context of the base repository.
+
+on:
+  workflow_call:
+    inputs:
+      build-inputs:
+        description: >-
+          Git path patterns, one per line, of other files that change what the build runs:
+          the workflow that calls this one, the workflows that it uses, and their local actions.
+          A change of one of them makes the result 'true'. Blank lines and lines that start with '#' are skipped.
+          A line that starts with ':' (a special Git pattern) is an error. A line that matches no file gives a warning.
+        default: ""
+        required: false
+        type: string
+    outputs:
+      result:
+        value: ${{ jobs.check-if-build-is-needed.outputs.result }}
+        description: Returns 'true' if the PR modifies a package or a build input, 'false' otherwise
+
+jobs:
+  check-if-build-is-needed:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    outputs:
+      result: ${{ steps.check.outputs.result }}
+    steps:
+      - name: Fail if the event is not pull_request
+        if: ${{ github.event_name != 'pull_request' }}
+        run: |
+          echo "::error::check-if-build-is-needed needs the pull_request event."
+          exit 1
+        shell: bash
+
+      - name: Set PR fetch depth
+        run: echo "PR_FETCH_DEPTH=$(( ${{ github.event.pull_request.commits }} + 1 ))" >> "${GITHUB_ENV}"
+        shell: bash
+
+      - name: Checkout PR branch and all PR commits
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: ${{ env.PR_FETCH_DEPTH }}
+          persist-credentials: false
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      # get-modified-packages needs only `colcon list`.
+      - name: Install colcon
+        run: pip3 install colcon-core colcon-ros colcon-package-information colcon-package-selection
+        shell: bash
+
+      # get-modified-packages gives an empty list when `colcon list` fails, so make sure that colcon works.
+      - name: Check that colcon finds the packages
+        run: |
+          if [ -z "$(colcon list --names-only)" ]; then
+            echo "::error::colcon list found no package."
+            exit 1
+          fi
+        shell: bash
+
+      - name: Get modified packages
+        id: get-modified-packages
+        uses: autowarefoundation/autoware-github-actions/get-modified-packages@v1
+
+      - name: Check if the build is needed
+        id: check
+        # package.xml and the files that make colcon ignore a package are build inputs in every repository,
+        # also if colcon cannot list the package.
+        # This is cautious: a PR that only removes a package needs the build, though the build then builds nothing.
+        # origin/<base> exists because get-modified-packages fetches it.
+        # `git diff --quiet` exits 1 on a change and more on an error, so both make the result 'true'.
+        env:
+          MODIFIED_PACKAGES: ${{ steps.get-modified-packages.outputs.modified-packages }}
+          BUILD_INPUTS: ${{ inputs.build-inputs }}
+        run: |
+          build_inputs=(
+            '*package.xml'
+            '*COLCON_IGNORE'
+            '*AMENT_IGNORE'
+            '*CATKIN_IGNORE'
+          )
+          while IFS= read -r line; do
+            line="${line#"${line%%[![:space:]]*}"}"
+            line="${line%"${line##*[![:space:]]}"}"
+            if [ -z "${line}" ] || [ "${line:0:1}" = "#" ]; then
+              continue
+            fi
+            # A special Git pattern, for example ':!*package.xml', can remove the patterns above from the check.
+            if [ "${line:0:1}" = ":" ]; then
+              echo "::error::build-inputs: a line must not start with ':': '${line}'"
+              exit 1
+            fi
+            # A pattern with a typo matches nothing, and then the result is 'false' without a sign of the mistake.
+            if [ -z "$(git ls-files -- "${line}")" ]; then
+              echo "::warning::build-inputs: '${line}' matches no file."
+            fi
+            build_inputs+=("${line}")
+          done <<< "${BUILD_INPUTS}"
+          echo "Build inputs: ${build_inputs[*]}"
+          rc=0
+          git diff --quiet "origin/${GITHUB_BASE_REF}...HEAD" -- "${build_inputs[@]}" || rc=$?
+          if [ "${rc}" -gt 1 ]; then
+            echo "::warning::git diff failed with exit code ${rc}, so the build is needed."
+          fi
+          if [ -n "${MODIFIED_PACKAGES}" ] || [ "${rc}" -ne 0 ]; then
+            result=true
+          else
+            result=false
+          fi
+          echo "Modified packages: ${MODIFIED_PACKAGES:-none}"
+          echo "Changed build inputs:"
+          git diff --name-only "origin/${GITHUB_BASE_REF}...HEAD" -- "${build_inputs[@]}" || true
+          echo "result=${result}" | tee -a "${GITHUB_OUTPUT}"
+        shell: bash
